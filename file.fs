@@ -32,9 +32,11 @@
 : read-line ( a1 u1 a2 -- u2 ior )
    linef ;
 
-create eol 10 c,
+here 1 c, 10 c, pad !
+: newline [ pad @ ] literal count ;
+
 : write-line ( a1 u a2 -- ior )
-   >r r@ write-file ?dup 0= if eol 1 r@ write-file then rdrop ;
+   >r r@ write-file ?dup 0= if newline r@ write-file then rdrop ;
 
 : create-file ( a1 u1 u2 -- a2 ior )
    open-file ;
