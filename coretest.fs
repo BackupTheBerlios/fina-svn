@@ -763,7 +763,6 @@ TESTING DEFINING WORDS: : ; CONSTANT VARIABLE CREATE DOES> >BODY
 
 \ ------------------------------------------------------------------------
 TESTING EVALUATE
-con
 
 : GE1 S" 123" ; IMMEDIATE
 : GE2 S" 123 1+" ; IMMEDIATE
