@@ -7,21 +7,37 @@ file warnings off
    source >in ! drop ; immediate
 
 : \g postpone \ ; immediate
-: internal postpone \ ; immediate
-: core postpone \ ; immediate
 
 : compile-only
    lastname c@ 32 or lastname c! ;
 
-: char
+: char  
    parse-word drop c@ ;
 
 : [char] 
    char postpone literal ; immediate compile-only
 
-: ( 
+: (  
    [char] ) parse 2drop ; immediate
 
+
+\g @see anscore
+\ immediate ( -- )
+
+\g @see anscore
+\ \  ( "ccc<eol>"-- )
+
+\g Mark last word as compile-only
+\ compile-only ( -- )
+
+\g @see anscore
+\ char  ( "<spaces>name" -- char )
+
+\g @see anscore
+\ [char]  ( ct: "<spaces>name" --  rt: -- char ) 
+
+\g @see anscore
+\ (  ( "ccc<paren>" -- )
 
 \ Misc
 
@@ -29,7 +45,7 @@ file warnings off
 \ compile-only ( -- ) \ internal
 
 \g @see anscore
-: chars  ( n1 -- n2 ) \ core
+: chars  ( n1 -- n2 )
    ; immediate
 
 \g Convert address units to chars
@@ -213,7 +229,7 @@ variable leaves
    ?dodefine xtof docreate <> -31 ?throw
    cell+ ; 
 
-\ Connect latest word to the DOES> code
+\g Connect latest word to the DOES> code
 : pipe ( --  R: xt -- )
    lastname name>xt >body cell- r> swap ! ;
 
@@ -224,12 +240,12 @@ variable leaves
 
 \ 
 
-\g Reserve one char in data space and store x in it
-: c,  ( c -- ) \ core
+\g @see anscore
+: c,  ( char -- )
    here c! 1 allot ;
 
 
-\g Set the numeric conversion radix to ten (decimal).  
+\g @see anscore
 : decimal  ( -- )
    10 base ! ;
 
