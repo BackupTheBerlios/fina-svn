@@ -108,11 +108,12 @@ static inline unsigned UMSlashMod(unsigned long long u, unsigned v,
 int FINA_Init(int argc, char ** argv)
 {
         extern int Forth_Entry;
+        static CELL dsp[4], rsp[4]; // should be enough to initialize
         Sys_Init(argc, argv);
         
-        saved->fpc = (CELL*)Forth_Entry;
-        saved->dsp = (CELL*)Forth_Entry + 256;
-        saved->rsp = (CELL*)Forth_Entry + 512;
+        saved->fpc = (CELL*)(Forth_Entry + arch_callsize());
+        saved->dsp = dsp+4;
+        saved->rsp = rsp+4;
         saved->tos = 0;
         return 0;
 }
