@@ -6,6 +6,7 @@
    1 or ;
 
 : open-file ( a u1 u2 -- a ior )
+   >r 2dup parsed 2! r>
    openf ;
 
 : read-file ( a1 u1 a2 -- u2 ior )
@@ -69,6 +70,7 @@ create line 102 allot
 
 : foreachline ( file xt -- )
    2>r begin
+      1  #line +!
       line 100 2r> over swap 2>r read-line throw
    while ( u )
       line swap r@ execute
@@ -82,19 +84,20 @@ create line 102 allot
    source-id ['] intline foreachline
    nr> restore-input -37 and throw ;
 
-variable verbose verbose on
+variable verbose verbose off
 
 : included 
-    here >r 2dup
-    r/o open-file throw
-    dup >r include-file
-    r> close-file throw
-    verbose @ if
-        type space ." took " here r> - . ." bytes" cr
-    else 2drop rdrop then ;
+   here >r 2dup
+   r/o open-file throw
+   dup >r include-file
+   r> close-file throw
+   verbose @ if
+       type space ." took " here r> - . ." bytes" cr
+   else 2drop rdrop then ;
 
 : include 
    parse-word included ;
 
 : require
    ." XXX require not implemented" cr include ;
+
