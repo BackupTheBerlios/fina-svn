@@ -289,4 +289,49 @@ variable leaves
 : key  ( -- char )
    ekey 255 and ;
 
+\g @see anssearch
+: set-current  ( wid -- )
+   to get-current ;
 
+variable env-wordlist  env-wordlist off
+
+\g @see anssearch
+: search-wordlist ( c-addr u wid -- 0 | xt 1 | xt -1 )
+   nfain if  fxt fimmed  else 0 then ;
+
+\g @see anscore
+: environment? ( c-addr u -- false | i*x true )
+   env-wordlist search-wordlist if execute -1 else 0 then ;
+
+\g Define a new environment query
+: env: 
+   get-current env-wordlist set-current : ;
+
+: ;env
+   postpone ; set-current ; immediate compile-only
+
+env: /counted-string 255 ;env
+
+env: /hold 255 ;env
+
+env: /pad 255 ;env
+
+env: address-units-bits 32 ;env
+
+env: core -1 ;env
+
+env: floored -1 ;env
+
+env: max-char 255 ;env
+
+env: max-d -1. 1 rshift ;env
+
+env: max-n -1 1 rshift ;env
+
+env: max-u -1 ;env
+
+env: max-ud -1. ;env
+
+env: return-stack-cells 256 ;env
+
+env: stack-cells 256 ;env
