@@ -446,12 +446,6 @@ prim noop ( -- )
 : cr  ( -- ) 
    10 emit ;  
 
-bcreate okstr ," ok"
-
-\g Display prompt
-: .ok  ( -- ) 
-   okstr count type cr ;  
-
 \g @see anscore
 : space  ( -- )
    32 emit ;   
@@ -459,17 +453,6 @@ bcreate okstr ," ok"
 \g @see anscore
 : spaces  ( n -- ) 
    0 max 0 ?do space loop ;  
-
-\g Setup vectors for file input
-: file  ( -- ) 
-   xtof noop '.prompt ! 
-   echo off ;  
-
-\g Setup vectors for console input
-: con  ( -- ) 
-   xtof .ok  '.prompt ! 
-   echo on ;  
-
 
 \ Stack
 
@@ -1228,11 +1211,11 @@ p: doto  ( x -- )
    xtof interpret 'interpret !
    xtof .err '.error !
    xtof , 'compile, !
+   xtof noop '.prompt !
    xtof forth-wordlist xt>name 3 cells - to forth-wordlist 
    xtof cold xt>name forth-wordlist !
    forth-wordlist to get-current
    get-current 1 #order 2!
-   file
    sp0 @ sp!
    quit ;
 0 ivariable dummy2
