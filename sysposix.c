@@ -12,6 +12,33 @@
 static struct termios otio;
 static int argc;
 static char ** argv;
+static int throw;
+
+static void errnoThrow(int error)
+{
+        if (error) switch (errno)
+        {
+        case ENOENT:
+                throw = -38;
+                break;
+        default:
+                throw = -37;
+        }
+        if (!error)
+                throw = 0;
+        errno = 0;
+}
+
+static void ferrorThrow(int error, FILE * handle)
+{
+        if (error && feof(handle))
+                throw = -39;
+        if (error && ferror(handle))
+                throw = -37;
+        if (!error)
+                throw = 0;
+        clearerr(handle);
+}
 
 void Sys_Init(int argcc, char ** argvv)
 {
@@ -55,55 +82,54 @@ void Sys_MemSet(char * dst, unsigned val, unsigned bytes)
         memset(dst, val, bytes);
 }
 
-void * Sys_OpenFile(const char * name, unsigned mode)
+void * Sys_FileOpen(const char * name, unsigned mode)
 {
         char *modestr[]={"r", "rb", "r+", "r+b", "w", "wb", "BAD"};
+        void * handle;
         if (mode > 5)
                 mode = 6;
-        return fopen(name, modestr[mode]);
+        handle = fopen(name, modestr[mode]);
+        errnoThrow(handle == 0);
+        return handle;
 }
 
-unsigned Sys_FileThrow(void * handle)
+unsigned Sys_FileThrow()
 {
-        unsigned ret = 0;
-        switch ((int)handle)
-        {
-        case -1: // No error
-                break;
-        case 0: // errno error
-                if (errno)
-                        ret = -37;
-                break;
-        default: // FileRead/FileWrite error, check ferror
-                if (ferror(((FILE*)handle)))
-                        ret = -37;
-                clearerr(((FILE*)handle));
-        }
-        return ret;
+        return throw;
 }
 
-unsigned Sys_CloseFile(void * handle)
+void Sys_FileClose(void * handle)
 {
-        return fclose(handle)? 0 : -1;
+        errnoThrow(handle == 0);
+        if (!throw) errnoThrow(0 != fclose(handle));
 }
 
-unsigned Sys_ReadFile(void * handle, char * buf, unsigned len)
+unsigned Sys_FileRead(void * handle, char * buf, unsigned len)
 {
-        return fread(buf, 1, len, handle);
+        unsigned res = 0;
+        errnoThrow(handle == 0);
+        if (!throw) res = fread(buf, 1, len, handle);
+        if (!throw) ferrorThrow(1, handle);
+        return res;
 }
 
-unsigned Sys_WriteFile(void * handle, char * buf, unsigned len)
+void Sys_FileWrite(void * handle, char * buf, unsigned len)
 {
-        return fwrite(buf, 1, len, handle);
+        unsigned res = 0;
+        errnoThrow(handle == 0);
+        if (!throw) res = fwrite(buf, 1, len, handle);
+        if (!throw) ferrorThrow(res != len, handle);
+        return res;
 }
 
-void * Sys_MMapFile(void * handle)
+void * Sys_FileMMap(void * handle)
 {
-        void * ret = mmap(0, 0x40000000, PROT_READ, 0, 
-                          fileno((FILE*)handle), 0);
-        if (ret == (void*)-1)
-                perror("mmap");
-        return ret;
+        void * res = 0;
+        errnoThrow(handle == 0);
+        if (!throw) res = mmap(0, 0x40000000, PROT_READ, 0, 
+                               fileno((FILE*)handle), 0);
+        if (!throw) errnoThrow(res == (void*)-1);
+        return res;
 }
 
 unsigned Sys_Argc()
@@ -116,3 +142,39 @@ char * Sys_Argv(unsigned i)
         return argv[i];
 }
 
+unsigned long long Sys_FileSize(void * handle)
+{
+        off_t prev = -1, res = -1;
+        errnoThrow(handle == 0);
+        if (!throw) errnoThrow(-1 == (prev = ftello(handle)));
+        if (!throw) errnoThrow(-1 == fseeko(handle, 0, SEEK_END));
+        if (!throw) errnoThrow(-1 == (res = ftello(handle)));
+        if (!throw) errnoThrow(-1 == fseeko(handle, prev, SEEK_SET));
+        return res;
+}
+
+void Sys_FileSeek(void * handle, unsigned long long pos)
+{
+        errnoThrow(handle == 0);
+        if (!throw) errnoThrow(-1 == fseeko(handle, pos, SEEK_SET));
+}
+
+unsigned long long Sys_FileTell(void * handle)
+{
+        unsigned long long res = -1;
+        errnoThrow(handle == 0);
+        if (!throw) res = ftello(handle);
+        if (!throw) errnoThrow(-1 == res);
+        return res;
+}
+
+unsigned Sys_FileLine(void * handle, char * buf, unsigned size)
+{
+        unsigned res = 0;
+        buf[size] = 0;
+        errnoThrow(handle == 0);
+        if (!throw) ferrorThrow(0 == fgets(buf, size+1, handle), handle);
+        if (!throw) res = strlen(buf);
+        if (!throw) res -= buf[res-1] == '\n';
+        return res;
+}
