@@ -6,7 +6,7 @@
 256       constant /user
 1024      constant /ds
 1024      constant /rs
-64 1024 * constant /tdict
+256 1024 * constant /tdict
 4         constant /tcall
 
 : .call"
