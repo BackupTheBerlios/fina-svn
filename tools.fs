@@ -68,9 +68,9 @@
    cell+ ;
 
 : xtsee ( xt -- )
-   dup doersee 
-   dup xt>name .name
-   dup /xt swap ?dodefine drop 
+\   dup doersee 
+\   dup xt>name .name
+   dup /xt swap \ ?dodefine drop 
    begin  2dup >  while  cellsee  repeat ;
 
 \g @see anstools
