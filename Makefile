@@ -43,6 +43,18 @@ all:
 	$(MAKE) fina
 	$(MAKE) doc
 
+# Systems
+
+Linux-ppc: anew posix fast
+	echo -n "/usr/powerpc-unknown-linux-gnu/gcc-bin/2.95/powerpc-unknown-linux-gnu-gcc" > compiler
+	echo -n "gforth-0.5.0" > hostforth
+
+NetBSD-i386: anew posix fast
+	echo "/usr/pkg/gcc-2.95.3/bin/gcc" > compiler
+	echo -n "gforth-0.5.0" > hostforth
+
+# Compiler
+
 fina: kernel ${SAVE_FINA}
 	cat ${SAVE_FINA} | ./$<
 	chmod 755 $@
@@ -71,19 +83,6 @@ kernel0dict.s: bootstrap ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
 
 bootstrapdict.s: ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1}
 	`cat hostforth` ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1} > $@
-
-# Glossaries
-
-
-doc: help/toc.help
-
-help/toc.help: fina maketoc.fs ${ALL_HELP}
-	./fina maketoc.fs -e "toc{ ${ALL_HELP} }toc bye" > $@
-
-${ALL_HELP}: ${ALL_FORTH} 
-
-help/%.help: %.fs
-	./fina glosgen.fs -e "newglos makeglos $< writeglos $@ bye"
 
 main.o : main.c
 
@@ -144,11 +143,16 @@ allocate:
 	echo -n " -DHAS_ALLOCATE " >> flags
 	echo "-1 constant has-allocate" >> opt.fs
 
+# Glossaries
 
-Linux-ppc: anew posix fast
-	echo -n "/usr/powerpc-unknown-linux-gnu/gcc-bin/2.95/powerpc-unknown-linux-gnu-gcc" > compiler
-	echo -n "gforth-0.5.0" > hostforth
+doc: help/toc.help
 
-NetBSD-i386: anew posix fast
-	echo "/usr/pkg/gcc-2.95.3/bin/gcc" > compiler
-	echo -n "gforth-0.5.0" > hostforth
+help/toc.help: fina maketoc.fs ${ALL_HELP}
+	./fina maketoc.fs -e "toc{ ${ALL_HELP} }toc bye" > $@
+
+${ALL_HELP}: ${ALL_FORTH} 
+
+help/%.help: %.fs
+	./fina glosgen.fs -e "newglos makeglos $< writeglos $@ bye"
+
+
