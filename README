@@ -9,14 +9,14 @@ $ gmake
 
 gmake is GNU make. Common names for it are also "gnumake" and "make".
 
-It might happen that your system isn't supported. In that case you'll
-get an error like:
+It might happen that your system isn't supported. You'll get an error
+like:
 
-gmake[1]: *** No rule to make target `NetBSD-i386'.  Stop.
+gmake[1]: *** No rule to make target `NetBSD-i386-xxx'.  Stop.
 
-In that case, take a look at the Makefile and add a rule for your
-system. If the architecture is supported and you're running a posix
-system, it should be easy to get it working.
+In that case, take a look at the Makefile.systems file and add a rule
+for your system. If the architecture is supported and you're running a
+posix system, it should be easy to get it working.
 
 When building, the following targets will be built:
 
