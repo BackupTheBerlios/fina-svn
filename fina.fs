@@ -829,33 +829,32 @@ p: +!  ( x a-addr -- )
    >r r@ - swap r> chars + swap ;  
 
 \g Returns unparsed input
-: remaining  ( -- c-addr u ) 
+: unparsed  ( -- c-addr u ) 
    source >in @ /string ;  
 
+\g Set start of unparsed input
+: unparsed! ( c-addr -- )
+   source -rot - min >in ! ;
 
 \g Scan string looking for char
 : scan  ( c-addr1 u1 char -- c-addr2 u2 ) 
-   >r begin  dup while over c@ i xor while 1 /string repeat then 
-   rdrop ;
+   >r  begin  dup while over c@ r@ xor while 1 /string repeat then  rdrop ;
 
 \g Skip leading characters
 : skip  ( c-addr1 u1 char -- c-addr2 u2 )
-   >r begin  dup while over c@ i = while 1 /string repeat then 
-   rdrop ;  
+   >r  begin  dup while over c@ i = while 1 /string repeat then  rdrop ;  
 
 \g @see anscore
 : parse  ( char "xxxc" -- c-addr u )
-   >r remaining over swap r> scan >r
-   over - dup r> if 1+ then >in +! ;  
+   >r unparsed over swap r> scan drop over - 2dup + 1+ unparsed! ;
 
-\g Parse input skipping leading delimiters
-: skipparse ( char "cccxxxc" -- c-addr u ) 
-   >r remaining r@ skip drop remaining drop - >in +!
-   r> parse ;
+ \g Parse input skipping leading delimiters
+: skipparse ( char "cccxxxc" -- c-addr u )
+   >r unparsed r@ skip drop unparsed! r> parse ;
 
 \g Skip leading spaces and parse word
 : parse-word  ( "  xxx " -- c-addr u ) 
-   bl skipparse ; 
+   bl skipparse ;
 
 \ Dictionary
 
