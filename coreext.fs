@@ -1,3 +1,11 @@
+-1 
+\g @see anscore
+constant true ( -- -1 )
+
+0
+\g @see anscore
+constant false ( -- 0 )
+
 
 \g @see anscore
 : hex ( -- )
@@ -34,3 +42,80 @@
 \g @see anscore
 : #tib ( -- a-addr )
    source nip ;
+
+\g @see anscore
+: .(  ( -- )
+   [char] ) parse type ; immediate
+
+\g @see ansdouble
+: d.r ( d n -- )
+   >r (d.)  r> over - spaces  type ;
+
+\g @see anscore
+: .r ( n1 n2 -- )
+   >r s>d r> d.r ;
+
+\g @see anscore
+: u.r ( u n -- )
+   >r 0 r> d.r ;
+
+\g @see anscore
+: 2r@ ( -- x1 x2  r: x1 x2 -- x1 x2 )
+   r> rp@ swap >r 2@ ;
+
+\g @see anscore
+: case ( ct: -- 0 3 )
+   0 3  1 bal +! ; immediate compile-only
+
+\g @see anscore
+: of  ( ct: -- orig 2 )
+   postpone over postpone = 
+   postpone if postpone drop 1+ ; immediate compile-only
+
+\g @see anscore
+: endof ( ct: orig 2 -- orig 2 )
+   1- postpone else 1+ ; immediate compile-only
+
+\g @see anscore
+: endcase ( ct: 0 3 orig1 2 orig2 2 ... orign 2 -- )
+   postpone drop begin
+      dup 2 =
+   while
+      1- postpone then
+   repeat  3 <> -22 ?throw drop  
+   -1 bal +! ; immediate compile-only
+
+\g @see anscore
+: convert  ( ud1 c-addr1 -- ud2 c-addr2 )
+   char+ true >number drop ;
+
+\g @see anscore
+: erase ( c-addr u -- )
+   0 fill ;
+
+\g @see anscore
+variable span ( -- a-addr )
+
+\g @see anscore
+: expect ( c-addr +n -- )
+   accept span ! ;
+
+\g @see anscore
+: roll ( xu xu-1 ... x0 u -- xu-1 ... x0 xu )
+    depth dup 2 < -4 ?throw
+    2 - over u< -4 ?throw
+    dup 1+ pick >r >r
+    sp@ dup cell+ r> cells move drop r> ;
+
+\g @see anscore
+: tuck ( x1 x2 -- x2 x1 x2 )
+   swap over ;
+
+: marker ( "name" -- )
+   create ." XXX marker not implemented" cr ;
+
+\g @see anscore
+: [compile]  ( "<spaces>name" -- )
+   ' compile, ; immediate compile-only
+
+env: core-ext -1 ;env
