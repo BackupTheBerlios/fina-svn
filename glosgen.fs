@@ -1,30 +1,8 @@
 \ Glossary generator.
 \ Written in ANS Forth, requires FILES wordset.
-
-\ This file is part of Gforth.
-
-\ Copyright (C) 1995,1997,2000,2003 Free Software Foundation, Inc.
 \ Copyright (c)1993 L.C. Benschop Eindhoven.
-
-\ Gforth is free software; you can redistribute it and/or
-\ modify it under the terms of the GNU General Public License
-\ as published by the Free Software Foundation; either version 2
-\ of the License, or (at your option) any later version.
-
-\ This program is distributed in the hope that it will be useful,
-\ but WITHOUT ANY WARRANTY; without even the implied warranty of
-\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-\ GNU General Public License for more details.
-
-\ You should have received a copy of the GNU General Public License
-\ along with this program; if not, write to the Free Software
-\ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-
-decimal
-
-: \G postpone \ ; immediate
-\G \G is an alias for \, so it is a comment till end-of-line, but
-\G it has a special meaning for the Glossary Generator.
+\ Permission to copy, distribute or modify this program is granted under the
+\ conditions of the General Public Licence version 2.
 
 \G \G comments should appear immediately above or below the definition of
 \G the word it belongs to. The definition line should contain no more
@@ -32,6 +10,13 @@ decimal
 \G the wordset and pronounciation.
 \G An isolated block of \G comments is placed at the beginning of the
 \G glossary file.
+
+
+: \G 
+\G \G is an alias for \, so it is a comment till end-of-line, but
+\G it has a special meaning for the Glossary Generator.
+POSTPONE \ ; IMMEDIATE
+
 
 VARIABLE GLOSLIST 
 VARIABLE CURRENT-COMMENT
@@ -85,12 +70,14 @@ VARIABLE CHARPTR
   REPEAT
 ;
 
+: >upper
+   2dup bounds ?do
+     I C@ [CHAR] a [CHAR] { WITHIN IF I C@ 32 - I C! THEN
+   loop ;
+
 : SEARCH-NAME 
   SCAN-WORD 2DROP
-  SCAN-WORD 2DUP BOUNDS ?DO 
-   I C@ [CHAR] a [CHAR] { WITHIN IF I C@ 32 - I C! THEN
-  LOOP \ translate to caps.
-  DUP HERE C! HERE CHAR+ SWAP DUP 1+ CHARS ALLOT CMOVE
+  SCAN-WORD >upper s,
 ;
 
 : SEARCH-STACK
@@ -109,7 +96,7 @@ VARIABLE CHARPTR
 ;
 
 : SEARCH-SETS
-  0 C,
+   scan-word 2drop scan-word 2drop scan-word >upper s,
 ;
 
 : SEARCH-PRON
@@ -207,7 +194,7 @@ VARIABLE CHARPTR
   BEGIN
    DUP C@ 1 >
   WHILE \ write all comment lines without prefixing \G.
-   DUP 4 CHARS + OVER C@ 3 - 0 MAX R@ WRITE-LINE THROW
+   DUP 4 CHARS + OVER C@ 3 - 0 MAX R@ WRITE-LINE THROW 
    COUNT CHARS + 
   REPEAT DROP
   HERE 0 R> WRITE-LINE THROW \ Write final empty line.
