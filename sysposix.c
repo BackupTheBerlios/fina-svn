@@ -125,7 +125,7 @@ void * Sys_FileMMap(void * handle)
 {
         void * res = 0;
         errnoThrow(handle == 0);
-        if (!throw) res = mmap(0, 0x40000000, PROT_READ, 0, 
+        if (!throw) res = mmap(0, 0x40000000, PROT_READ, MAP_SHARED, 
                                fileno((FILE*)handle), 0);
         if (!throw) errnoThrow(res == (void*)-1);
         return res;
