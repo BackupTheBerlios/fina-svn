@@ -1,0 +1,13 @@
+void Sys_Init();
+void Sys_End();
+void * Sys_OpenFile(const char * name, unsigned mode);
+unsigned Sys_CloseFile(void * handle);
+unsigned Sys_FileThrow();
+unsigned Sys_ReadFile(void * handle, char * buf, unsigned len);
+unsigned Sys_WriteFile(void * handle, char * buf, unsigned len);
+void * Sys_MMapFile(void * handle);
+void Sys_MemMove(char * to, const char * from, unsigned bytes);
+void Sys_MemSet(char * dst, unsigned c, unsigned bytes);
+unsigned Sys_HasChar();
+unsigned Sys_GetChar();
+void Sys_PutChar(unsigned c);

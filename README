@@ -1,0 +1,4 @@
+To build:
+
+make fast/slow x86/powerpc/mips posix
+make
