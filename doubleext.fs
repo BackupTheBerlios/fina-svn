@@ -8,7 +8,4 @@
 : du<  ( ud1 ud2 -- flag )
    rot 2dup xor if  u>= nip nip  else  2drop u<  then ;
 
-: d>=  ( d1 d2 -- flag )
-   d< 0= ;
-
 env: double-ext true ;env
