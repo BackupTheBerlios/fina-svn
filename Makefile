@@ -1,4 +1,5 @@
 CC = `cat compiler`
+HOST = `cat hostforth`
 CPPFLAGS = `cat flags` -DHASFILES
 CFLAGS = -g -O2 -Wall -fno-leading-underscore 
 
@@ -48,7 +49,7 @@ fina1.s: fina0 ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
 	cat ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1} | ./$< > $@
 
 fina0.s: ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1}
-	gforth-0.5.0 -p /usr/local/lib/gforth/0.5.0/:. ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1} > $@
+	`cat hostforth` ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1} > $@
 
 # Glossaries
 
@@ -78,7 +79,7 @@ fina2.o: fina1.s
 sys.o: sys.c sys.h
 
 distclean:
-	rm -f arch.h tconfig.fs sys.c opt.fs flags compiler
+	rm -f arch.h tconfig.fs sys.c opt.fs flags compiler hostforth
 
 clean:
 	rm -f *.o *.s fina fina0 fina1 fina2 *\~ \#*\# \
@@ -88,15 +89,19 @@ powerpc:
 	ln -fs tconfig-powerpc.fs tconfig.fs
 	ln -fs arch-powerpc.h arch.h
 	echo -n " -no-cpp-precomp " >> flags
+	echo -n "gcc2" > compiler
+	echo -n "gforth-0.5.0" > hostforth
 
 mips:
 	ln -fs tconfig-mips.fs tconfig.fs
 	ln -fs arch-mips.h arch.h
+	echo "gcc2" > compiler
 
 x86:
 	ln -fs tconfig-x86.fs tconfig.fs
 	ln -fs arch-x86.h arch.h
 	echo "/usr/pkg/gcc-2.95.3/bin/gcc" > compiler
+	echo -n "gforth-0.5.0 -p /usr/local/lib/gforth/0.5.0" > hostforth
 
 posix:
 	ln -fs sysposix.c sys.c
