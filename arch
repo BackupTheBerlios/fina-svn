@@ -1,0 +1,7 @@
+#!/bin/sh
+if [ `uname -s` = 'Linux' ]
+then
+        uname -i
+else
+        uname -p
+fi
