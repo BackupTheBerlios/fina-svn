@@ -12,6 +12,6 @@ include save.fs
    rp0 @ rp! 
    sp0 @ sp!
    ['] doargs catch '.error @execute
-   quit ; cold!
+   quit ; 'cold !
 
 save" fina"
