@@ -80,6 +80,13 @@ static char * zstr(const char * str, unsigned len)
         return res;
 }
 
+static unsigned strLen(const char * str)
+{
+    const char * ostr = str;
+    while (*str++) ;
+    return str - ostr - 1;
+}
+
 static inline unsigned UMSlashMod(unsigned long long u, unsigned v, 
                                   unsigned * pmod)
 {
@@ -107,13 +114,15 @@ static inline unsigned UMSlashMod(unsigned long long u, unsigned v,
 
 int FINA_Init(int argc, char ** argv)
 {
+#define BOOTSTRAP_STACK 16
         extern int Forth_Entry;
-        static CELL dsp[4], rsp[4]; // should be enough to initialize
+        static CELL dsp[BOOTSTRAP_STACK];
+        static CELL rsp[BOOTSTRAP_STACK];
         Sys_Init(argc, argv);
         
         saved->fpc = (CELL*)(Forth_Entry + arch_callsize());
-        saved->dsp = dsp+4;
-        saved->rsp = rsp+4;
+        saved->dsp = dsp+BOOTSTRAP_STACK;
+        saved->rsp = rsp+BOOTSTRAP_STACK;
         saved->tos = 0;
         return 0;
 }
@@ -156,6 +165,8 @@ static int prims()
 #if defined(FASTFORTH)
         register CELL t2;
         long long ll, ll2;
+#endif
+#if defined(FASTFORTH) || defined(HASFILES)
         unsigned long long ull;
 #endif
         LNKREG;
@@ -500,7 +511,7 @@ static int prims()
                 PRIM(ARGV,301);
                 PUSH;
                 *dsp = (CELL)Sys_Argv(tos);
-                tos = strlen((char*)*dsp);
+                tos = strLen((char*)*dsp);
                 NEXT;
 
 #if defined(FASTFORTH)
