@@ -443,7 +443,9 @@ p: pick coreext ( xu ... x1 x0 u -- xu ... x1 x0 xu ) copy uth item
    rdepth 0 ?do i rpick . loop cr ;  
 
 \ Exception handling
-: throw  exception ( i*x n -- i*x | j*x n ) raise exception if n is non-zero
+
+\g @see ansexception
+: throw  ( i*x n -- i*x | j*x n )
    ?dup if
       throwframe @ rp!
       r> throwframe !
@@ -454,7 +456,8 @@ p: pick coreext ( xu ... x1 x0 u -- xu ... x1 x0 xu ) copy uth item
 : do?throw 
    0<> @r+ and throw ; compile-only  
 
-: catch exception ( i*x xt -- j*x 0 | i*x n ) setup exception handling and execute xt 
+\g @see ansexception
+: catch  ( i*x xt -- j*x 0 | i*x n )
    sp@ >r throwframe @ >r
    rp@ throwframe !  execute
    r> throwframe !
