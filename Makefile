@@ -4,7 +4,6 @@ CFLAGS = -g -O2 -Wall -fno-leading-underscore
 
 COMMON_OBJECTS = main.o finac.o sys.o
 
-ALL_FORTH = core.fs glosgen.fs
 ALL_HELP = ${ALL_FORTH:%.fs=help/%.help}
 
 
@@ -16,8 +15,11 @@ HOST_GFORTH = host-gforth.fs
 FINA_TEST = core.fs throwmsg.fs tester.fs \
    coretest.fs postponetest.fs filetest bye.fs
 RUN_FINA = core.fs coreext.fs throwmsg.fs file.fs \
-   double.fs optional.fs string.fs lineedit.fs help.fs
+   double.fs optional.fs string.fs search.fs lineedit.fs multi.fs help.fs 
 SAVE_FINA = ${RUN_FINA} savefina.fs bye.fs
+
+ALL_FORTH = fina.fs ${SAVE_FINA}
+
 
 fina: fina2 ${SAVE_FINA}
 	cat ${SAVE_FINA} | ./fina2 
@@ -53,10 +55,10 @@ fina0.s: ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1}
 
 doc: help/toc.help
 
-help/toc.help: ${ALL_HELP}
+help/toc.help: fina maketoc.fs ${ALL_HELP}
 	./fina maketoc.fs -e "toc{ ${ALL_HELP} }toc bye" > $@
 
-${ALL_HELP}: ${ALL_SOURCES} 
+${ALL_HELP}: ${ALL_FORTH} 
 
 help/%.help: %.fs
 	./fina glosgen.fs -e "newglos makeglos $< writeglos $@ bye"
