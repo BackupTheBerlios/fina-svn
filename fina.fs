@@ -522,8 +522,7 @@ p: pick ( xu ... x1 x0 u -- xu ... x1 x0 xu )
 \g @see anstools
 : .s
    depth 0 <# [char] > hold #s [char] < hold #> type space
-   depth 0 > if depth 1- for i pick . next then cr ; 
-
+   depth dup 0 ?do dup pick . 1- loop drop cr ;
 : .rs
    rdepth . 4 spaces
    rdepth 0 ?do i rpick . loop cr ;  
@@ -645,7 +644,7 @@ p: abs  ( n -- u )
    dup 0< if  negate  then ;  
 
 \g @see anscore
-: lshift  ( x1 u -- x2 )
+p: lshift  ( x1 u -- x2 )
    0 ?do 2* loop ;  
 
 \g Shift n1 u bits right arithmetically
