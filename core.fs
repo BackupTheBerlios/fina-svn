@@ -1,4 +1,4 @@
-warnings off
+file warnings off
 
 : immediate
    lastname c@ 64 or lastname c! ;
@@ -6,15 +6,15 @@ warnings off
 : \ 
    source >in ! drop ; immediate
 
+: \g postpone \ ; immediate
 : core  postpone \ ; immediate
 : internal postpone \ ; immediate
 
-: compile-only  core ( -- ) make last definition compile-only
+: compile-only
    lastname c@ 32 or lastname c! ;
 
 : char
    parse-word drop c@ ;
-
 
 : [char] 
    char postpone literal ; immediate compile-only
@@ -26,20 +26,24 @@ warnings off
 \ Misc
 
 
-: chars  core ( n1 -- n2 ) convert characters to address units
+: chars  ( n1 -- n2 ) \ core
+\g convert characters to address units
    ; immediate
 
-: 1chars/  internal ( n1 -- n2 ) convert address units to chars
+: 1chars/  ( n1 -- n2 ) \ internal
+\g convert address units to chars
    ; immediate
 
-: [']  core ( "  xxx"" --  runtime: -- xt ) parse name and return its xt
+: [']  ( "  xxx"" --  runtime: -- xt ) \ core
+\g parse name and return its xt
    ' postpone literal ; immediate compile-only
 
-: dos" ( -- c-addr u )
+: dos"  ( -- c-addr u ) \ internal
+\g runtime for s" 
    r> count 2dup + aligned >r ; compile-only
 
 : sliteral ( c-addr u -- )
-   postpone dos" s, ; immediate compile-only 
+   postpone dos" s, align ; immediate compile-only 
 
 : s" ( "ccc<">" --  R: -- c-addr u )
    [char] " parse   postpone sliteral ; immediate compile-only
@@ -93,6 +97,7 @@ warnings off
 
 : variable ( "<spaces>name" -- ) 
    nesting?  head, xtof dovar xt, drop  -559038737 , linklast ; 
+
 
 variable leaves
 
@@ -151,7 +156,7 @@ variable leaves
    if r> count abort"msg 2! -2 throw else r> count + aligned >r then ;
 
 : abort"
-   postpone (abort") [char] " parse s, ; immediate compile-only
+   postpone (abort") [char] " parse s, align ; immediate compile-only
 
 
 
