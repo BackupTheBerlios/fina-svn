@@ -243,6 +243,7 @@ variable underscore  underscore off
 :' ?throw ['] do?throw here 2 cells - ! ; immediate compile-only
 
 :' bye
+   >t
    ."  .fill " /tdict size @ - .  ." ,1,0" cr
    ."  .long 0xcacacaca" cr 
    bye ; 
