@@ -3,10 +3,13 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
+#include <assert.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <setjmp.h>
 #include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <termios.h>
@@ -20,7 +23,7 @@ static struct termios otio;
 static int argc;
 static char ** argv;
 static int throw;
-jmp_buf jmpbuf;
+static jmp_buf jmpbuf;
 
 static void errnoThrow(int error)
 {
@@ -29,12 +32,24 @@ static void errnoThrow(int error)
         case ENOENT:
                 throw = -38;
                 break;
+        case ENOMEM:
+                throw = -21;
+                break;
         default:
                 throw = -37;
         }
         if (!error)
                 throw = 0;
         errno = 0;
+}
+
+static void memThrow(int error)
+{
+// malloc() doesn't seem to set errno on Darwin. The man page says it should.
+#if defined(__MACH__)  
+        if (error) errno = ENOMEM;
+#endif
+        errnoThrow(error);
 }
 
 static void ferrorThrow(int error, FILE * handle)
@@ -85,15 +100,26 @@ static void initSignals()
 static void initTerm()
 {
         struct termios tio;
-        tcgetattr(fileno(stdin), &otio);
-        tio = otio;
-        tio.c_lflag &= ~(ECHO | ICANON);
-        tcsetattr(fileno(stdin), TCSANOW, &tio);
+        unsigned ret;
+        if (isatty(fileno(stdin)))
+        {
+                ret = tcgetattr(fileno(stdin), &otio);
+                assert(ret == 0);
+                tio = otio;
+                tio.c_lflag &= ~(ECHO | ICANON);
+                ret = tcsetattr(fileno(stdin), TCSANOW, &tio);
+                assert(ret == 0);
+        }
 }
 
 static void endTerm()
 {
-        tcsetattr(fileno(stdin), TCSANOW, &otio);
+        unsigned ret;
+        if (isatty(fileno(stdin)))
+        {
+                ret = tcsetattr(fileno(stdin), TCSANOW, &otio);
+                assert(ret == 0);
+        }
 }
 
 void Sys_Init(int argcc, char ** argvv)
@@ -111,7 +137,16 @@ void Sys_End()
 
 unsigned Sys_HasChar()
 {
-        return -1;
+        int ret, flags, rflags;
+        flags = fcntl(fileno(stdin),F_GETFL,0);
+        assert(flags != -1);
+        rflags = fcntl(fileno(stdin),F_SETFL,flags|O_NDELAY);
+        assert(rflags != -1);
+        ret = getchar();
+        ungetc(ret, stdin);
+        rflags = fcntl(fileno(stdin),F_SETFL,flags);        
+        assert(rflags != -1);
+        return ret != EOF;
 }
 
 unsigned Sys_GetChar() 
@@ -121,8 +156,11 @@ unsigned Sys_GetChar()
 
 void Sys_PutChar(unsigned c)
 {
-        putchar(c);
-        fflush(stdout);
+        unsigned ret;
+        ret = putchar(c);
+        assert(ret == c);
+        ret = fflush(stdout);
+        assert(ret == 0);
 }
 
 void Sys_MemMove(char * to, const char * from, unsigned bytes)
@@ -146,7 +184,7 @@ void * Sys_FileOpen(const char * name, unsigned mode)
         return handle;
 }
 
-unsigned Sys_FileThrow()
+unsigned Sys_Throw()
 {
         return throw;
 }
@@ -293,4 +331,29 @@ void Sys_FileRen(const char * old, const char * new)
 void Sys_FileTrunc(void * handle, unsigned long long size)
 {
         errnoThrow(ftruncate(fileno((FILE*)handle), size));
+}
+
+void Sys_FileFlush(void * handle)
+{
+        errnoThrow(fflush(handle));
+}
+
+
+void * Sys_MemAllocate(unsigned bytes)
+{
+        void * ret = malloc(bytes);
+        memThrow(0 == ret);
+        return ret;
+}
+
+void Sys_MemFree(void * p)
+{
+        free(p);
+}
+
+void * Sys_MemResize(void * p, unsigned newsize)
+{
+        void * ret = realloc(p, newsize);
+        memThrow(0 == ret);
+        return ret;
 }
