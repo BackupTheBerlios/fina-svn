@@ -1,5 +1,5 @@
-CC = gcc2
-CPPFLAGS = -no-cpp-precomp `cat flags` -DHASFILES
+CC = `cat compiler`
+CPPFLAGS = `cat flags` -DHASFILES
 CFLAGS = -g -O2 -Wall -fno-leading-underscore 
 
 COMMON_OBJECTS = main.o finac.o sys.o
@@ -9,11 +9,10 @@ ALL_HELP = ${ALL_FORTH:%.fs=help/%.help}
 
 FINA_SRC0 = opt.fs tconfig.fs
 FINA_SRC1 = meta.fs fina.fs
-HOST_FINA0 = core.fs throwmsg.fs
+HOST_FINA0 = core.fs coreext.fs throwmsg.fs
 HOST_FINA1 = host-fina.fs
 HOST_GFORTH = host-gforth.fs
-FINA_TEST = core.fs throwmsg.fs tester.fs \
-   coretest.fs postponetest.fs filetest bye.fs
+FINA_TEST = core.fs throwmsg.fs tester.fs coretest.fs postponetest.fs filetest bye.fs
 RUN_FINA = core.fs coreext.fs throwmsg.fs file.fs \
    double.fs optional.fs string.fs require.fs toolsext.fs search.fs \
    lineedit.fs help.fs multi.fs
@@ -49,7 +48,7 @@ fina1.s: fina0 ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
 	cat ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1} | ./$< > $@
 
 fina0.s: ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1}
-	gforth-0.5.0 ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1} > $@
+	gforth-0.5.0 -p /usr/local/lib/gforth/0.5.0/:. ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1} > $@
 
 # Glossaries
 
@@ -79,7 +78,7 @@ fina2.o: fina1.s
 sys.o: sys.c sys.h
 
 distclean:
-	rm -f arch.h tconfig.fs sys.c opt.fs flags 
+	rm -f arch.h tconfig.fs sys.c opt.fs flags compiler
 
 clean:
 	rm -f *.o *.s fina fina0 fina1 fina2 *\~ \#*\# \
@@ -88,6 +87,7 @@ clean:
 powerpc:
 	ln -fs tconfig-powerpc.fs tconfig.fs
 	ln -fs arch-powerpc.h arch.h
+	echo -n " -no-cpp-precomp " >> flags
 
 mips:
 	ln -fs tconfig-mips.fs tconfig.fs
@@ -96,14 +96,15 @@ mips:
 x86:
 	ln -fs tconfig-x86.fs tconfig.fs
 	ln -fs arch-x86.h arch.h
+	echo "/usr/pkg/gcc-2.95.3/bin/gcc" > compiler
 
 posix:
 	ln -fs sysposix.c sys.c
 
 fast:
 	echo "-1 constant fast" >> opt.fs
-	echo " -DFASTFORTH " >> flags
+	echo -n " -DFASTFORTH " >> flags
 
 slow:
 	echo "0 constant fast" >> opt.fs
-	echo " -UFASTFORTH " >> flags
+	echo -n " -UFASTFORTH " >> flags
