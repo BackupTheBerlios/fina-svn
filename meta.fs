@@ -125,12 +125,12 @@ variable underscore  underscore off
 : taligned
    1 tcells 1- + 1 tcells negate and ;
 : name>t ( -- )
-   ."   .align 2" cr
+   .align
    .link 
    ."   .byte " lastname lex asm.   
    lastname namecount    
    bounds do ." ," i c@ asm. loop cr
-   ."   .align 2" cr 
+   .align
    underscore @ if [char] _ emit then 
    lastname namecount xttype ." :" cr 
    lastname namecount nip 1+  taligned 1 tcells + size +! ;
