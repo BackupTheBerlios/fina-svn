@@ -804,30 +804,30 @@ static int prims()
                 PRIM(OPENF, 200);
                 dsp[1] = (CELL)Sys_FileOpen(zstr((char*)dsp[1], dsp[0]), tos);
                 dsp++;
-                tos = Sys_FileThrow();
+                tos = Sys_Throw();
                 NEXT;
 
                 PRIM(CLOSEF, 201);
                 Sys_FileClose((void*)tos);
-                tos = Sys_FileThrow();
+                tos = Sys_Throw();
                 NEXT;
 
                 PRIM(READF, 202);
                 dsp[1] = Sys_FileRead((void*)tos, (char*)dsp[1], dsp[0]);
                 dsp++;
-                tos = Sys_FileThrow();
+                tos = Sys_Throw();
                 NEXT;
                 
                 PRIM(WRITEF, 203);
                 Sys_FileWrite((void*)tos, (char*)dsp[1], dsp[0]);
-                tos = Sys_FileThrow();
+                tos = Sys_Throw();
                 dsp += 2;
                 NEXT;
 
                 PRIM(MMAPF, 204);
                 tos = (CELL)Sys_FileMMap((void*)tos);
                 PUSH;
-                tos = Sys_FileThrow();
+                tos = Sys_Throw();
                 NEXT;
 
                 PRIM(SEEKF, 205);
@@ -836,7 +836,7 @@ static int prims()
                 POPULL;
                 Sys_FileSeek((void*)t0, ull);
                 PUSH;
-                tos = Sys_FileThrow();
+                tos = Sys_Throw();
                 NEXT;
                 
                 PRIM(SIZEF, 206);
@@ -845,7 +845,7 @@ static int prims()
                 ull = Sys_FileSize((void*)t0);
                 PUSHULL;
                 PUSH;
-                tos = Sys_FileThrow();
+                tos = Sys_Throw();
                 NEXT;
 
                 PRIM(TELLF, 207);
@@ -853,30 +853,30 @@ static int prims()
                 POP;
                 PUSHULL;
                 PUSH;
-                tos = Sys_FileThrow();
+                tos = Sys_Throw();
                 NEXT;
                         
                 PRIM(LINEF, 208);
                 dsp[1] = Sys_FileLine((void*)tos, (char*)dsp[1], dsp[0]);
-                tos = Sys_FileThrow();
+                tos = Sys_Throw();
                 dsp[0] = FLAG(tos != -39);
                 tos = tos == -39? 0 : tos;
                 NEXT;
 
                 PRIM(DELETEF, 209);
                 Sys_FileDelete(zstr((char*)*dsp++, tos));
-                tos = Sys_FileThrow();
+                tos = Sys_Throw();
                 NEXT;
 
                 PRIM(STATF, 210);
                 dsp[0] = Sys_FileStat(zstr((char*)dsp[0], tos));
-                tos = Sys_FileThrow();
+                tos = Sys_Throw();
                 NEXT;
 
                 PRIM(RENF, 211);
                 tos = (CELL)zstr2((char*)dsp[0], tos);
                 Sys_FileRen(zstr((char*)dsp[2], dsp[1]), (char*)tos);
-                tos = Sys_FileThrow();
+                tos = Sys_Throw();
                 dsp += 3;
                 NEXT;
 
@@ -886,10 +886,33 @@ static int prims()
                 POPULL;
                 PUSH;
                 Sys_FileTrunc((void*)t0, ull);
-                tos = Sys_FileThrow();
+                tos = Sys_Throw();
                 NEXT;
 
-#endif
+                PRIM(FLUSHF, 213);
+                Sys_FileFlush((void*)tos);
+                tos = Sys_Throw();
+                NEXT;
+                
+#endif  // HASFILES
+
+#if defined(HASALLOCATE)
+                PRIM(ALLOCATE, 250);
+                tos = (CELL)Sys_MemAllocate(tos);
+                PUSH;
+                tos = Sys_Throw();
+                NEXT;
+
+                PRIM(FREE, 251);
+                Sys_MemFree((void*)tos);
+                POP;
+                NEXT;
+
+                PRIM(RESIZE, 252);
+                dsp[0] = (CELL)Sys_MemResize((void*)dsp[0], tos);
+                tos = Sys_Throw();
+                NEXT;
+#endif  // HASALLOCATE
 
                 PRIM(MS, 298);
                 Sys_Sleep(tos);
