@@ -113,7 +113,8 @@ kernel.s: kerneldict.s finac.s
 sys.o: sys.c sys.h
 
 anew:
-	rm -f arch.h tconfig.fs sys.c opt.fs flags compiler hostforth
+	rm -f arch.h tconfig.fs sys.c opt.fs bootstrapdict.s\
+		flags compiler hostforth
 
 clean:
 	rm -f *.o *.s fina bootstrap kernel0 kernel *\~ \#*\# \
@@ -147,6 +148,6 @@ Linux-ppc: anew posix fast
 	echo -n "/usr/powerpc-unknown-linux-gnu/gcc-bin/2.95/powerpc-unknown-linux-gnu-gcc" > compiler
 	echo -n "gforth-0.5.0" > hostforth
 
-NetBSD-i686: anew posix fast
+NetBSD-i386: anew posix fast
 	echo "/usr/pkg/gcc-2.95.3/bin/gcc" > compiler
 	echo -n "gforth-0.5.0" > hostforth
