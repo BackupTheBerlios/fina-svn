@@ -91,12 +91,12 @@ variable size
 : .name
    namecount type ;
 0 value link
-: .label ." link" link 0 <# # # # # #> type ;
-: .link 
-   ."  .long " link if .label else 0 . then cr 
-   link 1+ to link .label ." :" cr ;
+: .link ( -- , emit link field)
+   ."  .long " link if ." 1b" else ." 0" then cr  
+   ." 1:" cr 
+   link 1+ to link ;
 variable underscore  underscore off
-: taligned
+: taligned ( u1 -- u2, align value to target cells )
    1 tcells 1- + 1 tcells negate and ;
 : name>t ( -- )
    .align
