@@ -1,4 +1,4 @@
-file warnings off
+file 
 
 : immediate
    lastname c@ 64 or lastname c! ;
@@ -131,6 +131,7 @@ file warnings off
 : constant ( x "<spaces>name" --  rt: -- x )
    nesting?  head,  xtof doconst xt, drop  , linklast ;
 
+
 \g @see anscore
 : value ( x "name" -- rt: -- x )
    nesting?  head,  xtof dovalue xt, drop  , linklast ;
@@ -138,7 +139,6 @@ file warnings off
 \g @see anscore
 : variable ( "<spaces>name" -- ) 
    nesting?  head, xtof dovar xt, drop  -559038737 , linklast ; 
-
 
 variable leaves
 
@@ -304,7 +304,7 @@ create env-wordlist here forth-wordlist cell+ ! 0 , 0 , 0 ,
 
 \g @see anscore
 : environment? ( c-addr u -- false | i*x true )
-   env-wordlist search-wordlist if execute -1 else 0 then ;
+   env-wordlist search-wordlist dup >r if execute then r> ;
 
 \g Define a new environment query
 : env: 
@@ -321,8 +321,6 @@ env: /pad 255 ;env
 
 env: address-units-bits 32 ;env
 
-env: core -1 ;env
-
 env: floored -1 ;env
 
 env: max-char 255 ;env
@@ -338,3 +336,5 @@ env: max-ud -1. ;env
 env: return-stack-cells 256 ;env
 
 env: stack-cells 256 ;env
+
+env: core -1 ;env
