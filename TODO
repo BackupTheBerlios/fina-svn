@@ -1,11 +1,8 @@
 - line editor
 - negative strings?
 - douser is slow
-- test MARKER, make it forget environment queries
 - implement USEPFR for better code on MIPS machines.
 - cleanup host-gforth
-- safer and more flexible metacompiler, special words should move the
-  remaining by themselves using lit>t, cell>t and so on.
 - rename executables: bootstrap-> kernel0 -> kernel -> fina
 - help broken, try "help char"
 - fast dictionary search using endian-specific code, i.e
@@ -20,7 +17,6 @@
 - forlist/repeat?
 - implement user and remove fake definition from host-fina.fs
 - remove debug stuff (shifts, type2, rdepth, rpick...)
-- simplify interpret, .err, : abort 0 0 abort"msg 2! -1 throw ;
 - split docreate -> dovar+dodoes
 - files
 - cross-compiling support
@@ -28,4 +24,3 @@
 - 0 -1 1 perform 0<> >= u> u>= <> lshift arshift fm/mod / mod /mod as primitives
 - implement as primitives >= u> u>= <> dofor do?do lshift rshift /mod /
 - implement const>t
-- implement correctly value and to
