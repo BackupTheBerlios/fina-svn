@@ -888,7 +888,7 @@ create #order ( -- a-addr )
 : fxt ( -- xt )
    found name>xt ;  
 
-\g Immediacy flag of last found word, -1 if word is immediate, 1 otherwise
+\g Immediacy flag of last found word, 1 if word is immediate, -1 otherwise
 : fimmed  ( -- -1|1 )
    found c@ [ immed ] literal and 0= 2* 1+ ;  
 
