@@ -779,30 +779,67 @@ static int prims()
 #if defined(HASFILES)
                 PRIM(OPENF, 200);
                 t0 = *dsp++;
-                *dsp = (CELL)Sys_OpenFile(zstr((char*)*dsp, t0), tos);
-                tos = Sys_FileThrow(*dsp);
+                *dsp = (CELL)Sys_FileOpen(zstr((char*)*dsp, t0), tos);
+                tos = Sys_FileThrow();
                 NEXT;
 
                 PRIM(CLOSEF, 201);
-                t1 = Sys_CloseFile((void*)tos);
-                tos = Sys_FileThrow((void*)t1);
+                Sys_FileClose((void*)tos);
+                tos = Sys_FileThrow();
                 NEXT;
 
                 PRIM(READF, 202);
                 t0 = *dsp++;
-                *dsp = Sys_ReadFile((void*)tos, (char*)*dsp, t0);
-                tos = Sys_FileThrow((void*)tos);
+                *dsp = Sys_FileRead((void*)tos, (char*)*dsp, t0);
+                tos = Sys_FileThrow();
                 NEXT;
                 
                 PRIM(WRITEF, 203);
                 t0 = *dsp++;
-                *dsp = Sys_WriteFile((void*)tos, (char*)*dsp, t0);
-                tos = Sys_FileThrow((void*)tos);
+                t1 = *dsp++;
+                Sys_FileWrite((void*)tos, t1, t0);
+                tos = Sys_FileThrow();
                 NEXT;
 
                 PRIM(MMAPF, 204);
-                tos = (CELL)Sys_MMapFile((void*)tos);
+                tos = (CELL)Sys_FileMMap((void*)tos);
+                PUSH;
+                tos = Sys_FileThrow();
                 NEXT;
+
+                PRIM(SEEKF, 205);
+                t0 = tos;
+                POP;
+                POPULL;
+                Sys_FileSeek((void*)t0, ull);
+                PUSH;
+                tos = Sys_FileThrow();
+                NEXT;
+                
+                PRIM(SIZEF, 206);
+                t0 = tos;
+                POP;
+                ull = Sys_FileSize((void*)t0);
+                PUSHULL;
+                PUSH;
+                tos = Sys_FileThrow();
+                NEXT;
+
+                PRIM(TELLF, 207);
+                ull = Sys_FileTell((void*)tos);
+                POP;
+                PUSHULL;
+                PUSH;
+                tos = Sys_FileThrow();
+                NEXT;
+                        
+                PRIM(LINEF, 208);
+                dsp[1] = Sys_FileLine((void*)tos, (char*)dsp[1], dsp[0]);
+                tos = Sys_FileThrow();
+                dsp[0] = tos == -39? 0 : -1;
+                tos = tos == -39? 0 : tos;
+                NEXT;
+
 #endif
         }NEXTT;}
 }
