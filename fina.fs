@@ -684,20 +684,26 @@ p: +!  core ( x a -- ) increment location by x
    bl skipparse ; 
 
 \ Dictionary
-create #order 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,  
-internal ( -- a ) variable holding the search order stack depth
 
-: dict?  internal ( a -- f ) is address within dictionary space?
+\g variable holding the search order stack depth
+create #order ( -- a-addr )
+0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,  
+
+\g Is address within dictionary space?
+: dict?  ( c-addr -- f )
    dict0 here within ;  
 
-: name>xt  internal ( a -- xt ) go from name to execution token
+\g  Go from name to execution token
+: name>xt  ( a-addr -- xt )
    namecount + aligned 
    dup @ h# deadbeef = if cell+ @ then ;  
 
-: primxt? internal ( xt -- f ) is xt a primitive xt?
+\g Is xt a primitive xt?
+: primxt? ( xt -- f )
    dict? 0= ;  
 
-: xt>name  internal ( xt -- c ) go from execution token to name
+\g Go from execution token to name
+: xt>name ( xt -- c ) 
    dup xtof dict0 = if 8 - exit then
    >r r@ primxt? if
       xtof cold recurse
@@ -727,10 +733,16 @@ internal ( -- a ) variable holding the search order stack depth
       parsed 2@ same? 0= if dup to found then
    else drop then ;  
 
-: nfain  internal ( a u wid -- nfa ) find word in wordlist, sets PARSED, result also stored in FOUND
+\g Find word in wordlist, sets PARSED, result also stored in FOUND
+\g @also found
+\g @also parsed
+: nfain  ( a u wid -- nfa ) 
    >r parsed 2! r> xtof match? forwordsin found ;  
-   
-: nfa  internal ( a u -- nfa ) find word, sets PARSED, result also stored in FOUND
+
+\g Find word, sets PARSED, result also stored in FOUND
+\g @also found
+\g @also parsed
+: nfa  ( a u -- nfa ) 
    parsed 2! xtof match? forwords found ;  
 
 : fxt found name>xt ;  
@@ -744,7 +756,8 @@ internal ( -- a ) variable holding the search order stack depth
    bounds ?do i c@ emit loop ; 
 
 bcreate redefstr ," redefined "
-: (head,)  internal ( a u -- ) compile a header
+\g Compile a header
+: (head,)  ( c-addr u -- ) 
    ?dict
    dup 0= -16 ?throw
    dup 31 > -19 ?throw 
@@ -754,8 +767,9 @@ bcreate redefstr ," redefined "
    here to lastname
    s, align ;  
 
-: head,  internal ( " xxx" -- ) parse input and compile header
-   parse-word (head,) ;  
+\g Parse input and compile header
+: head,  ( " xxx" -- ) 
+   parse-word (head,) ;
 
 \ Numeric output
 : hold  core ( c -- ) add char to beginning of pictured numeric output
@@ -778,10 +792,12 @@ bcreate redefstr ," redefined "
 : sign  core ( n -- ) if n is negative append "-" to pictured numeric output
    0< if [char] - hold then ;  
 
-: (d.)  internal ( d -- a u) convert double number to counted string
+\g Convert double number to string
+: (d.)  ( d -- c-addr u ) 
    swap over  dup 0< if  dnegate  then   <# #s rot sign #> ;  
 
-: d.  double ( d -- ) display double signed number followed by space
+\g @ansdouble
+: d.  ( d -- ) 
    (d.) type space ;  
 
 : .  core ( n -- ) display signed number followed by space
@@ -877,7 +893,7 @@ bcreate redefstr ," redefined "
          else 
             execute 
          then
-      else 
+      else
          parsed 2@ s>number state @ if 
             dpl @ 0< if postpone literal else postpone 2literal then
          then
@@ -927,9 +943,9 @@ bcreate exstr ,"  exception # "
    here over - swap ! ;
 
 \ Definers
-p: doto  internal ( x -- ) runtime for TO, store x at inline address
-\ XXX will fail on x86
-   @r+ cell+ ! ; compile-only 
+\g Runtime for TO, store x at inline address
+p: doto  ( x -- ) 
+   @r+ [ /tcall ] literal + ! ; compile-only 
 
 : postpone ( "<spaces>name" -- )
    ' fimmed 0< if postpone (compile) , exit then
@@ -941,7 +957,7 @@ p: doto  internal ( x -- ) runtime for TO, store x at inline address
 
 \ Initialization
 : cold ( -- )
-   xtof dict0 xt>name [ 6 cells ] literal - xtof dict0 cell+ !
+   xtof dict0 xt>name [ 6 cells ] literal - xtof dict0 [ /tcall ] literal + !
    xtof dummy2 xt>name to here
    dict0
    [ /tdict ] literal + dup to memtop
