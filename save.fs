@@ -18,9 +18,10 @@
    dict0 memtop over - dup pad +! r@ write-file throw \ dictionary
    dup pad @ + >r ( handle addr r: start)
    over file-size throw drop + ( handle end r: start )
-   r@ - r> swap  r@ .s write-file throw  \ contents after dictionary
+   r@ - r> swap  r@ write-file throw  \ contents after dictionary
    close-file throw  r> close-file throw ;
 
 : save"
    [char] " parse save ;
 
+save" fina"
