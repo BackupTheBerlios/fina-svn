@@ -34,6 +34,9 @@ struct state volatile * volatile saved = &_saved;
 static CELL bootstrap_dsp[BOOTSTRAP_STACK];
 static CELL bootstrap_rsp[BOOTSTRAP_STACK];
 
+volatile CELL foo;
+
+
 static inline CELL *userP()
 {
         extern CELL Forth_UserP;
@@ -107,29 +110,33 @@ static unsigned strLen(const char * str)
     return str - ostr - 1;
 }
 
-static inline unsigned UMSlashMod(unsigned long long u, unsigned v, 
-                                  unsigned * pmod)
+
+static inline unsigned CELL UMSlashMod(unsigned CELL * dd, 
+                                       unsigned CELL d, 
+                                       unsigned CELL * pmod)
 {
-        int i = 8*sizeof(int), c = 0;
-        unsigned q = 0, h = u >> (8*sizeof(int)), l = u;
-#define HIGHBIT(x) (((unsigned)(x))>>(8*sizeof(int)-1))
-        for (;;)
+#if 0
+        *pmod = dd % d;
+        return dd / d;
+#else
+        unsigned s = 8*sizeof(CELL)-1;
+        unsigned i = 8*sizeof(CELL);
+        unsigned h = dd[0];
+        unsigned l = dd[1];
+        while (i--)
         {
-                if (c || h >= v)
+                unsigned t = (int)h >> s;
+                h = (h << 1) | (l >> s);
+                l += l;
+                if ((h | t) >= d)
                 {
-                        q++;
-                        h -= v;
+                        h -= d;
+                        l++;
                 }
-                if (--i < 0)
-                        break;
-                c = HIGHBIT (h);
-                h <<= 1;
-                h += HIGHBIT (l);
-                l <<= 1;
-                q <<= 1;
         }
         *pmod = h;
-        return q;
+        return l;
+#endif
 }
 
 int FINA_Init(int argc, char ** argv)
@@ -153,7 +160,6 @@ void FINA_End()
 static int prims() PRIMSATTR;
 
 
-volatile CELL foo;
 
 int FINA_InternalTick(int throw)
 {
@@ -205,8 +211,8 @@ static int prims()
         foo = -1;
         while (1) { switch (foo) {
                 // DON'T MOVE THIS
-		PRIM(NOOP,-1);
-		NEXT;
+                PRIM(NOOP,-1);
+                NEXT;
 
                 PRIM(DOLIT,0);
                 PUSH;
@@ -230,7 +236,7 @@ static int prims()
                 
                 PRIM(DOCREATE,4);
                 PUSH;
-		t0 = (CELL)getlnk();
+                t0 = (CELL)getlnk();
                 tos = sizeof(CELL) + t0;
                 goto **(CELL**)t0;
                 NEXT;
@@ -527,9 +533,7 @@ static int prims()
                 
                 PRIM(PARENSEARCH_WORDLIST,65);
                 CELL * ret;
-                SAVESP;
                 ret = searchWordlist(tos, dsp[0], dsp[1]);
-                RESTORESP;
                 dsp += 2;
                 tos = ret[0];
                 if (tos)
@@ -544,14 +548,8 @@ static int prims()
                 
                 PRIM(UMSLASHMOD,67);
 #if 1
-                t0 = tos;
-                POP;
-                POPULL;
-                PUSH;
-                PUSH;
-                SAVESP;
-                tos = UMSlashMod(ull, t0, dsp);
-                RESTORESP;
+                tos = UMSlashMod(dsp, tos, dsp+1);
+                dsp++;
 #else
                 t0 = tos;
                 POP;
@@ -787,13 +785,13 @@ static int prims()
                 rsp++;
                 NEXT;
                 
-		PRIM(ZEROLTGT, 121);
-		tos = FLAG(tos);
-		NEXT;
+                PRIM(ZEROLTGT, 121);
+                tos = FLAG(tos);
+                NEXT;
 
-		PRIM(LTGT, 122);
-		tos = FLAG(tos != *dsp++);
-		NEXT;
+                PRIM(LTGT, 122);
+                tos = FLAG(tos != *dsp++);
+                NEXT;
                 
 //                PRIM(SLASH, 123);
 //                tos = *dsp++ / tos;
