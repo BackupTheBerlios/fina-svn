@@ -14,10 +14,11 @@ variable (incs)  (incs) off
 : (inc?)
    cell+ 2@ 2over compare 0= found or to found ;
 
-: included? 
+\g Has the file been included?
+: included?  ( c-addr u -- flag )
    0 to found forall (incs) (inc?) 2drop found ;
 
-: required
+: required  ( c-addr u -- )
    2dup included? if 2drop else included then ;
 
 : require
