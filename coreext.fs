@@ -111,8 +111,25 @@ variable span ( -- a-addr )
 : tuck ( x1 x2 -- x2 x1 x2 )
    swap over ;
 
-: marker ( "name" -- )
-   create ." XXX marker not implemented" cr ;
+\g @see anscore
+: marker
+    here
+    create , get-current ,
+    forth-wordlist                        \ start of wordlist link
+    begin cell+ dup @ while @ repeat      \ find end of wordlist link
+    , get-order dup , 0 do , loop
+does>     dup @ to here
+    cell+ dup @ set-current
+    cell+ dup @ 0 swap !                  \ restore end of wordlist link
+    cell+ dup @ dup >r cells + r@ 0 do dup @ swap cell- loop
+    drop r> set-order     \ restore search order
+    forth-wordlist    \ start of wordlist link
+    begin dup @       \ last word name field of wordlist
+        begin  dup here u>
+        while  cell- @
+        repeat over !       \ restore search order pointer
+        cell+ @ ?dup 0=     \ repeat to next wordlist
+    until ;
 
 \g @see anscore
 : [compile]  ( "<spaces>name" -- )
