@@ -901,7 +901,7 @@ p: doto  internal ( x -- ) runtime for TO, store x at inline address
 
 \ Strings
 : s, ( c-addr u -- )
-   here over char+ allot place align ; 
+   here over char+ allot place ;
 
 \ Initialization
 : cold ( -- )
