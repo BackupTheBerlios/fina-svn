@@ -3,8 +3,6 @@
 
 \ XXX Should we have a per-task HERE?
 
-\g This is a reimplementation of 
-
 
 require assert.fs
 
@@ -151,6 +149,7 @@ lastname taskname !
 : .task ( tid -- tid )
    dup 's taskname @ .name ." at " dup hex.
    dup 's status @ xt>name .name cr ;
+
 \g Display tasks list
 : .tasks
    cr ['] .task foreachtask ;
