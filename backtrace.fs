@@ -1,5 +1,3 @@
-: xt? ( val -- flag)
-   dict? ;
 : probablename ( xt -- name )
     dup xt? if 
         begin dup xt>name 0= while cell- repeat xt>name 
