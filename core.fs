@@ -44,16 +44,17 @@ file warnings off
 : dos"  ( -- c-addr u ) \ internal
    r> count 2dup + aligned >r ; compile-only
 
+\g @see ansstring
 : sliteral ( c-addr u -- )
    postpone dos" s, align ; immediate compile-only 
 
 \g @see anscore
-: s"
+: s"  ( "ccc<quote>" --  rt: -- c-addr u )
    [char] " parse   postpone sliteral ; immediate compile-only
 
 
 \g @see anscore
-: ."
+: ."  ( "ccc<quote>" --  rt: -- )
    [char] " parse   postpone sliteral 
    postpone type ; immediate compile-only
 
@@ -182,9 +183,7 @@ variable leaves
    bal @ 1- 2* pick -1 <> throw 
    bal @ 1- 2* 1+ pick compile, ; immediate compile-only
 
-\g before ANS descritpion
 \g @see anscore
-\g after ANS description
 : abort ( i*x --  r: j*x -- )
    -1 throw ;
 
@@ -197,70 +196,81 @@ variable leaves
    postpone (abort") [char] " parse s, align ; immediate compile-only
 
 
-
 \ Definers
 ' quit dup ?dodefine drop swap - constant /call
 
+\g @see anscore
 : to
    ' ?dodefine xtof dovalue <> -32 ?throw
    state @ if postpone doto /call - , else ! then ;  immediate
 
+\g @see anscore
 : create ( "<spaces>name" --  R: -- a-addr  )
    nesting?  head, xtof docreate xt, drop  0 , linklast ;
 
+\g @see anscore
 : >body ( xt -- a-addr )
    ?dodefine xtof docreate <> -31 ?throw
    cell+ ; 
 
+\ Connect latest word to the DOES> code
 : pipe ( --  R: xt -- )
    lastname name>xt >body cell- r> swap ! ;
 
+\g @see anscore
 : does> ( C: colon-sys1 -- colon-sys2 )
    nip -1 <> bal @ 1 <> or -22 ?throw
    (compile) pipe (xt,) dolist -1 ; immediate compile-only
 
 \ 
 
+\g Reserve one char in data space and store x in it
 : c,  ( c -- ) \ core
-\g reserve one char in data space and store x in it
    here c! 1 allot ;
 
 
-: decimal  ( -- ) \ core
 \g Set the numeric conversion radix to ten (decimal).  
+: decimal  ( -- )
    10 base ! ;
 
-: u.  ( u -- ) \ core
 \g @see anscore
+: u.  ( u -- )
    0 d. ;
 
-: evaluate  ( i*x c-addr u -- j*x ) \ core
+\g @see anscore
+: evaluate  ( i*x c-addr u -- j*x )
    source >r >r >in @ >r source-id >r 
    -1 to source-id  sourcevar 2!  >in off 
    interpret
    r> to source-id  r> >in !  r> r> sourcevar 2! ;
 
-: word  ( char "<chars>ccc<char>" -- c-addr ) \ core
-
+\g @see anscore
+: word  ( char "<chars>ccc<char>" -- c-addr )
    here >r skipparse s, r@ to here r> ;
 
-: find  ( a -- a 0 | xt 1 | xt -1 ) \ XXX
+\g @see anscore
+: find  ( a -- a 0 | xt 1 | xt -1 )
    count nfa if fxt fimmed else parsed cell+ @ -1 chars + 0 then ; 
 
-: sm/rem  core ( d n1 -- n2 n3 ) n2=rem n3=quot of symmetric division
+\g @see anscore
+: sm/rem  ( d n1 -- n2 n3 )
    2dup xor >r over >r >r dup 0< if dnegate then 
    r> abs um/mod
    r> 0< if swap negate swap then
    r> 0< if negate 0 over < -11 ?throw exit then
    dup 0< -11 ?throw ;
 
-: */mod  core ( n1 n2 n3 -- n4 n5 ) n4=rem n5=quot of (n1*n2)/n3
+\g @see anscore
+: */mod  ( n1 n2 n3 -- n4 n5 )
    >r m* r> fm/mod ;
 
-: */  core ( n1 n2 n3 -- n4 ) n4 = (n1*n2)/n3
+
+\g @see anscore
+: */  ( n1 n2 n3 -- n4 )
    */mod nip ;
 
-: key 
+\g @see anscore
+: key  ( -- char )
    ekey 255 and ;
 
 
