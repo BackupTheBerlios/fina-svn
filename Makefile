@@ -12,7 +12,7 @@ HOST_GFORTH = host-gforth.fs
 FINA_TEST = core.fs throwmsg.fs tester.fs \
    coretest.fs postponetest.fs filetest bye.fs
 RUN_FINA = core.fs coreext.fs throwmsg.fs file.fs \
-   double.fs optional.fs string.fs lineedit.fs
+   double.fs optional.fs string.fs lineedit.fs help.fs
 SAVE_FINA = ${RUN_FINA} savefina.fs bye.fs
 
 fina: fina2 ${SAVE_FINA}
@@ -49,6 +49,7 @@ glos: core.glo glosgen.glo
 
 core.glo: core.fs
 	./fina glosgen.fs -e "newglos makeglos $< writeglos $@ bye"
+	cp core.glo help/toc.help
 
 glosgen.glo: glosgen.fs
 	./fina glosgen.fs -e "newglos makeglos $< writeglos $@ bye"
