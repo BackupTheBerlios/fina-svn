@@ -32,7 +32,7 @@
 
 \g @see ansdouble
 : d2/  ( d1 -- d2 )
-   swap 1 rshift over 1 and 31 lshift or swap 2/ ;
+   swap 1 rshift over 1 and [ 1 cells 8 * 1- ] literal lshift or swap 2/ ;
 
 \g @see ansdouble
 : d>s  ( d -- u )
