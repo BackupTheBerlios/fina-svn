@@ -2,7 +2,7 @@ decimal
 0 value file
 0 value fsize
 { -> }
-{ char " parse /tmp/esto no existe ni de conya" r/o open-file -> 0 -38 }
+{ char " parse esto no existe ni de conya" r/o open-file -> 0 -38 }
 { char " parse LICENSE" r/o open-file swap to file -> 0 }
 { file 0= -> 0 }
 { file file-size rot to fsize -> 0 0 }
