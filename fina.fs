@@ -88,6 +88,9 @@ ivariable '.error  ( -- a-addr )
 ivariable 'interpret  ( -- a-addr )
 \g Execution vector for interpreter
 
+0
+ivariable 'compile,  ( -- a-addr )
+\g Execution vector for compile,
 
 10 
 ivariable base  ( -- a-addr )
@@ -1029,9 +1032,10 @@ bcreate redefstr ," redefined "
    source-id if 0 exit then
    tib dup [ /tib ] literal accept sourcevar 2! >in off -1 ;  
 
+
 \g @see anscore
 : compile,  ( xt -- )
-   , ;
+   'compile, @execute ;
 
 \g Compile inline xt into current colon def
 : (compile)  ( -- ) 
@@ -1040,10 +1044,6 @@ bcreate redefstr ," redefined "
 \g Extract inline xt
 : xtof  ( -- xt ) 
    @r+ ; compile-only 
-
-\g Compile call to inline xt into current colon def
-: (xt,)  ( -- xt ) 
-   @r+ xt, ;  
 
 \g Convert character to upper case
 : toupper  ( char1 -- char2) 
@@ -1157,12 +1157,16 @@ bcreate exstr ,"  exception # "
 : linklast ( -- )
    lastname get-current ! ;
 
+: reveal ( -- )
+   hasname? @ if linklast then hasname? off ;
+
 \g @see anscore
 : ; ( colon-sys -- )
    bal @ 1- -22 ?throw 
    nip 1+ -22 ?throw
-   hasname? @ if  linklast  then
-   hasname? off  bal off
+   reveal
+\   hasname? @ if  linklast  then hasname? off  
+   bal off
    postpone exit  postpone [ ; immediate compile-only 
 
 \ Jumps
@@ -1223,6 +1227,7 @@ p: doto  ( x -- )
    xtof drop 'khan !
    xtof interpret 'interpret !
    xtof .err '.error !
+   xtof , 'compile, !
    xtof forth-wordlist xt>name 3 cells - to forth-wordlist 
    xtof cold xt>name forth-wordlist !
    forth-wordlist to get-current
