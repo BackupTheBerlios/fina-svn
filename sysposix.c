@@ -1,18 +1,26 @@
+#include "arch.h"
 #include <sys/types.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 
 #include <errno.h>
+#include <setjmp.h>
+#include <signal.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include <termios.h>
+#include <unistd.h>
 
 
+#include "fina.h"
 #include "sys.h"
 
 static struct termios otio;
 static int argc;
 static char ** argv;
 static int throw;
+jmp_buf jmpbuf;
 
 static void errnoThrow(int error)
 {
@@ -40,20 +48,65 @@ static void ferrorThrow(int error, FILE * handle)
         clearerr(handle);
 }
 
-void Sys_Init(int argcc, char ** argvv)
+static void sighandler(int sig)
+{
+        switch (sig)
+        {
+        case SIGBUS:
+        case SIGSEGV:
+        case SIGILL:
+                throw = -9;
+                break;
+        default:
+                throw = -59;
+        }
+        signal(sig, sighandler);
+//        printf("Got signal %d, throw %d\n", sig, throw);
+        longjmp(jmpbuf, throw);
+}
+
+int Sys_Tick()
+{
+        static int set = 0;
+        int throw;
+        if (!set)
+                throw = setjmp(jmpbuf);
+        set = !throw;
+        return FINA_InternalTick(throw);
+}
+
+static void initSignals()
+{
+        signal(SIGBUS, sighandler);
+        signal(SIGSEGV, sighandler);
+        signal(SIGILL, sighandler);
+}
+
+static void initTerm()
 {
         struct termios tio;
         tcgetattr(fileno(stdin), &otio);
         tio = otio;
         tio.c_lflag &= ~(ECHO | ICANON);
         tcsetattr(fileno(stdin), TCSANOW, &tio);
+}
+
+static void endTerm()
+{
+        tcsetattr(fileno(stdin), TCSANOW, &otio);
+}
+
+void Sys_Init(int argcc, char ** argvv)
+{
         argc = argcc;
         argv = argvv;
+        initTerm();
+        initSignals();
 }
 
 void Sys_End()
 {
-        tcsetattr(fileno(stdin), TCSANOW, &otio);
+        endTerm();
 }
 
 unsigned Sys_HasChar()
@@ -176,4 +229,68 @@ unsigned Sys_FileLine(void * handle, char * buf, unsigned size)
         if (!throw) res = strlen(buf);
         if (!throw) res -= buf[res-1] == '\n';
         return res;
+}
+
+void * Sys_Time()
+{
+        time_t t = time(0);
+        return localtime(&t);
+}
+
+unsigned Sys_Second(void * t)
+{
+        return ((struct tm *)t)->tm_sec;
+}
+
+unsigned Sys_Minute(void * t)
+{
+        return ((struct tm *)t)->tm_min;
+}
+
+unsigned Sys_Hour(void * t)
+{
+        return ((struct tm *)t)->tm_hour;
+}
+
+unsigned Sys_Day(void * t)
+{
+        return ((struct tm *)t)->tm_mday;
+}
+
+unsigned Sys_Month(void * t)
+{
+        return ((struct tm *)t)->tm_mon + 1;
+}
+
+unsigned Sys_Year(void * t)
+{
+        return ((struct tm *)t)->tm_year + 1900;
+}
+
+void Sys_Sleep(unsigned ms)
+{
+        usleep(ms * 1000);
+}
+
+void Sys_FileDelete(const char * name)
+{
+        errnoThrow(-1 == unlink(name));
+}
+
+unsigned Sys_FileStat(const char * name)
+{
+        struct stat s;
+        errnoThrow(stat(name, &s));
+        return s.st_mode;
+}
+
+void Sys_FileRen(const char * old, const char * new)
+{
+        printf("renaming %s to %s\n", old, new);
+        errnoThrow(rename(old, new));
+}
+
+void Sys_FileTrunc(void * handle, unsigned long long size)
+{
+        errnoThrow(ftruncate(fileno((FILE*)handle), size));
 }
