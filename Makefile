@@ -110,6 +110,7 @@ clean:
 powerpc:
 	ln -fs tconfig-powerpc.fs tconfig.fs
 	ln -fs arch-powerpc.h arch.h
+	ln -fs bootstrapdict.s.powerpc bootstrapdict.s
 	echo -n " -no-cpp-precomp " >> flags
 	echo -n "gcc2" > compiler
 	echo -n "gforth-0.5.0" > hostforth
