@@ -43,7 +43,22 @@ Linux-i386-os:
 
 
 ################################################################
-# Darwin
+# Darwin-powerpc
+################################################################
+
+Darwin-powerpc-gcc:
+	echo gcc2
+
+Darwin-powerpc-cppflags: posix-cppflags
+	echo "-no-cpp-precomp"
+
+Darwin-powerpc-forthflags: posix-forthflags
+
+Darwin-powerpc-os:
+	echo posix
+
+################################################################
+# Common
 ################################################################
 
 files-cppflags:
