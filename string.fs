@@ -25,4 +25,4 @@
       then
    loop 2drop ;
 
-env: search true ;env
+env: string true ;env
