@@ -10,19 +10,20 @@ ALL_HELP = ${ALL_FORTH:%.fs=help/%.help}
 
 FINA_SRC0 = opt.fs tconfig.fs
 FINA_SRC1 = meta.fs fina.fs
-HOST_FINA0 = core.fs throwmsg.fs search.fs coreext.fs
+HOST_FINA0 = core.fs defer.fs throwmsg.fs search.fs coreext.fs
 HOST_FINA1 = host-fina.fs
 HOST_GFORTH = host-gforth.fs
-FINA_TEST0 = core.fs throwmsg.fs tester.fs coretest.fs postponetest.fs bye.fs
+FINA_TEST0 = core.fs defer.fs throwmsg.fs tester.fs coretest.fs postponetest.fs bye.fs
 FINA_TEST = tester.fs coretest.fs postponetest.fs filetest.fs dbltest.fs
 
 RUN_FINA = \
-   core.fs search.fs coreext.fs searchext.fs \
-   throwmsg.fs file.fs \
+   core.fs throwmsg.fs defer.fs signals.fs search.fs coreext.fs searchext.fs \
+   file.fs fileext.fs \
    double.fs doubleext.fs \
    optional.fs string.fs require.fs \
    tools.fs toolsext.fs \
-   search.fs lineedit.fs help.fs multi.fs
+   facility.fs facilityext.fs \
+   lineedit.fs help.fs multi.fs
 
 SAVE_FINA = ${RUN_FINA} savefina.fs bye.fs
 
@@ -73,7 +74,7 @@ help/%.help: %.fs
 
 main.o : main.c
 
-finac.s: finac.c fina.h arch.h sys.h
+finac.s: finac.c fina.h arch.h sys.h flags
 	${CC} ${CPPFLAGS} ${CFLAGS} -S finac.c -o finac.s
 
 fina.o: fina.s
