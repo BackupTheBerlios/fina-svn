@@ -135,4 +135,20 @@ does>     dup @ to here
 : [compile]  ( "<spaces>name" -- )
    ' compile, ; immediate compile-only
 
+\g @see anscore
+defer save-input  ( -- xn ... x1 n )
+:noname
+   source  >in @  source-id 4 ; is save-input
+
+\g @see anscore
+defer restore-input  ( xn ... x1 n -- flag )
+:noname
+   dup 4 = if
+      drop to source-id >in ! sourceVar 2!  0
+   else 
+      0 ?do drop loop  -1 
+   then ; is restore-input
+
+
 env: core-ext true ;env
+
