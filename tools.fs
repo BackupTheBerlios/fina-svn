@@ -47,6 +47,7 @@ forth-wordlist set-current
    ['] (next?) forwords drop found ;
 
 : /xt ( xt -- a-addr )
+   dup primxt? if exit then  \ XXX
    xt>name nextnfa cell- ;
 
 : type? ( addr <inline-doer> -- flag
@@ -58,6 +59,7 @@ forth-wordlist set-current
    dup type? doconst if ." constant " then
    dup type? douser if ." user " then
    dup type? dovalue if ." value " then
+   dup primxt? if ." primitive " then
    drop ;
 
 : xt? ( val -- flag )
@@ -65,17 +67,18 @@ forth-wordlist set-current
    dup dict? 0= if primxt? else ?dodefine nip 0<> then ;
 
 : safext>name ( xt -- name|0 )
-   dup xt? if xt>name else drop c" (null)" then ;
+   dup xt? if xt>name else 0 (d.) pad place pad then ;
 
 : cellsee ( a-addr1 -- a-addr2 )
    dup @ safext>name .name 
    cell+ ;
 
 : xtsee ( xt -- )
-\   dup doersee 
-\   dup xt>name .name
-   dup /xt swap \ ?dodefine drop 
-   begin  2dup >  while  cellsee  repeat ;
+   dup doersee 
+   dup xt>name .name
+   dup primxt? if dup else dup ?dodefine nip then xt>name .name
+   dup /xt swap ?dodefine drop 
+   begin  2dup >  while  cellsee  repeat 2drop ;
 
 \g @see anstools
 : see
