@@ -1,3 +1,7 @@
+- write do2literal, 3 words per 2literal instead of 4
+- help broken, try "help char"
+- fast dictionary search using endian-specific code, i.e
+   if (((*(CELL*)cstr1) << 3) == ((*(CELL*)cstr2) << 3)) ...
 - factorize INTERPRET with something like FOREACHPARSED
 - implement defer..is and remove @execute
 - EVALUATE should use SAVE-INPUT

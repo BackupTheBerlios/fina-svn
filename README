@@ -2,7 +2,6 @@ You will need gcc2 to build FINA.
 
 To build:
 
-
 gmake fast/slow x86/powerpc/mips posix
 gmake
 
