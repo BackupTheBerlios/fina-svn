@@ -13,8 +13,12 @@
 \g @see anstools
 : words ( -- )
    here off
-   ['] (.name) forwords 
+   get-order over >r set-order r> ['] (.name) forwordsin
    cr here @ . ." words" cr ;
+
+root-wordlist set-current
+: words words ; 
+forth-wordlist set-current
 
 : dumprow ( addr u -- addr' )
   swap cr dup 0 <#  # # # # # # # #  #> type space
