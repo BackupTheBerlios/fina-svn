@@ -1,12 +1,11 @@
+- Blocks
 - Make it possible to compile without bootstrap compiler (keep .s files for
   the supported architectures). Should also drop the gcc2 build-depend.
 - isolate compiler constants (/dict et al) from arch-specific code
-- line editor
 - negative strings?
 - douser is slow
 - implement USEPFR for better code on MIPS machines.
 - cleanup host-gforth
-- help broken, try "help char"
 - fast dictionary search using endian-specific code, i.e
    if (((*(CELL*)cstr1) << 3) == ((*(CELL*)cstr2) << 3)) ...
 - factorize INTERPRET with something like FOREACHPARSED
@@ -20,7 +19,6 @@
 - implement user and remove fake definition from host-fina.fs
 - remove debug stuff (shifts, type2, rdepth, rpick...)
 - split docreate -> dovar+dodoes
-- files
 - cross-compiling support
 - ensure headers compiled with s, don't yield different images in test
 - 0 -1 1 perform 0<> >= u> u>= <> lshift arshift fm/mod / mod /mod as primitives
