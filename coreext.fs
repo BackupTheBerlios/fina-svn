@@ -94,11 +94,8 @@ constant false ( -- 0 )
    0 fill ;
 
 \g @see anscore
-variable span ( -- a-addr )
-
-\g @see anscore
 : expect ( c-addr +n -- )
-   accept span ! ;
+   accept ;
 
 \g @see anscore
 : roll ( xu xu-1 ... x0 u -- xu-1 ... x0 xu )
