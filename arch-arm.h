@@ -1,11 +1,17 @@
 
-#define LNKREG register volatile CELL * lnk asm("%lr")
 #define SAVESP
 #define RESTORESP
 register CELL * rsp asm("%r7");
 register CELL * fpc asm("%r6");
 register CELL * dsp asm("%r5");
 register CELL   tos asm("%r4");
+
+
+static inline CELL * getlnk()
+{
+	register volatile CELL * lnk asm("%lr");
+	return lnk;
+}
 
 
 static inline CELL arch_iscall(CELL xt)

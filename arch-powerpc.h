@@ -6,9 +6,15 @@ register CELL * rsp asm("%r18");
 register CELL * fpc asm("%r17");
 register CELL * dsp asm("%r16");
 register CELL   tos asm("%r15");
-#define LNKREG register volatile CELL * lnk asm("%lr")
 #define SAVESP
 #define RESTORESP
+
+static inline CELL * getlnk()
+{
+	register volatile CELL * lnk asm("%lr");
+	return lnk;
+}
+
 
 static inline CELL arch_iscall(CELL xt)
 {

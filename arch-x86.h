@@ -8,7 +8,7 @@ register CELL * dsp asm("%edi");
 register CELL   tos asm("%ebx");
 static inline CELL * getlnk()
 {
-        int res;
+	CELL * res;
         asm volatile (" popl %0 " : "=r" (res));
         return res;
 }
@@ -28,9 +28,6 @@ static inline void setsp(CELL osp)
 }
 #define SAVESP { CELL savedsp = getsp()
 #define RESTORESP setsp(savedsp);}
-#define LNKREG
-#define lnk getlnk()
-
 
 static inline CELL arch_iscall(CELL xt)
 {

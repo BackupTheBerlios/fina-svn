@@ -6,9 +6,16 @@ register CELL * rsp asm("$16");
 register CELL * fpc asm("$17");
 register CELL * dsp asm("$18");
 register CELL   tos asm("$19");
-#define LNKREG register volatile CELL * lnk asm("$31")
 #define SAVESP
 #define RESTORESP
+
+
+static inline CELL * getlnk()
+{
+	register volatile CELL * lnk asm("$31");
+	return lnk;
+}
+
 
 #if defined(__linux__)
 #include <sys/cachectl.h>
