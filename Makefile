@@ -142,3 +142,8 @@ slow:
 
 files:
 	echo -n " -DHASFILES " >> flags
+	echo "-1 constant files" >> opt.fs
+
+alloc:
+	echo -n " -DHASALLOCATE " >> flags
+	echo "-1 constant alloc" >> opt.fs
