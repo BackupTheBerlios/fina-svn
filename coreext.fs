@@ -15,3 +15,11 @@
    
 : c"
    [char] " parse   postpone csliteral ; immediate compile-only
+
+\g @see anscore
+: query ( -- )
+   source-id 0 to source-id refill drop to source-id ;
+
+\g @see anscore
+: #tib ( -- a-addr )
+   source nip ;
