@@ -1,4 +1,3 @@
-file 
 
 : immediate
    lastname c@ 64 or lastname c! ;
