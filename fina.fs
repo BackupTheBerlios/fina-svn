@@ -282,6 +282,12 @@ internal ( a1 u1 a2 -- u2 ior ) write to file
 prim mmapf
 internal ( a1 -- a2 ) mmap file
 
+prim argc
+internal ( -- u ) number of arguments command line 
+
+prim argv
+internal ( u1 -- a u2 ) get command line argument
+
 \ COLON DEFINITIONS
 \ Multitasking
 : pause  internal ( -- ) transfer control to next task

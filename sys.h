@@ -11,3 +11,5 @@ void Sys_MemSet(char * dst, unsigned c, unsigned bytes);
 unsigned Sys_HasChar();
 unsigned Sys_GetChar();
 void Sys_PutChar(unsigned c);
+unsigned Sys_Argc();
+char * Sys_Argv(unsigned i);

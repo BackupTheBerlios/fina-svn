@@ -9,9 +9,9 @@
 
 #include "sys.h"
 
-struct termios otio;
-int argc;
-char ** argv;
+static struct termios otio;
+static int argc;
+static char ** argv;
 
 void Sys_Init(int argcc, char ** argvv)
 {
@@ -105,3 +105,14 @@ void * Sys_MMapFile(void * handle)
                 perror("mmap");
         return ret;
 }
+
+unsigned Sys_Argc()
+{
+        return argc;
+}
+
+char * Sys_Argv(unsigned i)
+{
+        return argv[i];
+}
+

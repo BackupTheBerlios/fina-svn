@@ -482,7 +482,23 @@ static int prims()
                 tos = nCaseCompare(t0, t1, tos);
                 RESTORESP;
                 NEXT;
-                
+
+                PRIM(RFETCH,33);
+                PUSH;
+                tos = *rsp;
+                NEXT;
+
+                PRIM(ARGC,300);
+                PUSH;
+                tos = Sys_Argc();
+                NEXT;
+
+                PRIM(ARGV,301);
+                PUSH;
+                *dsp = (CELL)Sys_Argv(tos);
+                tos = strlen((char*)*dsp);
+                NEXT;
+
 #if defined(FASTFORTH)
                 
                 PRIM(PARENSEARCH_WORDLIST,65);
@@ -760,11 +776,6 @@ static int prims()
                 
 #endif
                 
-                PRIM(RFETCH,33);
-                PUSH;
-                tos = *rsp;
-                NEXT;
-
 #if defined(HASFILES)
                 PRIM(OPENF, 200);
                 t0 = *dsp++;
