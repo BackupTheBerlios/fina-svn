@@ -32,5 +32,5 @@ defer banner
    quit ; 'cold!
 
 :noname
-   ." ok" cr ; '.prompt !   
-save" fina" 
+   ." ok" cr ; '.prompt ! 
+echo on save" fina" 
