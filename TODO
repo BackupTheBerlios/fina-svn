@@ -1,3 +1,5 @@
+- documentation system
+- more file tests
 - forlist/repeat?
 - line editor
 - implement user and remove fake definition from host-fina.fs
