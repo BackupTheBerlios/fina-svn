@@ -4,10 +4,11 @@ int Sys_Tick();
 unsigned Sys_Argc();
 char * Sys_Argv(unsigned i);
 
+unsigned Sys_Throw();
+
 // File support
 void * Sys_FileOpen(const char * name, unsigned mode);
 void Sys_FileClose(void * handle);
-unsigned Sys_FileThrow();
 unsigned Sys_FileRead(void * handle, char * buf, unsigned len);
 void Sys_FileWrite(void * handle, char * buf, unsigned len);
 void * Sys_FileMMap(void * handle);
@@ -19,10 +20,16 @@ void Sys_FileDelete(const char * name);
 unsigned Sys_FileStat(const char * name);
 void Sys_FileRen(const char * old, const char * new);
 void Sys_FileTrunc(void * handle, unsigned long long size);
+void Sys_FileFlush(void * handle);
 
 // Memory
 void Sys_MemMove(char * to, const char * from, unsigned bytes);
 void Sys_MemSet(char * dst, unsigned c, unsigned bytes);
+
+// Memory Allocation
+void * Sys_MemAllocate(unsigned bytes);
+void Sys_MemFree(void * addr);
+void * Sys_MemResize(void * addr, unsigned newsize);
 
 // Console
 unsigned Sys_HasChar();
