@@ -1,4 +1,3 @@
-marker foo
 \g @see ansfile
 : file-status ( c-addr u -- x ior )
    statf ;
