@@ -1,5 +1,3 @@
-: .name 
-   namecount type space ;
 : xt? ( val -- flag)
    dict? ;
 : probablename ( xt -- name )
