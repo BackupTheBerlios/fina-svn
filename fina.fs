@@ -24,9 +24,6 @@ user rp0  ( -- a-addr )
 user taskname ( -- a-addr )
 
 \ SYSTEM VARIABLES
-0 
-ivariable echo ( -- a-addr )
-\g Should accepted characters be echoed?
 
 0 
 ivariable parsed ( -- a-addr )
@@ -92,6 +89,10 @@ ivariable 'interpret  ( -- a-addr )
 ivariable 'compile,  ( -- a-addr )
 \g Execution vector for compile,
 
+0 
+ivariable 'khan ( buf buflen char c-addr -- char | 0 )
+\g Execution vector for key handler
+
 10 
 ivariable base  ( -- a-addr )
 \g @see anscore
@@ -99,6 +100,9 @@ ivariable base  ( -- a-addr )
 0 
 ivariable >in  ( -- a-addr )
 \g @see anscore
+
+\g @see anscore
+0 ivariable span
 
 0 
 ivariable state  ( -- a-addr )
@@ -600,10 +604,6 @@ p: u<  ( u1 u2 -- flag )
 p: >  ( n1 n2 -- f )
    swap < ;  
 
-\g returns true if n1 >= n2
-: >=  ( n1 n2 -- flag )
-   < 0= ; 
-
 \g @see anscore
 : u>  ( u1 u2 -- flag )
    swap u< ;
@@ -996,19 +996,20 @@ bcreate redefstr ," redefined "
 : ]  ( -- )
    state on ; 
 
-0 ivariable 'khan \ ( char c-addr -- char | 0 )
+
+\g Handle printable character for ACCEPT. Upon return the top of the stack
+\g will be 0 if there isn't enough room to hold char. Otherwise it will be
+\g the original char.
+: printable ( start count char -- start count char|0 )
+   over span @ u>= and dup >r if 
+     over span @ + r@ swap c!  1 span +! 
+   then r> ;
 
 \g @see anscore
 : accept ( c-addr +n1 -- +n2 )
-   0 -rot bounds ?do  
-      ekey 255 and 
-      dup 10 = if drop leave then
-      i 'khan @execute 
-      dup if
-         echo @ if  dup emit  then  
-         i c! 1+
-      else drop then
-   loop ;
+   2dup bl fill  span off
+   begin ekey 'khan @execute 10 = until 2drop 
+   -1 span +! span @ ;
 
 \g @see anscore
 : refill  ( -- flag )
@@ -1116,7 +1117,7 @@ bcreate exstr ,"  exception # "
 : quit  ( --  r: i*x -- )
    begin
       rp0 @ rp!  0 to source-id  bal off  postpone [  begin
-         refill drop echo @ if space then
+         refill drop 
          'interpret @ catch ?dup 0=
       while
          state @ 0= if .prompt then
@@ -1207,7 +1208,7 @@ p: doto  ( x -- )
    xtof rx@ 'ekey !
    xtof tx? 'emit? !
    xtof tx! 'emit !
-   xtof drop 'khan !
+   xtof printable 'khan !
    xtof interpret 'interpret !
    xtof .err '.error !
    xtof , 'compile, !
