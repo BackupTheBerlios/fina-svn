@@ -53,7 +53,7 @@ sys.o: sys.c sys.h
 
 clean:
 	rm -f *.o *.s fina fina0 fina1 glos.txt \
-		arch.h tconfig.fs sys.c opt.fs flags *\~ \#*\# 
+		arch.h tconfig.fs sys.c opt.fs flags *\~ \#*\# *.glo
 
 powerpc:
 	ln -fs tconfig-powerpc.fs tconfig.fs
