@@ -1,114 +1,159 @@
-0 value dict0
+0 
+value dict0 ( -- a-addr )
+\g Start of dictionary space
 
 \ SYSTEM VARIABLES
-0 ivariable echo
+0 
+ivariable echo ( -- a-addr )
+\g Should accepted characters be echoed?
 
-0 ivariable parsed 0 ,
-internal ( -- a ) dvariable holding last found word
+0 
+ivariable parsed ( -- a-addr )
+\g Double variable holding last found word
+0 ,
 
-0 ivariable bal
-internal ( -- a ) holds depth of control-flow stack
+0 
+ivariable bal ( -- a-addr )
+\g Tracks depth of control-flow stack
 
-0 ivariable sourcevar 0 ,
-internal ( -- a ) dvariable holding input buffer string
 
-0 ivariable abort"msg  0 ,
-internal ( -- a ) dvariable holding abort message
+0 
+ivariable sourcevar ( -- a-addr )
+\g Double variable holding input buffer string
+0 ,
 
-0 ivariable hld
-internal ( -- a ) pointer to numeric output string
+0 
+ivariable abort"msg  ( -- a-addr )
+\g Double variable holding ABORT" message
+0 ,
 
-0 ivariable userp
-internal ( -- a ) user variables pointer
+0 
+ivariable hld  ( -- a-addr )
+\g Pointer to numeric output string
 
--1 ivariable warnings
-internal ( -- a ) holds flag to control printing of warnings
+0 
+ivariable userp  ( -- a-addr )
+\g User variables pointer
 
-0 ivariable 'ekey?  
-internal ( -- a ) execution vertor of EKEY?
+-1 
+ivariable warnings  ( -- a-addr )
+\g Holds flag to control printing of warnings
 
-0 ivariable 'ekey  
-internal ( -- a ) execution vector of EKEY
+0 
+ivariable 'ekey?  ( -- a-addr )
+\g Execution vector of EKEY?
 
-0 ivariable 'emit? 
-internal ( -- a ) execution vector of EMIT?
+0 
+ivariable 'ekey  ( -- a-addr )
+\g Execution vector of EKEY
 
-0 ivariable 'emit  
-internal ( -- a ) execution vector of EMIT
+0 
+ivariable 'emit?  ( -- a-addr )
+\g Execution vector of EMIT?
 
-0 ivariable '.prompt  
-internal ( -- a ) execution vector of .PROMPT
+0 
+ivariable 'emit  ( -- a-addr )
+\g Execution vector of EMIT
 
-0 ivariable 'throwmsg
-internal ( -- a ) execution vector for getting throw error message
+0 
+ivariable '.prompt  ( -- a-addr )
+\g Execution vector of .PROMPT
 
-0 ivariable 'interpret
-internal ( -- a ) execution vector for interpreter
+0
+ivariable '.error  ( -- a-addr )
+\g Execution vector for printing THROW error codes
 
-0 ivariable forth-wordlist 0 ,
-core ( -- a ) wid of forth wordlist
+0 
+ivariable 'interpret  ( -- a-addr )
+\g Execution vector for interpreter
 
-10 ivariable base
-core ( -- a ) radix base for numeric i/o
+0 
+ivariable forth-wordlist  ( -- a-addr ) 
+\g @see anssearch
+0 ,
 
-0 ivariable >in
-core ( -- a ) holds the offset from start of input buffer to parse area
+10 
+ivariable base  ( -- a-addr )
+\g @see anscore
 
-0 ivariable state
-core ( -- a ) holds compilation state flag
+0 
+ivariable >in  ( -- a-addr )
+\g @see anscore
 
-0 ivariable hasname?
+0 
+ivariable state  ( -- a-addr )
+\g @see anscore
+
+0 
+ivariable hasname?  ( -- a-addr )
+\g Contains true when the last definition has a name
 
 \ SYSTEM VALUES
-0 value get-current 
-core ( -- wid ) identifier of the compilation wordlist
+0 
+value get-current  ( -- wid )
+\g @see anscore
 
-h# abadcafe value memtop  
-internal ( -- a ) holds upper dictionary limit
+h# abadcafe 
+value memtop  ( -- a-addr )
+\g Holds upper dictionary limit
 
-0 value lastname  
-internal ( -- a ) pointer to name of last word
+0 
+value lastname  ( -- a-addr )
+\g Pointer to NFA of last word
 
-h# abadcafe value here  
-core ( -- a ) data space pointer
+h# abadcafe 
+value here  ( -- c-addr )
+\g @see anscore
 
-h# abadcafe value source-id  
-coreext ( -- 0 | -1) source identifier
+h# abadcafe 
+value source-id  ( -- 0 | -1 )
+\g @see anscore
 
-h# abadcafe value pad  
-coreext ( -- a ) address of transient region
+h# abadcafe 
+value pad  ( -- a-addr )
+\g @see anscore
 
-h# abadcafe value tib  
-coreext ( -- a ) address of the terminal input buffer
+h# abadcafe 
+value tib  ( -- c-addr )
+\g @see anscore
 
-0 value found 
-internal ( -- a ) result of last nfa search
+0 
+value found  ( -- a-addr )
+\g Result of lastest NFA search
+\g @also nfa
 
 \ SYSTEM CONSTANTS
-32 constant bl  
-core ( -- c) character value for a space
+32 
+constant bl  ( -- char )
+\g @see anscore
 
 \ USER VARIABLES
+\g User variable holding a pointer to the next task
+user follower  ( -- a-addr )
+
+\g User variable holding a pointer to current task status routine
+user status ( -- a-addr )
+
+\g User variable holding the throw frame pointer for each task
+user throwframe  ( -- a-addr ) 
 
 \ XXX could this be a normal var? 
 \ probably, under the restriction that no task will check it between PAUSEs
-user dpl 
-internal ( -- a ) decimal point location
+\g User variable holding decimal point location
+user dpl  ( -- a-addr ) 
 
-user stacktop  
-internal ( -- a) uvar holding the stack pointer for each sleeping task
+\g User variable holding a pointer to the stack origin
+user sp0  ( -- a-addr )
 
-user follower
-internal ( -- a) uvar holding a pointer to the next task
+\g User variable holding a pointer to the return stack origin
+user rp0  ( -- a-addr )
 
-user sp0  
-internal ( -- a) uvar holding a pointer to the stack origin
+\g User variable holding a pointer to the task name
+user taskname ( -- a-addr )
 
-user rp0  
-internal ( -- a) uvar holding a pointer to the return stack origin
-
-user throwframe  
-internal ( -- a) uvar holding the throw frame pointer for each task
+useroffset
+value lastuser ( -- n )
+\g Offset of last user variable
 
 \ PRIMITIVES
 
@@ -302,9 +347,6 @@ prim argv
 internal ( u1 -- a u2 ) get command line argument
 
 \ COLON DEFINITIONS
-\ Multitasking
-: pause  internal ( -- ) transfer control to next task
-   rp@ sp@ stacktop !   follower @ >r ; compile-only  
 
 \ I/O
 
@@ -316,7 +358,7 @@ internal ( u1 -- a u2 ) get command line argument
    'ekey? @execute ;  
 
 : ekey  facilityext ( -- u ) receive keyboard event
-   ekey? 0= if begin pause ekey? until then 'ekey @execute ;  
+   'ekey @execute ;  
 
 : emit?  facilityext ( -- f ) returns true if output device is ready
    'emit? @execute ;  
@@ -661,6 +703,7 @@ internal ( -- a ) variable holding the search order stack depth
       xtof cold recurse
       begin cell- @ dup name>xt r@ = until
    else
+      r@ ?dodefine nip 0= if rdrop 0 exit then
       r@ begin cell- dup name>xt r@ = over cell- @ dict? and  until
    then  rdrop ;  
 
@@ -769,7 +812,7 @@ bcreate redefstr ," redefined "
    tib dup [ /tib ] literal accept sourcevar 2! >in off -1 ;  
 
 : compile,  coreext ( xt -- ) compile xt into current colon definition
-   , ; compile-only  
+   , ; 
 
 : (compile)  internal ( -- ) compile inline xt into current colon def
    @r+ compile, ;  
@@ -840,25 +883,17 @@ bcreate redefstr ," redefined "
          then
       then
    repeat 2drop ;
-bcreate exstr ," exception # "
+bcreate exstr ,"  exception # "
+: .err parsed 2@ type exstr count type . cr ;
 : quit
    begin
-      sp0 @ sp!  rp0 @ rp!  0 to source-id  bal off  postpone [  begin
+      rp0 @ rp!  0 to source-id  bal off  postpone [  begin
          refill drop space
          'interpret @ catch ?dup 0=
       while
          state @ 0= if .prompt cr then
       repeat
-      dup -1 <> if
-         space
-         dup -2 = if  abort"msg 2@ type then
-         dup -2 <> if
-            parsed 2@ type space [char] ? emit space
-            dup -1 -58 within 'throwmsg @ 0= or if 
-               exstr count type . 
-            else 'throwmsg @execute type then
-         then cr
-      then
+      '.error @execute sp0 @ sp!
    again ;  
 : :noname ( -- xt colon-sys )
    bal @ -29 ?throw
@@ -922,10 +957,12 @@ p: doto  internal ( x -- ) runtime for TO, store x at inline address
    xtof tx! 'emit !
    xtof drop 'khan !
    xtof interpret 'interpret !
+   xtof .err '.error !
    xtof cold xt>name forth-wordlist !
    forth-wordlist to get-current
    get-current 1 #order 2!
    file
+   sp0 @ sp!
    quit ;
 0 ivariable dummy2
 0 ivariable dummy3
