@@ -149,13 +149,13 @@ lastname taskname !
 
 \g Display task information
 : .task ( tid -- tid )
-   dup 's taskname @ .name ."  at " dup hex.
+   dup 's taskname @ .name ." at " dup hex.
    dup 's status @ xt>name .name cr ;
 \g Display tasks list
 : .tasks
    cr ['] .task foreachtask ;
 
-
+0 [if]
 64 64 64 task: mierda1
 64 64 64 task: mierda2
 64 64 64 task: mierda3
@@ -176,3 +176,4 @@ mierda3 sleep
 mierda4 kill
 .tasks
 :noname 5 0 do .tasks pause loop cr ; execute
+[then]
