@@ -67,10 +67,10 @@ require coretest.fs
 { 0 1 0 0 d= -> false }
 { 1 1 0 0 d= -> false }
 
-{ 0. 0. d<> -> false }
-{ 0. 1. d<> -> true }
-{ 0 1 0 0 d<> -> true }
-{ 1 1 0 0 d<> -> true }
+\ { 0. 0. d<> -> false }
+\ { 0. 1. d<> -> true }
+\ { 0 1 0 0 d<> -> true }
+\ { 1 1 0 0 d<> -> true }
 
 { 1. 1. d< -> false }
 { 0. 1. d< -> true }
@@ -78,11 +78,11 @@ require coretest.fs
 { 0 1 1 0 d< -> false }
 { -1. 0. d< -> true }
 
-{ 1. 1. d> -> false }
-{ 0. 1. d> -> false }
-{ 1 0 0 1 d> -> false }
-{ 0 1 1 0 d> -> true }
-{ -1. 0. d> -> false }
+\ { 1. 1. d> -> false }
+\ { 0. 1. d> -> false }
+\ { 1 0 0 1 d> -> false }
+\ { 0 1 1 0 d> -> true }
+\ { -1. 0. d> -> false }
 
 { 1. 1. d>= -> true }
 { 0. 1. d>= -> false }
@@ -90,11 +90,11 @@ require coretest.fs
 { 0 1 1 0 d>= -> true }
 { -1. 0. d>= -> false }
 
-{ 1. 1. d<= -> true }
-{ 0. 1. d<= -> true }
-{ 1 0 0 1 d<= -> true }
-{ 0 1 1 0 d<= -> false }
-{ -1. 0. d<= -> true }
+\ { 1. 1. d<= -> true }
+\ { 0. 1. d<= -> true }
+\ { 1 0 0 1 d<= -> true }
+\ { 0 1 1 0 d<= -> false }
+\ { -1. 0. d<= -> true }
 
 \ Since the d-comparisons, the du-comparisons, and the d0-comparisons
 \ are generated from the same source, we only test the ANS words in
