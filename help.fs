@@ -7,7 +7,7 @@
 
 \ Does str1 begin with str2?)
 : beginswith? ( c-addr1 u1 c-addr2 u2 -- flag )
-   2>r r@ min 2r> compare 0= ;
+   2>r r@ umin 2r> compare 0= ;
 
 variable requested 0 ,
 

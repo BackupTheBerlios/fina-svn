@@ -828,7 +828,7 @@ p: +!  ( x a-addr -- )
 
 \g Set start of unparsed input
 : unparsed! ( c-addr -- )
-   source -rot - min >in ! ;
+   source -rot - umin >in ! ;
 
 \g Scan string looking for char
 : scan  ( c-addr1 u1 char -- c-addr2 u2 ) 
