@@ -369,7 +369,7 @@ internal ( u1 -- a u2 ) get command line argument
 
 bcreate okstr ," ok"
 : .ok  internal ( -- ) display prompt
-   okstr count type ;  
+   okstr count type cr ;  
 
 : space  core ( -- ) send space to output device
    32 emit ;   
@@ -735,7 +735,7 @@ create #order ( -- a-addr )
 \g @also found
 \g @also parsed
 : nfain  ( a u wid -- nfa ) 
-   >r parsed 2! r> xtof match? forwordsin found ;  
+   >r parsed 2! r> xtof match? forwordsin found ;
 
 \g Find word, sets PARSED, result also stored in FOUND
 \g @also found
@@ -902,10 +902,10 @@ bcreate exstr ,"  exception # "
 : quit
    begin
       rp0 @ rp!  0 to source-id  bal off  postpone [  begin
-         refill drop space \ XXX
+         refill drop echo @ if space then
          'interpret @ catch ?dup 0=
       while
-         state @ 0= if .prompt cr then
+         state @ 0= if .prompt then
       repeat
       '.error @execute sp0 @ sp!
    again ;  
@@ -979,5 +979,4 @@ p: doto  ( x -- )
    sp0 @ sp!
    quit ;
 0 ivariable dummy2
-0 ivariable dummy3
 bye
