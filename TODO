@@ -1,3 +1,6 @@
+- douser is slow
+- change docreate
+- create ... does> implemented with vectored does>. does> defaults to NOOP
 - d< broken, implement without conditionals
 - test MARKER, make it forget environment queries
 - signal handling, tos=code; fpc = XT_THROW;
