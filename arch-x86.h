@@ -1,5 +1,7 @@
 typedef int CELL;
 
+#define PRIMSATTR  
+
 CELL * rsp;
 register CELL * fpc asm("%esi");
 register CELL * dsp asm("%edi");
@@ -50,3 +52,4 @@ static inline void arch_xtstore(CELL xt, CELL pdict)
         ((CELL*)pdict)[0] = 0xe8909090;
         ((CELL*)pdict)[1] = xt - (pdict + 3 + 5);
 }
+

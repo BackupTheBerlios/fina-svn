@@ -1,5 +1,7 @@
 #define CELL int
 
+#define PRIMSATTR
+
 register CELL * rsp asm("%r18");
 register CELL * fpc asm("%r17");
 register CELL * dsp asm("%r16");
