@@ -225,7 +225,7 @@ variable leaves
 
 \g @see anscore
 : create ( "<spaces>name" --  R: -- a-addr  )
-   nesting?  head, xtof docreate xt, drop  0 , linklast ;
+   nesting?  head, xtof docreate xt, drop  ['] noop , linklast ;
 
 \g @see anscore
 : >body ( xt -- a-addr )
