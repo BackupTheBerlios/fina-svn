@@ -39,24 +39,34 @@ all:
 	ln -fs bootstrapdict.s.$(ARCH) bootstrapdict.s
 	ln -fs tconfig-$(ARCH).fs tconfig.fs
 	ln -fs arch-$(ARCH).h arch.h
+	echo -n "gcc" > compiler
 	touch bootstrapdict.s
 	$(MAKE) fina
 	$(MAKE) doc
 
+genbootstrap: clean
+	$(MAKE) $(SYSTEM)-gcc
+	echo -n "gforth-0.5.0" > hostforth
+	$(MAKE) fina
+
 # Systems
 
 Darwin-powerpc: anew posix fast
-	echo -n "gcc2" > compiler
-	echo -n "gforth-0.5.0" > hostforth
 	echo -n " -no-cpp-precomp " >> flags
 
+Darwin-powerpc-gcc:
+	echo -n "gcc2" > compiler
+
 Linux-powerpc: anew posix fast
+
+Linux-powerpc-gcc:
 	echo -n "/usr/powerpc-unknown-linux-gnu/gcc-bin/2.95/powerpc-unknown-linux-gnu-gcc" > compiler
-	echo -n "gforth-0.5.0" > hostforth
 
 NetBSD-i386: anew posix fast
+
+NetBSD-i386-gcc:
 	echo "/usr/pkg/gcc-2.95.3/bin/gcc" > compiler
-	echo -n "gforth-0.5.0" > hostforth
+
 
 # Compiler
 
