@@ -194,6 +194,10 @@ variable underscore  underscore off
 
 : prim
    >t ?stack ['] prim>t to type>t create ;
+:' fprim
+   >t ?stack has-files if ['] prim>t else ['] noop then to type>t create ;
+:' mprim
+   >t ?stack has-allocate if ['] prim>t else ['] noop then to type>t create ;
 :' bcreate
    >t ?stack ['] bytevar>t to type>t create ;
 :' create     
@@ -209,9 +213,7 @@ variable underscore  underscore off
 :' :
    >t ?stack ['] col>t to type>t :' ;
 :' p: 
-   >t ?stack fast if ['] prim>t else ['] col>t then to type>t :' ;
-:' f:
-   >t ?stack files if ['] prim>t else ['] col>t then to type>t :' ;
+   >t ?stack more-prims if ['] prim>t else ['] col>t then to type>t :' ;
 
 :' to postpone doto ; immediate compile-only
 

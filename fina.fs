@@ -347,57 +347,57 @@ compile-only
 
 \ Memory allocation
 \g @see ansmemory
-prim allocate ( u -- a-addr throw )
+mprim allocate ( u -- a-addr throw )
 
 \g @see ansmemory
-prim free  ( a-addr -- )
+mprim free  ( a-addr -- )
 
 \g @see ansmemory
-prim resize  ( a-addr1 u -- a-addr2 )
+mprim resize  ( a-addr1 u -- a-addr2 )
 
 \ Files
 
 \g Open file
-prim openf  ( c-addr u1 u2 -- handle ior )
+fprim openf  ( c-addr u1 u2 -- handle ior )
 
 \g Close file
-prim closef  ( handle -- ior ) 
+fprim closef  ( handle -- ior ) 
 
 \g Read from file
-prim readf  ( c-addr u1 handle -- u2 ior )
+fprim readf  ( c-addr u1 handle -- u2 ior )
 
 \g Write to file
-prim writef  ( c-addr u1 handle -- u2 ior )
+fprim writef  ( c-addr u1 handle -- u2 ior )
 
 \g Map file in memory
-prim mmapf  ( handle -- a-addr ) 
+fprim mmapf  ( handle -- a-addr ) 
 
 \g Size of file
-prim sizef  ( handle -- ud ) 
+fprim sizef  ( handle -- ud ) 
 
 \g Seek to file position
-prim seekf  ( ud handle -- ior )
+fprim seekf  ( ud handle -- ior )
 
 \g Tell file position
-prim tellf  ( handle -- ud ior ) 
+fprim tellf  ( handle -- ud ior ) 
 
 \g Read line from file
-prim linef  ( c-addr u1 handle -- u2 u3 ior ) 
+fprim linef  ( c-addr u1 handle -- u2 u3 ior ) 
 
 \g Delete file
-prim deletef ( c-addr u -- ior )
+fprim deletef ( c-addr u -- ior )
 
 \g File status
-prim statf ( c-addr u -- x ior )
+fprim statf ( c-addr u -- x ior )
 
 \g Rename file
-prim renf  ( c-addr1 u1 c-addr2 u2 -- ior )
+fprim renf  ( c-addr1 u1 c-addr2 u2 -- ior )
 
 \g Resize file
-prim truncf  ( ud fileid -- ior )
+fprim truncf  ( ud fileid -- ior )
 
 \g Flush file
-prim flushf  ( fileid -- ior )
+fprim flushf  ( fileid -- ior )
 
 
 \g Number of arguments in command line

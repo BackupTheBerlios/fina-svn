@@ -131,19 +131,20 @@ x86:
 
 posix:
 	ln -fs sysposix.c sys.c
+	$(MAKE) files allocate
 
 fast:
-	echo "-1 constant fast" >> opt.fs
-	echo -n " -DFASTFORTH " >> flags
+	echo "-1 constant more-prims" >> opt.fs
+	echo -n " -DMORE_PRIMS " >> flags
 
 slow:
-	echo "0 constant fast" >> opt.fs
-	echo -n " -UFASTFORTH " >> flags
+	echo "0 constant more-prims" >> opt.fs
+	echo -n " -UMORE_PRIMS " >> flags
 
 files:
-	echo -n " -DHASFILES " >> flags
-	echo "-1 constant files" >> opt.fs
+	echo -n " -DHAS_FILES " >> flags
+	echo "-1 constant has-files" >> opt.fs
 
-alloc:
-	echo -n " -DHASALLOCATE " >> flags
-	echo "-1 constant alloc" >> opt.fs
+allocate:
+	echo -n " -DHAS_ALLOCATE " >> flags
+	echo "-1 constant has-allocate" >> opt.fs

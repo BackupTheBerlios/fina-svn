@@ -80,7 +80,7 @@ static inline CELL * searchWordlist(CELL wordList, CELL uiLen, CELL pAddr)
         return ret;
 }
 
-#if defined(HASFILES)
+#if defined(HAS_FILES)
 static char * zstr(const char * str, unsigned len)
 {
         static char res[512];
@@ -98,7 +98,7 @@ static char * zstr2(const char * str, unsigned len)
         res[len] = 0;
         return res;
 }
-#endif
+#endif  // HAS_FILES
 
 static unsigned strLen(const char * str)
 {
@@ -196,12 +196,12 @@ static int prims()
 {
         extern CELL Forth_Here;
         register CELL t0;
-#if defined(FASTFORTH)
+#if defined(MORE_PRIMS)
         long long ll, ll2;
 #endif
-#if defined(FASTFORTH) || defined(HASFILES)
+#if defined(MORE_PRIMS) || defined(HAS_FILES)
         unsigned long long ull;
-#endif
+#endif 
         LNKREG;
         foo = -1;
         while (1) { switch (foo) {
@@ -518,7 +518,7 @@ static int prims()
                 tos = *rsp;
                 NEXT;
 
-#if defined(FASTFORTH)
+#if defined(MORE_PRIMS)
                 PRIM(DOTO,5);
                 ((CELL*)*fpc++)[arch_callsize() / sizeof(CELL)] = tos;
                 POP;
@@ -798,9 +798,9 @@ static int prims()
 //                PRIM(SLASH, 123);
 //                tos = *dsp++ / tos;
 //                NEXT;
-#endif
+#endif  // MORE_PRIMS
                 
-#if defined(HASFILES)
+#if defined(HAS_FILES)
                 PRIM(OPENF, 200);
                 dsp[1] = (CELL)Sys_FileOpen(zstr((char*)dsp[1], dsp[0]), tos);
                 dsp++;
@@ -896,7 +896,7 @@ static int prims()
                 
 #endif  // HASFILES
 
-#if defined(HASALLOCATE)
+#if defined(HAS_ALLOCATE)
                 PRIM(ALLOCATE, 250);
                 tos = (CELL)Sys_MemAllocate(tos);
                 PUSH;
@@ -912,7 +912,7 @@ static int prims()
                 dsp[0] = (CELL)Sys_MemResize((void*)dsp[0], tos);
                 tos = Sys_Throw();
                 NEXT;
-#endif  // HASALLOCATE
+#endif  // HAS_ALLOCATE
 
                 PRIM(MS, 298);
                 Sys_Sleep(tos);
