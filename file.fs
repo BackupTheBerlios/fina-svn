@@ -1,49 +1,75 @@
-0 constant r/o
-2 constant r/w
-4 constant w/o
+0 
+constant r/o ( -- fam )
+\g @see ansfile
 
-: bin ( u1 -- u2 )
+2 
+constant r/w ( -- fam )
+\g @see ansfile
+
+4 
+constant w/o ( -- fam )
+\g @see ansfile
+
+\g @see ansfile
+: bin ( fam1 -- fam2 )
    1 or ;
 
-: open-file ( a u1 u2 -- a ior )
-   >r 2dup parsed 2! r>
+\g @see ansfile
+: open-file ( c-addr u fam -- fileid ior )
+\   >r 2dup parsed 2! r>
    openf ;
 
-: read-file ( a1 u1 a2 -- u2 ior )
+\g @see ansfile
+: read-file ( c-addr u1 fileid -- u2 ior )
    readf ;
 
-: write-file ( a1 u a2 -- ior )
+\g @see ansfile
+: write-file ( c-addr u fileid -- ior )
    writef ;
 
-: close-file ( a -- ior )
+\g @see ansfile
+: close-file ( fileid -- ior )
    closef ;
 
+\g Map file in memory
 : mmap-file ( a1 -- a2 ior )
    mmapf ;
 
-: file-size ( a -- ud ior )
+\g @see ansfile
+: file-size ( fileid -- ud ior )
    sizef ;
 
-: file-position ( a -- ud ior )
+\g @see ansfile
+: file-position ( fileid -- ud ior )
    tellf ;
 
-: reposition-file ( ud a -- ior )
+\g @see ansfile
+: reposition-file ( ud fileid -- ior )
    seekf ;
 
-: read-line ( a1 u1 a2 -- u2 ior )
+\g @see ansfile
+: read-line ( c-addr u1 fileid -- u2 flag ior )
    linef ;
 
 here 1 c, 10 c, pad !
 : newline [ pad @ ] literal count ;
 
-: write-line ( a1 u a2 -- ior )
+\g @see ansfile
+: write-line ( c-addr u fileid -- ior )
    >r r@ write-file ?dup 0= if newline r@ write-file then rdrop ;
 
-: create-file ( a1 u1 u2 -- a2 ior )
+\g @see ansfile
+: create-file ( c-addr u fam -- fileid ior )
    open-file ;
 
-\ variable #line  -1 #line !
-\ variable #lines 0 #lines !
+\g @see ansfile
+: delete-file ( c-addr u -- ior )
+   deletef ;
+
+\g @see ansfile
+: resize-file ( ud fileid -- ior )
+   truncf ;
+
 variable (fname) 0 ,
 
 -1 value sourceline#
@@ -52,16 +78,16 @@ here ," the terminal" count (fname) 2!
 : sourcefilename 
    (fname) 2@ ;
 
-: save-input
-   sourcefilename  sourceline#  
-   source  >in @  source-id 7 ;
+\ Extend save-input and restore-input to save file name and line number
+:noname  ( -- xn ... x1 n )
+   sourcefilename  sourceline# defered save-input 3 + ; is save-input
 
-: restore-input
-   dup 7 = if
-      drop to source-id >in ! sourceVar 2!  
-      to sourceline#   (fname) 2! 
-      0 exit
-   then 0 ?do drop loop -1 ;
+:noname  ( xn ... x1 n -- flag )
+   3 - defered restore-input if 
+      2drop drop -1 
+   else 
+      to sourceline# (fname) 2! 0 
+   then ; is restore-input
 
 create nrbuf 2 cells allot
 : n>r ( n1 .. nn n -- )
@@ -107,6 +133,7 @@ variable inchook1  ' drop inchook1 !
 
 \g @see ansfile
 : included  ( i*x c-addr u -- j*x )
+   2dup parsed 2!
    inchook0 @execute 
    save-input n>r  here >r
    2dup r/o open-file throw >r 
@@ -122,3 +149,4 @@ variable inchook1  ' drop inchook1 !
    here parse-word s, count included ;
 
 
+env: file true ;env

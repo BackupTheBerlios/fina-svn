@@ -3,6 +3,9 @@ value dict0 ( -- a-addr )
 \g Start of dictionary space
 
 \ USER VARIABLES
+\g User variable holding the signal handler for each task
+user sighandler  ( -- a-addr )
+
 \g User variable holding the throw frame pointer for each task
 user throwframe  ( -- a-addr ) 
 
@@ -259,6 +262,12 @@ prim ?dodefine ( xt1 -- xt1 0 | a xt2)
 \g Compile call to xt1 and return xt of current word
 prim xt, ( xt1 -- xt2 )
 
+\g @see ansfacility
+prim ms  ( u -- )
+
+\g @see ansfacility
+prim time&date ( -- +n1 +n2 +n3 +n4 +n5 +n6 )
+
 
 \ compile-only primitives
 
@@ -364,11 +373,26 @@ prim tellf  ( handle -- ud ior )
 \g Read line from file
 prim linef  ( c-addr u1 handle -- u2 u3 ior ) 
 
+\g Delete file
+prim deletef ( c-addr u -- ior )
+
+\g File status
+prim statf ( c-addr u -- x ior )
+
+\g Rename file
+prim renf  ( c-addr1 u1 c-addr2 u2 -- ior )
+
+\g Resize file
+prim truncf  ( ud fileid -- ior )
+
 \g Number of arguments in command line
 prim argc ( -- u )
 
 \g Get command line argument
 prim argv ( u1 -- c-addr u2 )
+
+\g Do nothing
+prim noop ( -- )
 
 
 \ COLON DEFINITIONS
@@ -428,9 +452,6 @@ bcreate okstr ," ok"
    xtof .ok  '.prompt ! 
    echo on ;  
 
-\g Do nothing
-p: noop  ( -- )
-   ;  
 
 \ Stack
 
@@ -742,9 +763,13 @@ p: aligned  ( addr -- a-addr )
 : align  ( -- )
    here aligned to here ?dict ;  
 
+\g Rotate backwards top three items 
+: -rot  ( x1 x2 x3 -- x3 x2 x1 )
+   rot rot ;
+
 \g @see anscore
 p: fill  ( c-addr u char -- )
-   rot rot 0 ?do 2dup c! char+ loop 2drop ;  
+   -rot 0 ?do 2dup c! char+ loop 2drop ;  
 
 \g @see anscore
 p: count  ( c-addr1 -- c-addr2 u )
@@ -827,7 +852,7 @@ create #order ( -- a-addr )
 
 \g Is address within dictionary space?
 : dict?  ( c-addr -- flag )
-   dict0 here within ;
+   dict0 memtop within ;
 
 \g  Go from name to execution token
 : name>xt  ( a-addr -- xt )
@@ -976,7 +1001,7 @@ bcreate redefstr ," redefined "
 
 \g @see anscore
 : accept ( c-addr +n1 -- +n2 )
-   0 rot rot bounds ?do  
+   0 -rot bounds ?do  
       ekey 255 and 
       dup 10 = if drop leave then
       i 'khan @execute 
@@ -1171,7 +1196,7 @@ p: doto  ( x -- )
    xtof dict0 xt>name [ 6 cells ] literal - xtof dict0 [ /tcall ] literal + !
    xtof dummy2 xt>name to here
    dict0
-   [ /tdict ] literal + dup to memtop
+   [ /tdict ] literal + dup to memtop  cell-
    dup userp ! [ /user ]  literal - \ must be initialized before rp0 and sp0
    dup rp0 !   [ /rs ]    literal - 
    dup sp0 !   [ /ds ]    literal - 

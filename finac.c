@@ -29,6 +29,16 @@ struct state {
 } _saved;
 struct state volatile * volatile saved = &_saved;
 
+#define BOOTSTRAP_STACK 16
+
+static CELL bootstrap_dsp[BOOTSTRAP_STACK];
+static CELL bootstrap_rsp[BOOTSTRAP_STACK];
+
+static inline CELL userP()
+{
+        extern CELL Forth_UserP;
+        return *(CELL*)(Forth_UserP + arch_callsize());
+}
 
 static inline unsigned upCase(unsigned uiVal)
 {
@@ -74,8 +84,16 @@ static inline CELL * searchWordlist(CELL wordList, CELL uiLen, CELL pAddr)
 static char * zstr(const char * str, unsigned len)
 {
         static char res[512];
-        if (len > 511)
-                len = 511;
+        len &= 511;
+        Sys_MemMove(res, str, len);
+        res[len] = 0;
+        return res;
+}
+
+static char * zstr2(const char * str, unsigned len)
+{
+        static char res[512];
+        len &= 511;
         Sys_MemMove(res, str, len);
         res[len] = 0;
         return res;
@@ -116,15 +134,12 @@ static inline unsigned UMSlashMod(unsigned long long u, unsigned v,
 
 int FINA_Init(int argc, char ** argv)
 {
-#define BOOTSTRAP_STACK 16
-        extern int Forth_Entry;
-        static CELL dsp[BOOTSTRAP_STACK];
-        static CELL rsp[BOOTSTRAP_STACK];
+        extern CELL Forth_Entry;
         Sys_Init(argc, argv);
         
         saved->fpc = (CELL*)(Forth_Entry + arch_callsize());
-        saved->dsp = dsp+BOOTSTRAP_STACK;
-        saved->rsp = rsp+BOOTSTRAP_STACK;
+        saved->dsp = bootstrap_dsp+BOOTSTRAP_STACK;
+        saved->rsp = bootstrap_rsp+BOOTSTRAP_STACK;
         saved->tos = 0;
         return 0;
 }
@@ -140,7 +155,7 @@ static int prims() PRIMSATTR;
 
 volatile CELL foo;
 
-int FINA_Tick()
+int FINA_InternalTick(int throw)
 {
         // This crap is a hack to force saving previous register 
         // values in the stack
@@ -149,10 +164,21 @@ int FINA_Tick()
         CELL * saveddsp = dsp;
         CELL   savedtos = tos;
         int ret;
-        fpc = saved->fpc;
-        rsp = saved->rsp;
-        dsp = saved->dsp;
-        tos = saved->tos;
+        
+        if (throw)
+        {
+                fpc = (CELL*)(arch_callsize() + *(CELL*)userP());
+                rsp = bootstrap_rsp + BOOTSTRAP_STACK;
+                dsp = bootstrap_dsp + BOOTSTRAP_STACK;
+                tos = throw;
+        }
+        else
+        {
+                fpc = saved->fpc;
+                rsp = saved->rsp;
+                dsp = saved->dsp;
+                tos = saved->tos;
+        }
         ret = prims();
         fpc = savedfpc;
         rsp = savedrsp;
@@ -161,9 +187,13 @@ int FINA_Tick()
         return ret;
 }
 
+int FINA_Tick()
+{
+        return Sys_Tick();
+}
+
 static int prims()
 {
-        extern CELL Forth_UserP;
         extern CELL Forth_Here;
         register CELL t0, t1;
 #if defined(FASTFORTH)
@@ -210,7 +240,7 @@ static int prims()
                 PRIM(DOUSER,6);
                 PUSH;
                 tos = *lnk;
-                tos += *(CELL*)Forth_UserP;
+                tos += userP();
                 NEXT;
                 
                 PRIM(DOLIST,7);
@@ -421,10 +451,10 @@ static int prims()
                 NEXT;
                 
                 PRIM(XTCOMMA,45);
-                t0 = *(CELL*)Forth_Here;
+                t0 = *(CELL*)(Forth_Here + arch_callsize());
                 t0 += sizeof(CELL)-1;
                 t0 &= -sizeof(CELL);
-                *(CELL*)Forth_Here = t0 + arch_callsize();
+                *(CELL*)(Forth_Here + arch_callsize()) = t0 + arch_callsize();
                 arch_xtstore(tos, t0);
                 tos = t0;
                 NEXT;
@@ -793,6 +823,10 @@ static int prims()
 		PRIM(LTGT, 122);
 		tos = FLAG(tos != *dsp++);
 		NEXT;
+                
+//                PRIM(SLASH, 123);
+//                tos = *dsp++ / tos;
+//                NEXT;
 #endif
                 
 #if defined(HASFILES)
@@ -859,7 +893,55 @@ static int prims()
                 tos = tos == -39? 0 : tos;
                 NEXT;
 
+                PRIM(DELETEF, 209);
+                Sys_FileDelete(zstr((char*)*dsp++, tos));
+                tos = Sys_FileThrow();
+                NEXT;
+
+                PRIM(STATF, 210);
+                dsp[0] = Sys_FileStat(zstr((char*)dsp[0], tos));
+                tos = Sys_FileThrow();
+                NEXT;
+
+                PRIM(RENF, 211);
+                t0 = (CELL)zstr2((char*)dsp[0], tos);
+                Sys_FileRen(zstr((char*)dsp[2], dsp[1]), (char*)t0);
+                tos = Sys_FileThrow();
+                dsp += 3;
+                NEXT;
+
+                PRIM(TRUNCF, 212);
+                t0 = tos;
+                POP;
+                POPULL;
+                PUSH;
+                Sys_FileTrunc((void*)t0, ull);
+                tos = Sys_FileThrow();
+                NEXT;
+
 #endif
+
+                PRIM(MS, 298);
+                Sys_Sleep(tos);
+                POP;
+                NEXT;
+                
+                PRIM(TIMEANDDATE, 299);
+                t0 = (CELL)Sys_Time();
+                PUSH;
+                tos = Sys_Second((void*)t0);
+                PUSH;
+                tos = Sys_Minute((void*)t0);
+                PUSH;
+                tos = Sys_Hour((void*)t0);
+                PUSH;
+                tos = Sys_Day((void*)t0);
+                PUSH;
+                tos = Sys_Month((void*)t0);
+                PUSH;
+                tos = Sys_Year((void*)t0);
+                NEXT;
+
                 PRIM(ARGC,300);
                 PUSH;
                 tos = Sys_Argc();
