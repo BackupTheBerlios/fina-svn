@@ -77,6 +77,8 @@ create parsed create nfa create nfain
 create 'khan
 create dummy2
 create bwmark create bwresolve create fwmark create fwresolve
+create .err
+create '.error
 
 : char+ postpone 1+ ; immediate compile-only
 : 1chars/ ; immediate
