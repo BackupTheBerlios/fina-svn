@@ -68,12 +68,15 @@ here pad !
    [ pad @ ] literal swap 58 + 
    for count + next count ;
 
+: errstr
+   parsed 2@ 256 u< swap dict? and if parsed 2@ else s" (wrong)" then ;
+
 :noname ( code -- )
    dup 1 -1 within if
       space
       dup -2 = if  abort"msg 2@ type then
       dup -2 <> if
-         parsed 2@ type space [char] ? emit space
+         errstr type space [char] ? emit space
          dup -1 -58 within if 
             exstr count type dup . 
          else 
