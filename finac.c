@@ -797,7 +797,7 @@ static int prims()
                 PRIM(WRITEF, 203);
                 t0 = *dsp++;
                 t1 = *dsp++;
-                Sys_FileWrite((void*)tos, t1, t0);
+                Sys_FileWrite((void*)tos, (char*)t1, t0);
                 tos = Sys_FileThrow();
                 NEXT;
 
