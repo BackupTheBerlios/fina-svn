@@ -23,7 +23,7 @@ RUN_FINA = \
    optional.fs string.fs require.fs \
    tools.fs toolsext.fs \
    facility.fs facilityext.fs \
-   lineedit.fs help.fs multi.fs
+   lineedit.fs help.fs multi.fs osnice.fs
 
 SAVE_FINA = ${RUN_FINA} savefina.fs bye.fs
 
