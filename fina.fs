@@ -109,7 +109,7 @@ ivariable hasname?  ( -- a-addr )
 \ SYSTEM VALUES
 0 
 value get-current  ( -- wid )
-\g @see anscore
+\g @see anssearch
 
 h# abadcafe 
 value memtop  ( -- a-addr )
@@ -822,7 +822,8 @@ p: +!  ( x a-addr -- )
 
 \g Buffer holding the search order stack, first cell holds the depth
 create #order ( -- a-addr )
-0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,  
+0 , 
+0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,  
 
 \g Is address within dictionary space?
 : dict?  ( c-addr -- flag )
@@ -835,7 +836,8 @@ create #order ( -- a-addr )
 
 \g Is xt a primitive xt?
 : primxt? ( xt -- flag )
-   dict? 0= ;  
+   xtof noop xtof argv cell+ within ;
+\ dict? 0= ;  
 
 \g Go from execution token to name
 : xt>name ( xt -- c-addr )
@@ -1062,7 +1064,6 @@ bcreate redefstr ," redefined "
 \g @see ansdouble
 : 2literal ( ct: xd --  rt: -- xd )
    postpone do2lit swap , , ; immediate compile-only
-   \ swap postpone literal postpone literal ;  immediate compile-only 
 
 \g Interpret input string
 : interpret ( i*x -- j*x )
