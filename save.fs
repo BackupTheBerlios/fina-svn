@@ -8,8 +8,8 @@
 : mark ( a1 -- a2 )
    begin cell+ dup 2@ h# feedbabe.deadbeef d= until ;
 
-: cold!
-   dict0 cell+ cell+ ! ;
+: 'cold
+   dict0 cell+ cell+ ;
 
 : save ( a u -- )
    w/o open-file throw >r   0 argv r/o open-file throw
