@@ -42,14 +42,14 @@ file warnings off
 \ Misc
 
 \g Make last definition a compile-only word
-\ compile-only ( -- ) \ internal
+\ compile-only ( -- )
 
 \g @see anscore
 : chars  ( n1 -- n2 )
    ; immediate
 
 \g Convert address units to chars
-: 1chars/  ( n1 -- n2 ) \ internal
+: 1chars/  ( n1 -- n2 )
    ; immediate
 
 \g @see anscore
@@ -57,7 +57,7 @@ file warnings off
    ' postpone literal ; immediate compile-only
 
 \g Runtime for s" 
-: dos"  ( -- c-addr u ) \ internal
+: dos"  ( -- c-addr u )
    r> count 2dup + aligned >r ; compile-only
 
 \g @see ansstring
@@ -78,50 +78,53 @@ file warnings off
 \ Flow control
 
 \g @see anscore
-: ahead  ( -- orig 1 )
+: ahead  ( -- a-addr 1 )
    postpone branch   fwmark ;  immediate compile-only
 
 \g @see anscore
-: if  ( -- orig 1 )
+: if  ( -- a-addr 1 )
    postpone 0branch   fwmark ; immediate compile-only
 
 \g @see anscore
-: then ( orig 1 -- )
+: then ( a-addr 1 -- )
    fwresolve ; immediate compile-only
 
 \g @see anscore
-: else ( orig1 1 -- orig2 1 )
+: else ( a-addr1 1 -- a-addr2 1 )
    postpone ahead  2swap  postpone then ; immediate compile-only
 
 \g @see anscore
-: begin  ( -- dest -1 )
+: begin  ( -- a-addr -1 )
    bwmark ; immediate compile-only
 
 \g @see anscore
-: while ( dest -1 -- orig 1 dest -1 )
+: while ( a-addr1 -1 -- a-addr2 1 a-addr1 -1 )
    postpone if   2swap ; immediate compile-only 
 
 \g @see anscore
-: again ( dest -1 -- )
+: again ( a-addr -1 -- )
    postpone branch  bwresolve ; immediate compile-only
 
 \g @see anscore
-: repeat ( orig 1 dest -1 -- )
+: repeat ( a-addr1 1 a-addr2 -1 -- )
    postpone again  postpone then ; immediate compile-only
 
 \g @see anscore
-: until ( dest -1 -- )
+: until ( a-addr -1 -- )
    postpone 0branch  bwresolve ; immediate compile-only
 
 \ Exceptions
-\g Throw code if flag is true
-: ?throw ( compilation: --  rt: flag code -- ) \ internal
+
+\g Throw code if flag is true. Changes the runtime of the previous
+\g literal to DO?THROW. 
+\g Sample usage: "dup something <> -32 ?throw"
+: ?throw ( -- )
    ['] do?throw here 2 cells - ! ; immediate compile-only
 
 \ Definers
 
 \g Check for compiler nesting
-: nesting? ( -- ) \ internal
+: nesting? ( -- )
    bal @ -29 ?throw ;
 
 \g @see anscore
@@ -140,7 +143,7 @@ file warnings off
 variable leaves
 
 \g Link item to list
-: link ( item list -- ) \ internal
+: link ( item list -- )
     2dup @ swap ! ! ;
 
 \g Allocate space for a link field and link it to list
