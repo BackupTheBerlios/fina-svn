@@ -65,14 +65,22 @@ create nrbuf 2 cells allot
     r> r> r> r>   r> r> r> r>   r> 
     nrbuf 2@ >r ; compile-only
 
-create ibuf 102 allot
+create line 102 allot
+
+: foreachline ( file xt -- )
+   2>r begin
+      line 100 2r> over swap 2>r read-line throw
+   while ( u )
+      line swap r@ execute
+   repeat drop rdrop rdrop ;
+
+: intline
+   sourcevar 2! >in off interpret ;
 
 : include-file
-   save-input n>r  to source-id  #line off  begin 
-      ibuf 100 source-id read-line throw
-   while 
-      ibuf swap sourceVar 2! >in off  interpret
-   repeat  drop  nr> restore-input -37 and throw ;
+   save-input n>r  to source-id  #line off  
+   source-id ['] intline foreachline
+   nr> restore-input -37 and throw ;
 
 variable verbose verbose on
 
@@ -87,3 +95,6 @@ variable verbose verbose on
 
 : include 
    parse-word included ;
+
+: require
+   ." XXX require not implemented" cr include ;
