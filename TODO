@@ -1,5 +1,5 @@
 - Make it possible to compile without bootstrap compiler (keep .s files for
-  the supported architectures).
+  the supported architectures). Should also drop the gcc2 build-depend.
 - isolate compiler constants (/dict et al) from arch-specific code
 - line editor
 - negative strings?
