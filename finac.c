@@ -231,8 +231,9 @@ static int prims()
                 
                 PRIM(DOCREATE,4);
                 PUSH;
-                tos = sizeof(CELL) + (CELL)lnk;
-                goto **(CELL**)lnk;
+		t0 = (CELL)lnk;
+                tos = sizeof(CELL) + t0;
+                goto **(CELL**)t0;
                 NEXT;
                 
                 PRIM(DOUSER,6);
