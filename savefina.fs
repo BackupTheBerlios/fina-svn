@@ -9,7 +9,7 @@ include save.fs
 defer banner
 
 :noname
-   ." FINA v0.1. Copyright (c) 2004, Jorge Acereda Macia." cr
+   ." FINA v0.1. Copyright (c) 2004-2005, Jorge Acereda Macia." cr
    ." FINA comes with EVEN LESS WARRANTY; for details type 'license'." cr
    ." Type 'bye' to exit." cr
 ; is banner
