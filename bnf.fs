@@ -1,16 +1,17 @@
 \ BNF Parser                                (c) 1988 B. J. Rodriguez
 \ Adapted to FINA by Jorge Acereda
 
+: dp! to here ;
 0 value success
 : <bnf ( enter rule )
-   r> success if  >in @ dp @ 2>r  >r  else  drop  then ;
+   r> success if  >in @ here 2>r  >r  else  drop  then ;
 : bnf> ( leave rule )
-   r> 2r> success if  2drop  else  dp ! >in !  then >r ;
+   r> 2r> success if  2drop  else  dp! >in !  then >r ;
 : | ( prepare to evaluate alternate rule )
-   r> 2r> success if  2drop drop  else  2dup dp ! >in ! 2>r >r then 
+   r> 2r> success if  2drop drop  else  2dup dp! >in ! 2>r >r then 
    true to success ;
 : bnf: ( start rule definition)
-   : postpone recursive postpone <bnf ;
+   : reveal postpone <bnf ;
 : ;bnf ( end rule definition)
    postpone bnf> postpone ; ; immediate
 : @token ( - n , get current token)  
