@@ -4,6 +4,10 @@ CFLAGS = -g -O2 -Wall -fno-leading-underscore
 
 COMMON_OBJECTS = main.o finac.o sys.o
 
+ALL_FORTH = core.fs glosgen.fs
+ALL_HELP = ${ALL_FORTH:%.fs=help/%.help}
+
+
 FINA_SRC0 = opt.fs tconfig.fs
 FINA_SRC1 = meta.fs fina.fs
 HOST_FINA0 = core.fs throwmsg.fs
@@ -45,15 +49,17 @@ fina0.s: ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1}
 	gforth-0.5.0 ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1} > $@
 
 # Glossaries
-glos: core.glo glosgen.glo
 
-core.glo: core.fs
+
+doc: help/toc.help
+
+help/toc.help: ${ALL_HELP}
+	./fina maketoc.fs -e "toc{ ${ALL_HELP} }toc bye" > $@
+
+${ALL_HELP}: ${ALL_SOURCES} 
+
+help/%.help: %.fs
 	./fina glosgen.fs -e "newglos makeglos $< writeglos $@ bye"
-	cp core.glo help/toc.help
-
-glosgen.glo: glosgen.fs
-	./fina glosgen.fs -e "newglos makeglos $< writeglos $@ bye"
-
 
 main.o : main.c
 
