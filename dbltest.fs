@@ -84,11 +84,11 @@ require coretest.fs
 \ { 0 1 1 0 d> -> true }
 \ { -1. 0. d> -> false }
 
-{ 1. 1. d>= -> true }
-{ 0. 1. d>= -> false }
-{ 1 0 0 1 d>= -> false }
-{ 0 1 1 0 d>= -> true }
-{ -1. 0. d>= -> false }
+\ { 1. 1. d>= -> true }
+\ { 0. 1. d>= -> false }
+\ { 1 0 0 1 d>= -> false }
+\ { 0 1 1 0 d>= -> true }
+\ { -1. 0. d>= -> false }
 
 \ { 1. 1. d<= -> true }
 \ { 0. 1. d<= -> true }
