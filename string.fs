@@ -2,7 +2,7 @@
 \g @see ansstring
 : compare  ( c-addr1 u1 c-addr2 u2 -- n )
     rot 2dup swap - >r
-    min same? ?dup if rdrop exit then
+    umin same? ?dup if rdrop exit then
     r> dup if 0< 2* 1+ then ;
 
 \g @see ansstring
