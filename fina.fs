@@ -2,6 +2,24 @@
 value dict0 ( -- a-addr )
 \g Start of dictionary space
 
+\ USER VARIABLES
+\g User variable holding the throw frame pointer for each task
+user throwframe  ( -- a-addr ) 
+
+\ XXX could this be a normal var? 
+\ probably, under the restriction that no task will check it between PAUSEs
+\g User variable holding decimal point location
+user dpl  ( -- a-addr ) 
+
+\g User variable holding a pointer to the stack origin
+user sp0  ( -- a-addr )
+
+\g User variable holding a pointer to the return stack origin
+user rp0  ( -- a-addr )
+
+\g User variable holding a pointer to the task name
+user taskname ( -- a-addr )
+
 \ SYSTEM VARIABLES
 0 
 ivariable echo ( -- a-addr )
@@ -122,38 +140,15 @@ value found  ( -- a-addr )
 \g Result of lastest NFA search
 \g @also nfa
 
+useroffset
+value lastuser ( -- n )
+\g Offset of last user variable
+
 \ SYSTEM CONSTANTS
 32 
 constant bl  ( -- char )
 \g @see anscore
 
-\ USER VARIABLES
-\g User variable holding a pointer to the next task
-user follower  ( -- a-addr )
-
-\g User variable holding a pointer to current task status routine
-user status ( -- a-addr )
-
-\g User variable holding the throw frame pointer for each task
-user throwframe  ( -- a-addr ) 
-
-\ XXX could this be a normal var? 
-\ probably, under the restriction that no task will check it between PAUSEs
-\g User variable holding decimal point location
-user dpl  ( -- a-addr ) 
-
-\g User variable holding a pointer to the stack origin
-user sp0  ( -- a-addr )
-
-\g User variable holding a pointer to the return stack origin
-user rp0  ( -- a-addr )
-
-\g User variable holding a pointer to the task name
-user taskname ( -- a-addr )
-
-useroffset
-value lastuser ( -- n )
-\g Offset of last user variable
 
 \ PRIMITIVES
 
@@ -904,7 +899,7 @@ bcreate exstr ,"  exception # "
 : quit
    begin
       rp0 @ rp!  0 to source-id  bal off  postpone [  begin
-         refill drop space
+         refill drop space \ XXX
          'interpret @ catch ?dup 0=
       while
          state @ 0= if .prompt cr then
