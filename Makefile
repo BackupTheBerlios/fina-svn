@@ -9,8 +9,10 @@ FINA_SRC1 = meta.fs fina.fs
 HOST_FINA0 = core.fs throwmsg.fs
 HOST_FINA1 = host-fina.fs
 HOST_GFORTH = host-gforth.fs
-FINA_TEST = core.fs throwmsg.fs tester.fs coretest.fs postponetest.fs bye.fs
-RUN_FINA = core.fs coreext.fs throwmsg.fs lineedit.fs file.fs
+FINA_TEST = core.fs throwmsg.fs tester.fs \
+   coretest.fs postponetest.fs filetest bye.fs
+RUN_FINA = core.fs coreext.fs throwmsg.fs lineedit.fs file.fs \
+   double.fs save.fs optional.fs string.fs glosgen.fs
 
 fina: ${COMMON_OBJECTS} fina.o
 
