@@ -144,9 +144,7 @@ lastname taskname !
    ekey? 0= if begin pause ekey? until then [ 'ekey @ compile, ] ;  'ekey !
 
 
-
-
-88 88 88 hat mierda  mierda build
-: test mierda activate 0 begin 1+ dup . pause again ;
-test
-:noname 10 0 do pause loop cr ; execute
+\ 88 88 88 hat mierda  mierda build
+\ : test mierda activate 0 begin 1+ dup . pause again ;
+\ test
+\ :noname 10 0 do pause loop cr ; execute
