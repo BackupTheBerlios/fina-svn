@@ -18,7 +18,7 @@
    closef ;
 
 : mmap-file ( a1 -- a2 ior )
-   mmapf 0 ;
+   mmapf ;
 
 : file-size ( a -- ud ior )
    sizef ;
