@@ -1,14 +1,22 @@
 Yes, this README sucks, but you know, it is still unreleased.
 
-You will need gcc2 to build FINA.
+You will need gcc2 to build FINA. You will also need gforth-0.5.0 if
+you want to add support for another architecture.
 
-To build:
+To build just run:
 
-gmake fast/slow x86/powerpc/mips posix
-gmake
+$ gmake
 
 gmake is GNU make. Common names for it are also "gnumake" and "make".
 
+It might happen that your system isn't supported. In that case you'll
+get an error like:
+
+gmake[1]: *** No rule to make target `NetBSD-i386'.  Stop.
+
+In that case, take a look at the Makefile and add a rule for your
+system. If the architecture is supported and you're running a posix
+system, it should be easy to get it working.
 
 When building, the following targets will be built:
 
