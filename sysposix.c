@@ -27,6 +27,16 @@ static char ** argv;
 static int throw;
 static jmp_buf jmpbuf;
 
+
+void mysignal(int signo, void * handler)
+{
+	struct sigaction action;
+	action.sa_handler = handler;
+	sigemptyset(&action.sa_mask);
+	action.sa_flags=SA_NODEFER;
+	sigaction(signo, &action, 0);
+}
+
 static void errnoThrow(int error)
 {
         if (error) switch (errno)
@@ -77,8 +87,8 @@ static void sighandler(int sig)
         default:
                 throw = -59;
         }
-        signal(sig, sighandler);
-//        printf("Got signal %d, throw %d\n", sig, throw);
+	mysignal(sig, sighandler);
+	// printf("Got signal %d, throw %d\n", sig, throw);
         longjmp(jmpbuf, throw);
 }
 
@@ -94,9 +104,9 @@ int Sys_Tick()
 
 static void initSignals()
 {
-        signal(SIGBUS, sighandler);
-        signal(SIGSEGV, sighandler);
-        signal(SIGILL, sighandler);
+        mysignal(SIGBUS, sighandler);
+        mysignal(SIGSEGV, sighandler);
+        mysignal(SIGILL, sighandler);
 }
 
 static void initTerm()
