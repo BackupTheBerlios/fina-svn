@@ -1,19 +1,30 @@
 
-: unused pad here - ;
+\g @see anscore
+: hex ( -- )
+   16 base ! ;
 
-: 2>r
+\g @see anscore 
+: unused ( -- u )
+   pad here - ;
+
+\g @see anscore
+: 2>r  ( d --  r: -- d )
    swap r> swap >r swap >r >r ;
 
-: 2r>   
+\g @see anscore
+: 2r>  ( -- d  r: d -- )
    r> r> swap r> swap >r swap ;
 
-: doc"
+\g Runtime for C"
+: doc" ( -- c-addr )
    r> count over + aligned >r [ -1 chars ] literal + ; compile-only
 
-: csliteral
+\g Compile a counted string literal
+: csliteral ( c-addr u -- )
    postpone doc" s, align ; immediate compile-only 
-   
-: c"
+
+\g #see anscore    
+: c"  ( <string>" --  rt: -- c-addr )
    [char] " parse   postpone csliteral ; immediate compile-only
 
 \g @see anscore
