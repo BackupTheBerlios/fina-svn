@@ -1,3 +1,4 @@
+- factorize INTERPRET with something like FOREACHPARSED
 - implement defer..is and remove @execute
 - EVALUATE should use SAVE-INPUT
 - document
