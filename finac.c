@@ -398,12 +398,11 @@ static int prims()
                 NEXT;
                 
                 PRIM(QDODEFINE,44);
-                t0 = tos;
-                if (arch_iscall(t0))
+                PUSH;
+                if (arch_iscall(tos))
                 {
-                        tos += arch_callsize();
-                        PUSH;
-                        tos = arch_calledby(t0);
+                        *dsp += arch_callsize();
+                        tos = arch_calledby(tos);
                 }
                 else
                         tos = 0;
