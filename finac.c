@@ -13,8 +13,8 @@
 #define PUSHLL *--dsp = tos; *--dsp = ll; tos = ll>>32
 #define PUSHULL *--dsp = tos; *--dsp = ull; tos = ull>>32
 
-#define PRIM(x, n)  case n: asm(" .globl XT_" #x "\nXT_" #x ":");
-#define NEXTT goto **fpc++;
+#define PRIM(x, n)  case n: asm(" .globl XT_" #x "\nXT_" #x ":")
+#define NEXTT goto **fpc++
 #define NEXT NEXTT; break
 #define PUSH *--dsp = tos
 #define RPUSH(reg) *--rsp = (CELL)(reg)
@@ -70,6 +70,7 @@ static inline CELL * searchWordlist(CELL wordList, CELL uiLen, CELL pAddr)
         return ret;
 }
 
+#if defined(HASFILES)
 static char * zstr(const char * str, unsigned len)
 {
         static char res[512];
@@ -79,6 +80,7 @@ static char * zstr(const char * str, unsigned len)
         res[len] = 0;
         return res;
 }
+#endif
 
 static unsigned strLen(const char * str)
 {
@@ -132,7 +134,9 @@ void FINA_End()
         Sys_End();
 }
 
-static int prims(); 
+
+static int prims() PRIMSATTR;
+
 
 volatile CELL foo;
 
@@ -170,9 +174,11 @@ static int prims()
         unsigned long long ull;
 #endif
         LNKREG;
-        
-        foo = -100;
+        foo = -1;
         while (1) { switch (foo) {
+		PRIM(NOOP,-1);
+		NEXT;
+
                 PRIM(DOLIT,0);
                 PUSH;
                 tos = *fpc++;
@@ -198,12 +204,6 @@ static int prims()
                 t0 = (CELL)lnk;
                 tos = t0 + sizeof(CELL);
                 if (*(CELL**)t0) goto **(CELL**)t0;
-                NEXT;
-                
-                PRIM(DOTO,5);
-                t0 = *fpc++;
-                ((CELL*)t0)[arch_callsize() / sizeof(CELL)] = tos;
-                POP;
                 NEXT;
                 
                 PRIM(DOUSER,6);
@@ -515,6 +515,12 @@ static int prims()
                 NEXT;
 
 #if defined(FASTFORTH)
+                PRIM(DOTO,5);
+                t0 = *fpc++;
+                ((CELL*)t0)[arch_callsize() / sizeof(CELL)] = tos;
+                POP;
+                NEXT;
+                
                 
                 PRIM(PARENSEARCH_WORDLIST,65);
                 {
@@ -790,6 +796,13 @@ static int prims()
                 rsp++;
                 NEXT;
                 
+		PRIM(ZEROLTGT, 121);
+		tos = FLAG(tos);
+		NEXT;
+
+		PRIM(LTGT, 122);
+		tos = FLAG(tos != *dsp++);
+		NEXT;
 #endif
                 
 #if defined(HASFILES)
