@@ -88,10 +88,6 @@ ivariable '.error  ( -- a-addr )
 ivariable 'interpret  ( -- a-addr )
 \g Execution vector for interpreter
 
-0 
-ivariable forth-wordlist  ( -- a-addr ) 
-\g @see anssearch
-0 ,
 
 10 
 ivariable base  ( -- a-addr )
@@ -146,6 +142,13 @@ value found  ( -- a-addr )
 useroffset
 value lastuser ( -- n )
 \g Offset of last user variable
+
+0 , 0 ,
+0 
+value forth-wordlist  ( -- a-addr )
+\g @see anssearch
+
+
 
 \ SYSTEM CONSTANTS
 32 
@@ -342,6 +345,15 @@ compile-only
 prim r@  ( -- x  r: x -- x ) 
 compile-only
 
+\ Memory allocation
+\g @see ansmemory
+prim allocate ( u -- a-addr throw )
+
+\g @see ansmemory
+prim free  ( a-addr -- )
+
+\g @see ansmemory
+prim resize  ( a-addr1 u -- a-addr2 )
 
 \ Files
 
@@ -384,6 +396,10 @@ prim renf  ( c-addr1 u1 c-addr2 u2 -- ior )
 
 \g Resize file
 prim truncf  ( ud fileid -- ior )
+
+\g Flush file
+prim flushf  ( fileid -- ior )
+
 
 \g Number of arguments in command line
 prim argc ( -- u )
@@ -1209,6 +1225,7 @@ p: doto  ( x -- )
    xtof drop 'khan !
    xtof interpret 'interpret !
    xtof .err '.error !
+   xtof forth-wordlist xt>name 3 cells - to forth-wordlist 
    xtof cold xt>name forth-wordlist !
    forth-wordlist to get-current
    get-current 1 #order 2!
