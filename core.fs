@@ -236,6 +236,10 @@ variable leaves
 : pipe ( --  R: xt -- )
    lastname name>xt >body cell- r> swap ! ;
 
+\g Compile call to inline xt into current colon def
+: (xt,)  ( -- xt ) 
+   @r+ xt, ;  
+
 \g @see anscore
 : does> ( C: colon-sys1 -- colon-sys2 )
    nip -1 <> bal @ 1 <> or -22 ?throw
