@@ -370,8 +370,7 @@ prim readf  ( c-addr u1 handle -- u2 ior )
 prim writef  ( c-addr u1 handle -- u2 ior )
 
 \g Map file in memory
-prim mmapf
-internal ( handle -- a-addr ) 
+prim mmapf  ( handle -- a-addr ) 
 
 \g Size of file
 prim sizef  ( handle -- ud ) 
@@ -459,12 +458,12 @@ bcreate okstr ," ok"
    0 max 0 ?do space loop ;  
 
 \g Setup vectors for file input
-: file  internal ( -- ) 
+: file  ( -- ) 
    xtof noop '.prompt ! 
    echo off ;  
 
 \g Setup vectors for console input
-: con  internal ( -- ) 
+: con  ( -- ) 
    xtof .ok  '.prompt ! 
    echo on ;  
 
@@ -812,11 +811,11 @@ p: +!  ( x a-addr -- )
    here !  [ 1 tcells ] literal allot ;  
 
 \g Store 0 at address
-: off  internal ( a-addr -- ) 
+: off  ( a-addr -- ) 
    0 swap ! ;  
 
 \g Store -1 at address
-: on  internal ( a-addr -- ) 
+: on  ( a-addr -- ) 
    -1 swap ! ;  
 
 \ Parsing
@@ -1063,7 +1062,7 @@ bcreate redefstr ," redefined "
    digit base @ u< ;  
 
 \g Accumulate u1 into ud1
-: accum  internal ( ud1 u1 -- ud2 ) 
+: accum  ( ud1 u1 -- ud2 ) 
    swap base @ um* drop rot base @ um* d+ ;  
 
 \g @see anscore

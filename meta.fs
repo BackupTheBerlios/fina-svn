@@ -1,30 +1,3 @@
-\ Glossary stuff
-create glosname 32 chars allot
-: glos
-   glosname count guppertype bl gemit
-   [char] ) parse gtype s" )" gtype
-   bl gemit gtype
-   10 parse gtype gnl ;
-: core
-   s" CORE" glos ; immediate
-: coreext
-   s" CORE EXT" glos ; immediate
-: double
-   s" DOUBLE" glos ; immediate
-: exception
-   s" EXCEPTION" glos ; immediate
-: facilityext
-   s" FACILITY EXT" glos ; immediate
-: internal
-   s" INTERNAL" glos ; immediate
-: search
-   s" SEARCH" glos ; immediate
-: string
-   s" STRING" glos ; immediate
-: toolsext
-   s" TOOLS EXT" glos ; immediate
-
-
 
 \ Helpers
 : literal postpone literal ; immediate compile-only
@@ -211,8 +184,6 @@ variable underscore  underscore off
 : >t
    type>t execute forgetit ;
 
-: glosname! lastname namecount glosname place ;
-
 : ?stack
    depth abort" stack error" ;
 
@@ -222,23 +193,25 @@ variable underscore  underscore off
 : value' value ;
 
 : prim
-   >t ?stack ['] prim>t to type>t create glosname! ;
+   >t ?stack ['] prim>t to type>t create ;
 :' bcreate
-   >t ?stack ['] bytevar>t to type>t create glosname! ;
+   >t ?stack ['] bytevar>t to type>t create ;
 :' create     
-   >t ?stack ['] create>t to type>t create glosname! ;
+   >t ?stack ['] create>t to type>t create ;
 :' user 
-   >t ?stack ['] user>t to type>t user glosname! ;
+   >t ?stack ['] user>t to type>t user ;
 :' ivariable
-   >t ['] var>t to type>t variable glosname! lastxt execute ! ;
+   >t ['] var>t to type>t variable lastxt execute ! ;
 :' constant   
-   >t ['] val>t to type>t constant glosname! ;
+   >t ['] val>t to type>t constant ;
 :' value      
-   >t ['] val>t to type>t value glosname! ;
+   >t ['] val>t to type>t value ;
 :' :
-   >t ?stack ['] col>t to type>t :' glosname! ;
+   >t ?stack ['] col>t to type>t :' ;
 :' p: 
-   >t ?stack fast if ['] prim>t else ['] col>t then to type>t :' glosname! ;
+   >t ?stack fast if ['] prim>t else ['] col>t then to type>t :' ;
+:' f:
+   >t ?stack files if ['] prim>t else ['] col>t then to type>t :' ;
 
 :' to postpone doto ; immediate compile-only
 
