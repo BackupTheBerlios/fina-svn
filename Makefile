@@ -10,13 +10,20 @@ ALL_HELP = ${ALL_FORTH:%.fs=help/%.help}
 
 FINA_SRC0 = opt.fs tconfig.fs
 FINA_SRC1 = meta.fs fina.fs
-HOST_FINA0 = core.fs coreext.fs throwmsg.fs
+HOST_FINA0 = core.fs throwmsg.fs search.fs coreext.fs
 HOST_FINA1 = host-fina.fs
 HOST_GFORTH = host-gforth.fs
-FINA_TEST = core.fs throwmsg.fs tester.fs coretest.fs postponetest.fs filetest bye.fs
-RUN_FINA = core.fs coreext.fs throwmsg.fs file.fs \
-   double.fs optional.fs string.fs require.fs tools.fs toolsext.fs \
+FINA_TEST0 = core.fs throwmsg.fs tester.fs coretest.fs postponetest.fs bye.fs
+FINA_TEST = tester.fs coretest.fs postponetest.fs filetest.fs dbltest.fs
+
+RUN_FINA = \
+   core.fs search.fs coreext.fs searchext.fs \
+   throwmsg.fs file.fs \
+   double.fs doubleext.fs \
+   optional.fs string.fs require.fs \
+   tools.fs toolsext.fs \
    search.fs lineedit.fs help.fs multi.fs
+
 SAVE_FINA = ${RUN_FINA} savefina.fs bye.fs
 
 ALL_FORTH = fina.fs ${SAVE_FINA}
@@ -35,12 +42,12 @@ fina0: ${COMMON_OBJECTS}
 run: fina
 	cat ${RUN_FINA} - | ./fina
 
-test: fina2
+test: fina
 	diff fina2 fina1
-	cat ${FINA_TEST} | ./$<
+	./$< ${FINA_TEST} -e bye
 
 test0: fina0
-	cat ${FINA_TEST} | ./$<
+	cat ${FINA_TEST0} ${FINA_TEST} ${FINA_TEST1} | ./$<
 
 finas2.s: fina1 ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
 	cat ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1} | ./$< > $@
@@ -78,7 +85,7 @@ fina0.o: fina0.s
 fina1.o: fina1.s
 	${CC} -c ${CFLAGS} $< -o $@
 
-fina2.o: fina1.s
+fina2.o: fina2.s
 	${CC} -c ${CFLAGS} $< -o $@
 
 fina.s: finas.s finac.s
