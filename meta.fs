@@ -141,6 +141,9 @@ variable underscore  underscore off
 : val>t ( -- )
    name>t .call" DOVALUE" body>t
    /tcall size +! ;
+: const>t ( -- )
+   name>t .call" DOCONST" body>t
+   /tcall size +! ;
 
 0 tcells value useroffset
 : nextuser useroffset dup -1 tcells + to useroffset ;
@@ -203,7 +206,7 @@ variable underscore  underscore off
 :' ivariable
    >t ['] var>t to type>t variable lastxt execute ! ;
 :' constant   
-   >t ['] val>t to type>t constant ;
+   >t ['] const>t to type>t constant ;
 :' value      
    >t ['] val>t to type>t value ;
 :' :
