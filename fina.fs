@@ -664,6 +664,10 @@ p: max  ( n1 n2 -- n3 )
 p: min  ( n1 n2 -- n3 )
    2dup > if swap then drop ;  
 
+\g Minimum of two unsigned values
+: umin ( u1 u2 -- u3 )
+   2dup u> if swap then drop ;
+
 \g @see anscore
 p: um*  ( u1 u2 -- ud )
    0 swap [ tcellbits 1- ] literal for
