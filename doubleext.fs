@@ -10,3 +10,5 @@
 
 : d>=  ( d1 d2 -- flag )
    d< 0= ;
+
+env: double-ext true ;env
