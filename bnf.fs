@@ -1,7 +1,7 @@
 \ BNF Parser                                (c) 1988 B. J. Rodriguez
 \ Adapted to FINA by Jorge Acereda
 
-: dp! to here ;
+: dp! here - allot ;
 0 value success
 : <bnf ( enter rule )
    r> success if  >in @ here 2>r  >r  else  drop  then ;
