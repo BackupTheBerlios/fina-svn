@@ -135,4 +135,4 @@ does>     dup @ to here
 : [compile]  ( "<spaces>name" -- )
    ' compile, ; immediate compile-only
 
-env: core-ext -1 ;env
+env: core-ext true ;env
