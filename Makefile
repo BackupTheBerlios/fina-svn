@@ -15,7 +15,7 @@ HOST_GFORTH = host-gforth.fs
 FINA_TEST = core.fs throwmsg.fs tester.fs \
    coretest.fs postponetest.fs filetest bye.fs
 RUN_FINA = core.fs coreext.fs throwmsg.fs file.fs \
-   double.fs optional.fs string.fs toolsext.fs search.fs \
+   double.fs optional.fs string.fs require.fs toolsext.fs search.fs \
    lineedit.fs help.fs multi.fs
 SAVE_FINA = ${RUN_FINA} savefina.fs bye.fs
 
