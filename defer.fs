@@ -4,7 +4,7 @@
    create [ pad @ ] literal , does> @ execute ;
 
 : is ( xt "<spaces>name" -- )
-   ' >body ! ;
+   ' >body state @ if postpone literal postpone ! else ! then ; immediate
 
 : what's ( "<spaces>name" -- )
    ' >body @ ;
