@@ -1,9 +1,7 @@
+- line editor
+- negative strings?
 - douser is slow
-- change docreate
-- create ... does> implemented with vectored does>. does> defaults to NOOP
-- d< broken, implement without conditionals
 - test MARKER, make it forget environment queries
-- signal handling, tos=code; fpc = XT_THROW;
 - implement USEPFR for better code on MIPS machines.
 - cleanup host-gforth
 - safer and more flexible metacompiler, special words should move the
@@ -20,7 +18,6 @@
 - documentation system
 - more file tests
 - forlist/repeat?
-- line editor
 - implement user and remove fake definition from host-fina.fs
 - remove debug stuff (shifts, type2, rdepth, rpick...)
 - simplify interpret, .err, : abort 0 0 abort"msg 2! -1 throw ;
