@@ -1,15 +1,9 @@
-: d= rot = >r = r> and ;
-
-: h# ( <hexnum> -- u )
-    bl parse  base @ >r  hex  s>number  r> base !   
-    state @ if dpl @ 0< if postpone literal else postpone 2literal then  then
-    ; immediate
 
 : mark ( a1 -- a2 )
-   begin cell+ dup 2@ h# feedbabe.deadbeef d= until ;
+   begin cell+ dup 2@ [ hex ] feedbabe.deadbeef [ decimal ]  d= until ;
 
-: 'cold
-   dict0 cell+ cell+ ;
+: 'cold!
+   dict0 cell+ cell+ ! ;
 
 : save ( a u -- )
    w/o open-file throw >r   0 argv r/o open-file throw
