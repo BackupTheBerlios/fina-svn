@@ -783,7 +783,6 @@ bcreate redefstr ," redefined "
    swap base @ um* drop rot base @ um* d+ ;  
 
 : >number  core ( ud1 a1 u1 -- ud2 a2 u2 ) add number string's value to ud1, returns unconverted chars
-   -1 dpl !
    begin
       over c@ digit? over and 
    while
@@ -791,10 +790,11 @@ bcreate redefstr ," redefined "
    repeat ;  
 
 : s>unumber ( a u -- u | ud )
+   -1 dpl !
    0 0 2swap begin 
       >number dup 
    while 
-      [char] . <> -13 throw -1 dup dpl ! 1 /string 
+      over c@ [char] . <> -13 ?throw dup 1- dpl ! 1 /string 
    repeat 2drop 
    dpl @ 0< if drop then ;  
 
