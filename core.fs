@@ -260,6 +260,11 @@ variable leaves
 : */  core ( n1 n2 n3 -- n4 ) n4 = (n1*n2)/n3
    */mod nip ;
 
+: key 
+   ekey 255 and ;
+
+
+
 \ Debugging stuff
 : hex 16 base ! ;
 
@@ -281,3 +286,4 @@ variable leaves
     16 /mod swap >r
     0 ?do 16 dumprow loop
     R> dumprow drop r> base ! ;
+
