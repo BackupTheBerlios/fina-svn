@@ -1,3 +1,4 @@
+- EVALUATE should use SAVE-INPUT
 - document
 - split ?dodefine -> ?xt+xtbody
 - documentation system
