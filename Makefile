@@ -1,14 +1,23 @@
-CC = `cat compiler`
-HOST = `cat hostforth`
-CPPFLAGS = `cat flags`
-CFLAGS = -g -O2 -Wall 
+
+ARCH     := $(shell ./arch)
+KERN     := $(shell uname -s)
+HOST     := gforth-0.5.0
+SYSTEM   := $(KERN)-$(ARCH)
+ifeq ($(origin CC), undefined)
+CC       := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-gcc)
+endif
+CPPFLAGS := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-cppflags)
+OS       := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-os)
+FFLAGS   := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-forthflags)
+
+CFLAGS = -g -O2 -Wall
 
 COMMON_OBJECTS = main.o sys.o
 
 ALL_HELP = ${ALL_FORTH:%.fs=help/%.help}
 
 
-FINA_SRC0 = opt.fs tconfig.fs
+FINA_SRC0 = opt.fs tconfig-$(ARCH).fs
 FINA_SRC1 = meta.fs fina.fs
 HOST_FINA0 = core.fs defer.fs throwmsg.fs search.fs coreext.fs
 HOST_FINA1 = host-fina.fs
@@ -29,44 +38,14 @@ SAVE_FINA = ${RUN_FINA} savefina.fs bye.fs
 
 ALL_FORTH = fina.fs ${SAVE_FINA}
 
-ARCH = `./arch`
-KERN = `uname -s`
-SYSTEM = $(KERN)-$(ARCH)
 
+all: fina doc
 
-all:
-	$(MAKE) $(SYSTEM)
-	ln -fs bootstrapdict.s.$(ARCH) bootstrapdict.s
-	ln -fs tconfig-$(ARCH).fs tconfig.fs
+opt.fs:
+	echo $(FFLAGS) > opt.fs
+
+arch.h: arch-$(ARCH).h
 	ln -fs arch-$(ARCH).h arch.h
-	echo -n "gcc" > compiler
-	touch bootstrapdict.s
-	$(MAKE) fina
-	$(MAKE) doc
-
-genbootstrap: clean
-	$(MAKE) $(SYSTEM)-gcc
-	echo -n "gforth-0.5.0" > hostforth
-	$(MAKE) fina
-
-# Systems
-
-Darwin-powerpc: anew posix fast
-	echo -n " -no-cpp-precomp " >> flags
-
-Darwin-powerpc-gcc:
-	echo -n "gcc2" > compiler
-
-Linux-powerpc: anew posix fast
-
-Linux-powerpc-gcc:
-	echo -n "/usr/powerpc-unknown-linux-gnu/gcc-bin/2.95/powerpc-unknown-linux-gnu-gcc" > compiler
-
-NetBSD-i386: anew posix fast
-
-NetBSD-i386-gcc:
-	echo "/usr/pkg/gcc-2.95.3/bin/gcc" > compiler
-
 
 # Compiler
 
@@ -96,12 +75,12 @@ kerneldict.s: kernel0 ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
 kernel0dict.s: bootstrap ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
 	cat ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1} | ./$< > $@
 
-bootstrapdict.s: ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1}
-	`cat hostforth` ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1} > $@
+bootstrapdict-$(ARCH).s: ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1}
+	$(HOST) ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1} > $@
 
 main.o : main.c
 
-finac.s: finac.c fina.h arch.h sys.h flags
+finac.s: finac.c fina.h arch.h sys.h
 	${CC} ${CPPFLAGS} ${CFLAGS} -S finac.c -o finac.s
 
 fina.o: fina.s
@@ -116,7 +95,10 @@ kernel0.o: kernel0.s
 kernel.o: kernel.s
 	${CC} -c ${CFLAGS} $< -o $@
 
-bootstrap.s: bootstrapdict.s finac.s
+sys.o: sys$(OS).c sys.h
+	${CC} -c ${CFLAGS} $< -o $@
+
+bootstrap.s: finac.s bootstrapdict-$(ARCH).s
 	cat $^ > $@
 
 kernel0.s: kernel0dict.s finac.s
@@ -125,38 +107,13 @@ kernel0.s: kernel0dict.s finac.s
 kernel.s: kerneldict.s finac.s
 	cat $^ > $@
 
-sys.o: sys.c sys.h
-
-anew:
-	rm -f arch.h tconfig.fs sys.c opt.fs bootstrapdict.s\
-		flags compiler hostforth
 
 clean:
-	rm -f *.o *.s fina bootstrap kernel0 kernel *\~ \#*\# \
+	rm -f *.o kernel*.s bootstrap.s fina*.s arch.h opt.fs fina bootstrap kernel0 kernel *\~ \#*\# \
 		help/toc.help ${ALL_HELP}
 
-distclean: anew clean
+distclean: clean
 
-
-posix:
-	ln -fs sysposix.c sys.c
-	$(MAKE) files allocate
-
-fast:
-	echo "-1 constant more-prims" >> opt.fs
-	echo -n " -DMORE_PRIMS " >> flags
-
-slow:
-	echo "0 constant more-prims" >> opt.fs
-	echo -n " -UMORE_PRIMS " >> flags
-
-files:
-	echo -n " -DHAS_FILES " >> flags
-	echo "-1 constant has-files" >> opt.fs
-
-allocate:
-	echo -n " -DHAS_ALLOCATE " >> flags
-	echo "-1 constant has-allocate" >> opt.fs
 
 # Glossaries
 
