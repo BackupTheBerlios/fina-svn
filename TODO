@@ -23,4 +23,3 @@
 - ensure headers compiled with s, don't yield different images in test
 - 0 -1 1 perform 0<> >= u> u>= <> lshift arshift fm/mod / mod /mod as primitives
 - implement as primitives >= u> u>= <> dofor do?do lshift rshift /mod /
-- implement const>t
