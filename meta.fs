@@ -167,7 +167,7 @@ variable underscore  underscore off
    name>t .call" DOVALUE" body>t
    /tcall size +! ;
 
--1 tcells value useroffset
+0 tcells value useroffset
 : nextuser useroffset dup -1 tcells + to useroffset ;
 : user>t ( -- )
    name>t
@@ -177,10 +177,10 @@ variable underscore  underscore off
 : lit>t ( addr -- addr' )
    cell+  dup @ asm. ;
 : cell>t ( addr -- addr' )
-\  ." moving " dup @ xt>name if dup @ xt>name .name space else dup @ hex. then 
-   dup @ .special dup 0< if 
+\  ." moving " dup @ xt>name if dup @ xt>name .name space else dup @ . then 
+   dup @ .special dup 0< if
       drop xt>name namecount xttype
-   else
+   else 
       nip 0 ?do lit>t loop
    then cell+ ;
 : list>t ( -- )
