@@ -30,33 +30,33 @@ SAVE_FINA = ${RUN_FINA} savefina.fs bye.fs
 ALL_FORTH = fina.fs ${SAVE_FINA}
 
 
-fina: fina2 ${SAVE_FINA}
-	cat ${SAVE_FINA} | ./fina2 
-	chmod 755 fina
+fina: kernel ${SAVE_FINA}
+	cat ${SAVE_FINA} | ./$<
+	chmod 755 $@
 
-fina2: ${COMMON_OBJECTS} fina2.o
+kernel: ${COMMON_OBJECTS}
 
-fina1: ${COMMON_OBJECTS} fina1.o
+kernel0: ${COMMON_OBJECTS}
 
-fina0: ${COMMON_OBJECTS} 
+bootstrap: ${COMMON_OBJECTS} 
 
 run: fina
-	cat ${RUN_FINA} - | ./fina
+	cat ${RUN_FINA} - | ./kernel
 
 test: fina
-	diff fina2 fina1
+	diff kernel kernel0
 	./$< ${FINA_TEST} -e bye
 
-test0: fina0
+bootstraptest: bootstrap
 	cat ${FINA_TEST0} ${FINA_TEST} ${FINA_TEST1} | ./$<
 
-finas2.s: fina1 ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
+kerneldict.s: kernel0 ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
 	cat ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1} | ./$< > $@
 
-finas1.s: fina0 ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
+kernel0dict.s: bootstrap ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
 	cat ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1} | ./$< > $@
 
-finas0.s: ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1}
+bootstrapdict.s: ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1}
 	`cat hostforth` ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1} > $@
 
 # Glossaries
@@ -80,25 +80,22 @@ finac.s: finac.c fina.h arch.h sys.h flags
 fina.o: fina.s
 	${CC} -c ${CFLAGS} $< -o $@
 
-fina0.o: fina0.s
+bootstrap.o: bootstrap.s
 	${CC} -c ${CFLAGS} $< -o $@
 
-fina1.o: fina1.s
+kernel0.o: kernel0.s
 	${CC} -c ${CFLAGS} $< -o $@
 
-fina2.o: fina2.s
+kernel.o: kernel.s
 	${CC} -c ${CFLAGS} $< -o $@
 
-fina.s: finas.s finac.s
+bootstrap.s: bootstrapdict.s finac.s
 	cat $^ > $@
 
-fina0.s: finas0.s finac.s
+kernel0.s: kernel0dict.s finac.s
 	cat $^ > $@
 
-fina1.s: finas1.s finac.s
-	cat $^ > $@
-
-fina2.s: finas2.s finac.s
+kernel.s: kerneldict.s finac.s
 	cat $^ > $@
 
 sys.o: sys.c sys.h
@@ -107,7 +104,7 @@ distclean:
 	rm -f arch.h tconfig.fs sys.c opt.fs flags compiler hostforth
 
 clean:
-	rm -f *.o *.s fina fina0 fina1 fina2 *\~ \#*\# \
+	rm -f *.o *.s fina bootstrap kernel0 kernel *\~ \#*\# \
 		help/toc.help ${ALL_HELP}
 
 powerpc:
@@ -126,8 +123,9 @@ mips:
 x86:
 	ln -fs tconfig-x86.fs tconfig.fs
 	ln -fs arch-x86.h arch.h
+	ln -fs bootstrapdict-x86.s bootstrapdict.s
 	echo "/usr/pkg/gcc-2.95.3/bin/gcc" > compiler
-	echo -n "gforth-0.5.0 -p .:/usr/local/lib/gforth/0.5.0" > hostforth
+	echo -n "/sw/bin/gforth-0.5.0" > hostforth
 
 posix:
 	ln -fs sysposix.c sys.c
