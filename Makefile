@@ -50,7 +50,7 @@ Darwin-powerpc: anew posix fast
 	echo -n "gforth-0.5.0" > hostforth
 	echo -n " -no-cpp-precomp " >> flags
 
-Linux-ppc: anew posix fast
+Linux-powerpc: anew posix fast
 	echo -n "/usr/powerpc-unknown-linux-gnu/gcc-bin/2.95/powerpc-unknown-linux-gnu-gcc" > compiler
 	echo -n "gforth-0.5.0" > hostforth
 
