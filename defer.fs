@@ -6,5 +6,8 @@
 : is ( xt "<spaces>name" -- )
    ' >body ! ;
 
+: what's ( "<spaces>name" -- )
+   ' >body @ ;
+
 : deferred ( "<spaces>name" -- )
-   ' >body @ compile, ; immediate compile-only 
+   what's compile, ; immediate compile-only 
