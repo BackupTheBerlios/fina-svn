@@ -1,4 +1,3 @@
-#include "arch.h"
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -83,7 +82,7 @@ static void sighandler(int sig)
 int Sys_Tick()
 {
         static int set = 0;
-        int throw;
+        int throw = 0;
         if (!set)
                 throw = setjmp(jmpbuf);
         set = !throw;
