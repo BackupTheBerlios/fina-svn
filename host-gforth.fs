@@ -78,7 +78,8 @@ create 'khan
 create dummy2
 create bwmark create bwresolve create fwmark create fwresolve
 create .err
-create '.error
+create '.error create .rs
+create do2lit
 
 : char+ postpone 1+ ; immediate compile-only
 : 1chars/ ; immediate
