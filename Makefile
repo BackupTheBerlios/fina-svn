@@ -79,7 +79,8 @@ distclean:
 	rm -f arch.h tconfig.fs sys.c opt.fs flags 
 
 clean:
-	rm -f *.o *.s fina fina0 fina1 fina2 *\~ \#*\# *.glo
+	rm -f *.o *.s fina fina0 fina1 fina2 *\~ \#*\# \
+		help/toc.help ${ALL_HELP}
 
 powerpc:
 	ln -fs tconfig-powerpc.fs tconfig.fs
