@@ -1,5 +1,4 @@
 file warnings off
-
 \ glossary stuff
 create glosname 32 chars allot
 : gtype 2drop ; 
@@ -11,16 +10,32 @@ create glosname 32 chars allot
    lastname name>xt ;
 : lasthead ( -- addr)
    lastname ;
-: .special ( xt -- xt n, n=-1 if not special, otherwise # of lits to move )
-   ['] dolit   over = if ." XT_DOLIT,"      1 exit then
-   ['] do?do   over = if ." XT_DOQDO,"      1 exit then
-   ['] doloop  over = if ." XT_DOLOOP,"     1 exit then
-   ['] do+loop over = if ." XT_DOPLUSLOOP," 1 exit then
-   ['] donext  over = if ." XT_DONEXT,"     1 exit then
-   ['] 0branch over = if ." XT_ZEROBRANCH," 1 exit then
-   ['] branch  over = if ." XT_BRANCH,"     1 exit then
-   ['] do?throw over = if ." XT_DOQTHROW,"  1 exit then
-   -1 ;
+defer lit>t defer ncell>t
+: special+lit ( "word" -- )
+   ' postpone literal postpone over postpone = postpone if 
+      postpone drop postpone ncell>t 
+      [char] , postpone literal postpone emit
+      postpone lit>t postpone exit 
+   postpone then ; immediate
+: special+xt
+   ' postpone literal postpone over postpone = postpone if
+      postpone drop postpone ncell>t 
+      [char] , postpone literal postpone emit
+      postpone ncell>t postpone exit  
+   postpone then ; immediate
+: cell>t ( a-addr1 -- a-addr2 )
+   dup @   
+   special+lit dolit
+   special+lit do?do
+   special+lit doloop
+   special+lit do+loop
+   special+lit donext
+   special+lit 0branch
+   special+lit branch
+   special+lit do?throw
+   special+xt (compile)
+   special+xt xtof
+   drop ncell>t ;
 : type? 
    postpone name>xt postpone ?dodefine postpone nip
    ' postpone literal postpone = ; immediate compile-only
@@ -50,9 +65,4 @@ does>
 
 \ Undefined
 create dummy2
-
-\ We create these as normal words so that .special doesn't translate
-\ them. This is to avoid translating things like "(compile),doloop" 
-create dolit create do?do create doloop create do+loop create donext 
-create 0branch create branch
 
