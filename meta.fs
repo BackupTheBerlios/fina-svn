@@ -246,7 +246,7 @@ variable underscore  underscore off
    >t
    ."  .fill " /tdict size @ - .  ." ,1,0" cr
    ."  .long 0xcacacaca" cr 
-   bye ; 
+   .end bye ; 
 
 marker forget-previous
 .init
