@@ -1,5 +1,6 @@
 : ,"
-   [char] " parse here over 1 chars + allot place align ;
+   [char] " parse s, ;
+\ here over 1 chars + allot place ;
 
 here pad !
 ," xxx"
@@ -65,5 +66,5 @@ here pad !
 :noname
    dup -58 0 within 0= -24 ?throw
    [ pad @ ] literal swap 58 + 
-   for count + aligned next count ; 'throwmsg !
+   for count + next count ; 'throwmsg !
 
