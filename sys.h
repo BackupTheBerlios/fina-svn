@@ -1,4 +1,4 @@
-void Sys_Init();
+void Sys_Init(int argc, char ** argv);
 void Sys_End();
 void * Sys_OpenFile(const char * name, unsigned mode);
 unsigned Sys_CloseFile(void * handle);

@@ -10,14 +10,18 @@
 #include "sys.h"
 
 struct termios otio;
+int argc;
+char ** argv;
 
-void Sys_Init()
+void Sys_Init(int argcc, char ** argvv)
 {
         struct termios tio;
         tcgetattr(fileno(stdin), &otio);
         tio = otio;
         tio.c_lflag &= ~(ECHO | ICANON);
         tcsetattr(fileno(stdin), TCSANOW, &tio);
+        argc = argcc;
+        argv = argvv;
 }
 
 void Sys_End()

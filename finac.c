@@ -103,10 +103,10 @@ static inline unsigned UMSlashMod(unsigned long long u, unsigned v, unsigned * p
         return q;
 }
 
-int FINA_Init()
+int FINA_Init(int argc, char ** argv)
 {
         extern int Forth_Entry;
-        Sys_Init();
+        Sys_Init(argc, argv);
         
         saved->fpc = (CELL*)Forth_Entry;
         saved->dsp = (CELL*)Forth_Entry + 256;
@@ -790,7 +790,7 @@ static int prims()
                 NEXT;
 
                 PRIM(MMAPF, 204);
-                tos = Sys_MMapFile(tos);
+                tos = (CELL)Sys_MMapFile((void*)tos);
                 NEXT;
 #endif
         }NEXTT;}
