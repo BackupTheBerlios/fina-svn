@@ -176,6 +176,7 @@ static int prims()
         LNKREG;
         foo = -1;
         while (1) { switch (foo) {
+                // DON'T MOVE THIS
 		PRIM(NOOP,-1);
 		NEXT;
 
@@ -501,17 +502,6 @@ static int prims()
                 PRIM(RFETCH,33);
                 PUSH;
                 tos = *rsp;
-                NEXT;
-
-                PRIM(ARGC,300);
-                PUSH;
-                tos = Sys_Argc();
-                NEXT;
-
-                PRIM(ARGV,301);
-                PUSH;
-                *dsp = (CELL)Sys_Argv(tos);
-                tos = strLen((char*)*dsp);
                 NEXT;
 
 #if defined(FASTFORTH)
@@ -870,5 +860,17 @@ static int prims()
                 NEXT;
 
 #endif
+                PRIM(ARGC,300);
+                PUSH;
+                tos = Sys_Argc();
+                NEXT;
+
+                // DON'T MOVE THIS
+                PRIM(ARGV,301);
+                PUSH;
+                *dsp = (CELL)Sys_Argv(tos);
+                tos = strLen((char*)*dsp);
+                NEXT;
+
         }NEXTT;}
 }
