@@ -1,5 +1,5 @@
 \ XXX
-: .name namecount type ;
+require backtrace.fs
 
 variable assert-level 
 1 assert-level !
@@ -15,23 +15,6 @@ variable assert-level
     3 assertn ; immediate
 : assert(
     postpone assert1( ; immediate
-: xt? ( val -- flag)
-   dict? ;
-: probablename ( xt -- name )
-    dup xt? if 
-        begin dup xt>name 0= while cell- repeat xt>name 
-    else
-        s" h# " pad char+ swap move 
-        0 base @ >r hex <# #s #> r> base ! dup 3 chars + pad c! 
-        pad 4 chars + swap move pad 
-    then ;
-: rstack ( -- bottom top )
-    rp0 @ rp@ ;
-: .backtrace ( bottom top -- )
-    swap cell+ swap
-    cr ." backtrace: " do i @ probablename .name space 1 cells +loop ;
-: .stacks ( -- )
-    rstack .backtrace .s ;
 : .input ( -- )
     cr ." input: " sourcevar 2@ type ;
 : (endassert)
