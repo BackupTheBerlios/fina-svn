@@ -29,7 +29,7 @@ SAVE_FINA = ${RUN_FINA} savefina.fs bye.fs
 
 ALL_FORTH = fina.fs ${SAVE_FINA}
 
-ARCH = `uname -m`
+ARCH = `uname -p`
 KERN = `uname -s`
 SYSTEM = $(KERN)-$(ARCH)
 
@@ -44,6 +44,11 @@ all:
 	$(MAKE) doc
 
 # Systems
+
+Darwin-powerpc: anew posix fast
+	echo -n "gcc2" > compiler
+	echo -n "gforth-0.5.0" > hostforth
+	echo -n " -no-cpp-precomp " >> flags
 
 Linux-ppc: anew posix fast
 	echo -n "/usr/powerpc-unknown-linux-gnu/gcc-bin/2.95/powerpc-unknown-linux-gnu-gcc" > compiler
