@@ -1,4 +1,4 @@
-file warnings off
+warnings off
 \ glossary stuff
 create glosname 32 chars allot
 : gtype 2drop ; 
