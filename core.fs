@@ -293,7 +293,7 @@ variable leaves
 : set-current  ( wid -- )
    to get-current ;
 
-variable env-wordlist  env-wordlist off
+create env-wordlist here forth-wordlist cell+ ! 0 , 0 , 0 ,
 
 \g @see anssearch
 : search-wordlist ( c-addr u wid -- 0 | xt 1 | xt -1 )
