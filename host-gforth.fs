@@ -4,19 +4,47 @@ warnings off
 : lastname 
    last @ cell+ ;
 create do?throw
-: .special ( xt -- xt n, n=-1 if not special, otherwise # of lits to move )
-   ['] ;s      over = if ." XT_EXIT"        0 exit then
-   ['] (for)   over = if ." XT_DOFOR"       0 exit then
-   ['] (do)    over = if ." XT_DODO"        0 exit then
-   ['] (?do)   over = if ." XT_DOQDO,"      1 exit then
-   ['] lit     over = if ." XT_DOLIT,"      1 exit then
-   ['] (loop)  over = if ." XT_DOLOOP,"     1 exit then
-   ['] (+loop) over = if ." XT_DOPLUSLOOP," 1 exit then
-   ['] (next)  over = if ." XT_DONEXT,"     1 exit then
-   ['] ?branch over = if ." XT_ZEROBRANCH," 1 exit then
-   ['] branch  over = if ." XT_BRANCH,"     1 exit then
-   ['] do?throw over = if ." XT_DOQTHROW,"  1 exit then
-   -1 ;
+defer ncell>t defer lit>t
+
+create xtof
+: renamed>t
+   drop type cell+ ;
+: renamed>t,
+   renamed>t ." ," ;
+: renamed ( addr len "word" -- )
+   postpone rot ' postpone literal postpone over postpone = postpone if
+      postpone renamed>t  postpone exit
+   postpone else
+      postpone nip postpone nip
+   postpone then ; immediate 
+: renamed+lit ( "word" -- )
+   postpone rot ' postpone literal postpone over postpone = postpone if
+      postpone renamed>t,  postpone lit>t postpone exit
+   postpone else
+      postpone nip postpone nip
+   postpone then ; immediate 
+: renamed+xt
+   postpone rot ' postpone literal postpone over postpone = postpone if
+      postpone renamed>t, postpone ncell>t postpone exit
+   postpone else
+      postpone nip postpone nip
+   postpone then ; immediate 
+: cell>t ( a-addr1 -- a-addr2 )
+   dup @
+   s" XT_EXIT" renamed ;s
+   s" XT_DOFOR" renamed (for)
+   s" XT_DODO" renamed (do)
+   s" XT_DOQDO" renamed+lit (?do)
+   s" XT_DOLIT" renamed+lit lit
+   s" XT_DOLOOP" renamed+lit (loop)
+   s" XT_DOPLUSLOOP" renamed+lit (+loop)
+   s" XT_DONEXT" renamed+lit (next)
+   s" XT_ZEROBRANCH" renamed+lit ?branch
+   s" XT_BRANCH" renamed+lit branch
+   s" XT_DOQTHROW" renamed+lit do?throw
+   s" XT_LPARENCOMPILERPAREN" renamed+xt (compile)
+   s" XT_XTOF" renamed+xt xtof
+   drop ncell>t ;
 : lastbody
    lastxt >body ;
 s" glos.txt" w/o open-file throw constant glos 
@@ -53,7 +81,7 @@ create accum create dolist create hasname? create nesting?
 create linklast create (head,) create head, create 0branch
 create branch create fw create bw create resolve create mark
 create link create foreach create forall create @r+ create !r+
-create leaves create resolvleave create (xt,) create xtof create pipe
+create leaves create resolvleave create (xt,) create pipe
 create .ok create con create echo create 'echo create '.prompt
 create file create doto create ?throw
 
@@ -80,6 +108,9 @@ create bwmark create bwresolve create fwmark create fwresolve
 create .err
 create '.error create .rs
 create do2lit
+create sskip create sscan
+create sparse create unparsed create unparsed!
+create 'compile,
 
 : char+ postpone 1+ ; immediate compile-only
 : 1chars/ ; immediate
