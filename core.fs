@@ -7,8 +7,8 @@ file warnings off
    source >in ! drop ; immediate
 
 : \g postpone \ ; immediate
-: core  postpone \ ; immediate
 : internal postpone \ ; immediate
+: core postpone \ ; immediate
 
 : compile-only
    lastname c@ 32 or lastname c! ;
@@ -25,136 +25,174 @@ file warnings off
 
 \ Misc
 
+\g Make last definition a compile-only word
+\ compile-only ( -- ) \ internal
 
-: chars  ( n1 -- n2 ) \ core
-\g convert characters to address units
+\g @see anscore
+: chars  ( n1 -- n2 )
    ; immediate
 
+\g Convert address units to chars
 : 1chars/  ( n1 -- n2 ) \ internal
-\g convert address units to chars
    ; immediate
 
-: [']  ( "  xxx"" --  runtime: -- xt ) \ core
-\g parse name and return its xt
+\g @see anscore
+: [']  ( "  xxx"" --  rt: -- xt )
    ' postpone literal ; immediate compile-only
 
+\g Runtime for s" 
 : dos"  ( -- c-addr u ) \ internal
-\g runtime for s" 
    r> count 2dup + aligned >r ; compile-only
 
 : sliteral ( c-addr u -- )
    postpone dos" s, align ; immediate compile-only 
 
-: s" ( "ccc<">" --  R: -- c-addr u )
+\g @see anscore
+: s"
    [char] " parse   postpone sliteral ; immediate compile-only
 
-: ." ( "ccc<">" --  R: -- )
+
+\g @see anscore
+: ."
    [char] " parse   postpone sliteral 
    postpone type ; immediate compile-only
 
 
 \ Flow control
 
-: ahead ( C: -- orig )
+\g @see anscore
+: ahead  ( -- orig 1 )
    postpone branch   fwmark ;  immediate compile-only
 
-: if ( compilation: C: -- orig   runtime: x -- )
+\g @see anscore
+: if  ( -- orig 1 )
    postpone 0branch   fwmark ; immediate compile-only
 
-: then ( compilation: C: orig --   runtime: -- )
+\g @see anscore
+: then ( orig 1 -- )
    fwresolve ; immediate compile-only
 
-: else ( compilation: C: orig1 -- orig2   runtime:  -- )
+\g @see anscore
+: else ( orig1 1 -- orig2 1 )
    postpone ahead  2swap  postpone then ; immediate compile-only
 
-: begin ( C: -- dest )
+\g @see anscore
+: begin  ( -- dest -1 )
    bwmark ; immediate compile-only
 
-: while ( C: dest -- orig dest )
+\g @see anscore
+: while ( dest -1 -- orig 1 dest -1 )
    postpone if   2swap ; immediate compile-only 
 
-: again ( C: dest -- )
+\g @see anscore
+: again ( dest -1 -- )
    postpone branch  bwresolve ; immediate compile-only
 
-: repeat ( C: orig dest -- )
+\g @see anscore
+: repeat ( orig 1 dest -1 -- )
    postpone again  postpone then ; immediate compile-only
 
-: until ( C: dest -- )
+\g @see anscore
+: until ( dest -1 -- )
    postpone 0branch  bwresolve ; immediate compile-only
 
 \ Exceptions
-: ?throw ['] do?throw here 2 cells - ! ; immediate compile-only
+\g Throw code if flag is true
+: ?throw ( compilation: --  rt: flag code -- ) \ internal
+   ['] do?throw here 2 cells - ! ; immediate compile-only
 
 \ Definers
-: nesting? ( -- )
+
+\g Check for compiler nesting
+: nesting? ( -- ) \ internal
    bal @ -29 ?throw ;
 
-: constant ( x "<spaces>name" --  R: -- x )
+\g @see anscore
+: constant ( x "<spaces>name" --  rt: -- x )
    nesting?  head,  xtof doconst xt, drop  , linklast ;
 
-: value ( x "name" -- R: -- x )
+\g @see anscore
+: value ( x "name" -- rt: -- x )
    nesting?  head,  xtof dovalue xt, drop  , linklast ;
 
+\g @see anscore
 : variable ( "<spaces>name" -- ) 
    nesting?  head, xtof dovar xt, drop  -559038737 , linklast ; 
 
 
 variable leaves
 
-: link ( item list -- , enlaza un item a la lista)
+\g Link item to list
+: link ( item list -- ) \ internal
     2dup @ swap ! ! ;
 
+\g Allocate space for a link field and link it to list
 : linked ( list -- , enlaza here a la lista)
     here 0 , swap link ;
 
-: for ( C: -- for-sys )
+\g Start for-next loop, will iterate count+1 times
+: for ( ct: -- dest -1  rt: count -- r: u1 u1 )
    postpone dofor  bwmark  leaves off ; immediate compile-only
 
-: do ( C: -- do-sys )
+\g @see anscore
+: do ( ct: -- dest -1  rt: end start -- r: -- start end )
    postpone dodo  bwmark   leaves off ; immediate compile-only
 
-: ?do
+\g @see anscore
+: ?do ( ct: -- dest -1  rt: end start -- r: -- start end )
    postpone do?do leaves off leaves linked bwmark ; immediate compile-only
 
-: leave ( --  R: loop-sys -- )
+\g @see anscore
+: leave ( r: limit index -- )
    postpone branch  leaves linked ;  immediate compile-only
 
-: foreach ( xt list -- , recorre una lista aplicando xt a cada elemento)
+\g Apply xt to each element in list
+: foreach ( xt list -- )
    swap >r @ >r 
    begin r@ while r> r@ over @ >r execute repeat
    rdrop rdrop ;
 
+\g Syntactic sugar for FOREACH
 : forall ( "list" "word" -- , azucar para foreach )
    @r+ execute @r+ swap foreach ; compile-only
 
 : resolvleave ( a-addr -- )
    here over - swap ! ;
 
-: loop ( C: do-sys -- )
+\g @see anscore
+: loop ( ct: dest -1  rt:  --  r: limit index --  | limit index+1 )
    postpone doloop  bwresolve  
    forall leaves resolvleave
    postpone unloop ; immediate compile-only
 
-: next ( C: do-sys -- )
+\g Terminate for-next loop
+: next ( ct: dest -1  rt: initial index --  | initial index-1 )
    postpone donext  bwresolve
    forall leaves resolvleave
    postpone unloop ; immediate compile-only
 
-: +loop ( C: do-sys -- )
+\g @see anscore
+: +loop ( ct: dest -1  rt: n --  r: limit index --  | limit index+n )
    postpone do+loop  bwresolve
    forall leaves resolvleave
    postpone unloop ; immediate compile-only
 
-: recurse ( -- )
+\g @see anscore
+: recurse ( ct: -- )
    bal @ 1- 2* pick -1 <> throw 
    bal @ 1- 2* 1+ pick compile, ; immediate compile-only
 
-: abort ( i*x -- ) ( R: j*x -- )
+\g before ANS descritpion
+\g @see anscore
+\g after ANS description
+: abort ( i*x --  r: j*x -- )
    -1 throw ;
 
+\g Runtime for ABORT"
 : (abort")
    if r> count abort"msg 2! -2 throw else r> count + aligned >r then ;
 
+\g @see anscore
 : abort"
    postpone (abort") [char] " parse s, align ; immediate compile-only
 
@@ -181,22 +219,27 @@ variable leaves
 
 \ 
 
-: c,  core ( c -- ) reserve one char in data space and store x in it
+: c,  ( c -- ) \ core
+\g reserve one char in data space and store x in it
    here c! 1 allot ;
 
 
-: decimal 10 base ! ;
+: decimal  ( -- ) \ core
+\g Set the numeric conversion radix to ten (decimal).  
+   10 base ! ;
 
-: u. core ( u -- ) display unsigned number followed by space
+: u.  ( u -- ) \ core
+\g @see anscore
    0 d. ;
 
-: evaluate  core ( i*x a u -- j*x ) evaluate string
+: evaluate  ( i*x c-addr u -- j*x ) \ core
    source >r >r >in @ >r source-id >r 
    -1 to source-id  sourcevar 2!  >in off 
    interpret
    r> to source-id  r> >in !  r> r> sourcevar 2! ;
 
-: word  core ( c "cccxxxc" -- a ) skip leading delimiters and parse a word
+: word  ( char "<chars>ccc<char>" -- c-addr ) \ core
+
    here >r skipparse s, r@ to here r> ;
 
 : find  ( a -- a 0 | xt 1 | xt -1 ) \ XXX
