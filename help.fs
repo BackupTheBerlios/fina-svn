@@ -1,19 +1,21 @@
 
-: C+!  ( n addr -- )  dup >R  C@ +  R> C! ;
+: c+! ( n addr -- )
+   >r r@  c@ +  r> c! ;
 
-: APPEND                    ( str len addr -- )
-    2dup 2>R  COUNT chars +  SWAP chars MOVE ( ) 2R> C+! ;
+: append ( str len cstr -- )
+    2dup 2>r  count chars +  swap chars move  2r> c+! ;
 
-
-: beginswith? ( a1 u1 a2 u2 -- flag, does str1 begin with str2?)
+\ Does str1 begin with str2?)
+: beginswith? ( c-addr1 u1 c-addr2 u2 -- flag )
    2>r r@ min 2r> compare 0= ;
 
 variable requested 0 ,
 
-: nextword ( a1 u1 -- a2 u2 )
+: nextword ( c-addr1 u1 -- c-addr2 u2 )
    2dup bl scan nip - ;
 
-: matches? ( a u -- flag, did we find a matching line?)
+\ Did we find a matching line?
+: matches? ( c-addr u -- flag )
    2dup nextword requested 2@ compare 0= >r
    bl scan bl skip nextword requested 2@ compare 0= r> or ;
 
@@ -27,7 +29,7 @@ variable requested 0 ,
 : ?type level 0> and type ;
 : ?cr level 0> if cr then ;
 
-: .line? ( a u -- )
+: .line? ( c-addr u -- )
    2dup s" ====" beginswith? if  0 to helpstatus  then
    helpstatus 1 = if  2dup matches?  if  -1000 to helpstatus  then  then
    helpstatus 0< if
@@ -42,7 +44,7 @@ variable requested 0 ,
    helpstatus 1+ to helpstatus
    2drop ;
 
-: @see ( a u -- )
+: @see ( c-addr u -- )
    level 1+ to level
    s" <<" ?type 2dup ?type s" >>" ?type ?cr
    s" help/" pad place
