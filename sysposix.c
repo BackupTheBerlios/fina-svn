@@ -119,7 +119,6 @@ void Sys_FileWrite(void * handle, char * buf, unsigned len)
         errnoThrow(handle == 0);
         if (!throw) res = fwrite(buf, 1, len, handle);
         if (!throw) ferrorThrow(res != len, handle);
-        return res;
 }
 
 void * Sys_FileMMap(void * handle)
