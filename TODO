@@ -1,3 +1,5 @@
+- d< broken, implement without conditionals
+- test MARKER, make it forget environment queries
 - signal handling, tos=code; fpc = XT_THROW;
 - implement USEPFR for better code on MIPS machines.
 - cleanup host-gforth
