@@ -1,3 +1,8 @@
+- signal handling, tos=code; fpc = XT_THROW;
+- implement USEPFR for better code on MIPS machines.
+- cleanup host-gforth
+- safer and more flexible metacompiler, special words should move the
+  remaining by themselves using lit>t, cell>t and so on.
 - rename executables: bootstrap-> kernel0 -> kernel -> fina
 - help broken, try "help char"
 - fast dictionary search using endian-specific code, i.e
