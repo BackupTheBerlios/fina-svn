@@ -29,7 +29,7 @@ file warnings off
 \ compile-only ( -- ) \ internal
 
 \g @see anscore
-: chars  ( n1 -- n2 )
+: chars  ( n1 -- n2 ) \ core
    ; immediate
 
 \g Convert address units to chars
