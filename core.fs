@@ -291,9 +291,13 @@ variable leaves
 : */  ( n1 n2 n3 -- n4 )
    */mod nip ;
 
+\g @see ansfacility
+: ekey>char
+   255 and ;
+
 \g @see anscore
 : key  ( -- char )
-   ekey 255 and ;
+   ekey ekey>char ;
 
 \g @see anssearch
 : set-current  ( wid -- )
