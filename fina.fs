@@ -1050,11 +1050,16 @@ bcreate redefstr ," redefined "
 
 \g @see anscore
 : >number  ( ud1 c-addr1 u1 -- ud2 c-addr2 u2 )
+   base @ >r      
    begin
-      over c@ digit? over and 
+      over c@ [char] # = if
+         2swap drop base ! 0 0 2swap 1 /string
+      then
+      over c@ digit? over and
    while
       >r >r r@ c@ digit accum r> r> 1 /string
-   repeat ;  
+   repeat
+   r> base ! ;  
 
 \g Convert string to unsigned number
 : s>unumber ( c-addr u1 -- u2 | ud )
@@ -1152,26 +1157,6 @@ bcreate exstr ,"  exception # "
 \   hasname? @ if  linklast  then hasname? off  
    bal off
    postpone exit  postpone [ ; immediate compile-only 
-
-\ Jumps
-
-\g Mark the start of a backwards jump
-: bwmark
-   here 1 bal +! -1 ;
-
-\g Mark the start of a forward jump
-: fwmark
-   here h# deadbeef , 1 bal +! 1 ;
-
-\g Resolve backwards jump
-: bwresolve
-   -1 <> -22 ?throw  -1 bal +!
-   here - , ;
-
-\g Resolve forward jump
-: fwresolve
-   1 <> -22 ?throw  -1 bal +!
-   here over - swap ! ;
 
 \ Definers
 

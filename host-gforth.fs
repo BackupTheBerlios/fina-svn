@@ -83,7 +83,7 @@ create branch create fw create bw create resolve create mark
 create link create foreach create forall create @r+ create !r+
 create leaves create resolvleave create (xt,) create pipe
 create .ok create con create echo create 'echo create '.prompt
-create file create doto create ?throw
+create file create doto
 
 : ahead postpone ahead ; immediate compile-only
 : if postpone if ; immediate compile-only
@@ -104,7 +104,6 @@ create 'throwmsg create s>unumber
 create parsed create nfa create nfain
 create 'khan
 create dummy2
-create bwmark create bwresolve create fwmark create fwresolve
 create .err
 create '.error create .rs
 create do2lit

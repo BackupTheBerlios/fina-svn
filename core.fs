@@ -1,4 +1,4 @@
-
+warnings off
 : immediate
    lastname c@ 64 or lastname c! ;
 
@@ -74,7 +74,33 @@
    postpone type ; immediate compile-only
 
 
+\ Exceptions
+
+\g Throw code if flag is true. Changes the runtime of the previous
+\g literal to DO?THROW. 
+\g Sample usage: "dup something <> -32 ?throw"
+: ?throw ( -- )
+   ['] do?throw here 2 cells - ! ; immediate compile-only
+
 \ Flow control
+
+\g Mark the start of a backwards jump
+: bwmark
+   here 1 bal +! -1 ;
+
+\g Mark the start of a forward jump
+: fwmark
+   here -1414673666 , 1 bal +! 1 ;
+
+\g Resolve backwards jump
+: bwresolve
+   -1 <> -22 ?throw  -1 bal +!
+   here - , ;
+
+\g Resolve forward jump
+: fwresolve
+   1 <> -22 ?throw  -1 bal +!
+   here over - swap ! ;
 
 \g @see anstools
 : ahead  ( -- a-addr 1 )
@@ -111,14 +137,6 @@
 \g @see anscore
 : until ( a-addr -1 -- )
    postpone 0branch  bwresolve ; immediate compile-only
-
-\ Exceptions
-
-\g Throw code if flag is true. Changes the runtime of the previous
-\g literal to DO?THROW. 
-\g Sample usage: "dup something <> -32 ?throw"
-: ?throw ( -- )
-   ['] do?throw here 2 cells - ! ; immediate compile-only
 
 \ Definers
 
