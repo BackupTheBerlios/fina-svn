@@ -19,28 +19,30 @@ variable requested 0 ,
 
 0 value status 
 
+0 value '@see
+
+: .line? ( a u -- )
+   2dup s" ====" beginswith? if  0 to status  then
+   status 1 = if  2dup matches?  if  -1000 to status  then  then
+   status 0< if
+      2dup s" @see" beginswith? if  
+         2dup bl scan  bl skip status >r '@see execute r> to status
+      else
+         2dup type cr
+      then
+   then
+   status 1+ to status
+   2drop ;
+
 : @see ( a u -- )
+   ." <<" 2dup type ." >>" cr
    s" help/" pad place
    pad append
    s" .help" pad append 
    pad count r/o open-file throw >r
    2 to status
-   begin
-      here 80 r@ read-line throw
-   while 
-      here swap 
-      2dup s" =====" beginswith? if  0 to status  then
-      status 1 = if  2dup matches?  if  -1000 to status  then  then
-      status 0< if
-         2dup s" @see" beginswith? if  
-            2dup bl scan  bl skip status >r recurse r> to status
-         else
-            2dup type cr
-         then
-      then
-      status 1+ to status
-      2drop
-   repeat 2drop r> close-file ;
+   r@ ['] .line? foreachline
+   r> close-file throw ;  ' @see to '@see
 
 : help
    parse-word requested 2! s" toc" cr @see ;
