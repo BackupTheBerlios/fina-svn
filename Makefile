@@ -125,7 +125,7 @@ x86:
 	ln -fs arch-x86.h arch.h
 	ln -fs bootstrapdict-x86.s bootstrapdict.s
 	echo "/usr/pkg/gcc-2.95.3/bin/gcc" > compiler
-	echo -n "/sw/bin/gforth-0.5.0" > hostforth
+	echo -n "gforth-0.5.0" > hostforth
 
 posix:
 	ln -fs sysposix.c sys.c
