@@ -3,9 +3,7 @@ ARCH     := $(shell ./arch)
 KERN     := $(shell uname -s)
 HOST     := gforth-0.5.0
 SYSTEM   := $(KERN)-$(ARCH)
-ifeq ($(origin CC), undefined)
 CC       := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-gcc)
-endif
 CPPFLAGS := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-cppflags)
 OS       := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-os)
 FFLAGS   := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-forthflags)
@@ -38,6 +36,11 @@ SAVE_FINA = ${RUN_FINA} savefina.fs bye.fs
 
 ALL_FORTH = fina.fs ${SAVE_FINA}
 
+
+bootstrap-from-assembler: opt.fs
+	touch opt.fs
+	touch bootstrapdict-$(ARCH).s
+	$(MAKE) all
 
 all: fina doc
 
@@ -76,7 +79,8 @@ kernel0dict.s: bootstrap ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
 	cat ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1} | ./$< > $@
 
 bootstrapdict-$(ARCH).s: ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1}
-	$(HOST) ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1} > $@
+	$(HOST) ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1} > $@.tmp
+	mv $@.tmp $@
 
 main.o : main.c
 
@@ -110,7 +114,7 @@ kernel.s: kerneldict.s finac.s
 
 clean:
 	rm -f *.o kernel*.s bootstrap.s fina*.s arch.h opt.fs fina bootstrap kernel0 kernel *\~ \#*\# \
-		help/toc.help ${ALL_HELP}
+		glos.txt help/toc.help ${ALL_HELP}
 
 distclean: clean
 
