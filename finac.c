@@ -8,7 +8,8 @@
 
 #define POPLL  ll  = (((long long)tos) << 32) | *(unsigned*)dsp++; tos = *dsp++
 #define POPLL2 ll2 = (((long long)tos) << 32) | *(unsigned*)dsp++; tos = *dsp++
-#define POPULL ull = (((unsigned long long)tos) << 32) | *(unsigned*)dsp++; tos = *dsp++
+#define POPULL ull = (((unsigned long long)tos) << 32) \
+                   | *(unsigned*)dsp++; tos = *dsp++
 #define PUSHLL *--dsp = tos; *--dsp = ll; tos = ll>>32
 #define PUSHULL *--dsp = tos; *--dsp = ull; tos = ull>>32
 
@@ -79,7 +80,8 @@ static char * zstr(const char * str, unsigned len)
         return res;
 }
 
-static inline unsigned UMSlashMod(unsigned long long u, unsigned v, unsigned * pmod)
+static inline unsigned UMSlashMod(unsigned long long u, unsigned v, 
+                                  unsigned * pmod)
 {
         int i = 8*sizeof(int), c = 0;
         unsigned q = 0, h = u >> (8*sizeof(int)), l = u;
@@ -457,7 +459,8 @@ static int prims()
                 
                 PRIM(CALL3,60);
                 {
-                        typedef unsigned (*CALL3)(unsigned, unsigned, unsigned);
+                        typedef unsigned (*CALL3)(unsigned, unsigned, 
+                                                  unsigned);
                         SAVESP;
                         tos = ((CALL3)tos)(dsp[0], dsp[1], dsp[2]);
                         RESTORESP;
@@ -467,7 +470,8 @@ static int prims()
                 
                 PRIM(CALL4,61);
                 {
-                        typedef unsigned (*CALL4)(unsigned, unsigned, unsigned, unsigned);
+                        typedef unsigned (*CALL4)(unsigned, unsigned, 
+                                                  unsigned, unsigned);
                         SAVESP;
                         tos = ((CALL4)tos)(dsp[0], dsp[1], dsp[2], dsp[3]);
                         RESTORESP;
@@ -676,7 +680,8 @@ static int prims()
                 NEXT;
                 
                 PRIM(WITHIN, 98);
-                tos = FLAG(((unsigned)dsp[1] - (unsigned)dsp[0]) < ((unsigned)tos - (unsigned)dsp[0]));
+                tos = FLAG(((unsigned)dsp[1] - (unsigned)dsp[0]) 
+                           < ((unsigned)tos - (unsigned)dsp[0]));
                 dsp += 2;
                 NEXT;
                 
