@@ -198,7 +198,8 @@ VARIABLE CHARPTR
    DUP 4 CHARS + OVER C@ 3 - 0 MAX R@ WRITE-LINE THROW 
    COUNT CHARS + 
   REPEAT DROP
-  HERE 0 R> WRITE-LINE THROW \ Write final empty line.
+\  HERE 0 R> WRITE-LINE THROW \ Write final empty line.
+  rdrop
 ;
 
 
