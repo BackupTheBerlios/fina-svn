@@ -29,6 +29,14 @@ SAVE_FINA = ${RUN_FINA} savefina.fs bye.fs
 
 ALL_FORTH = fina.fs ${SAVE_FINA}
 
+SYSTEM = `uname -s`-`uname -m`
+
+
+all:
+	$(MAKE) $(SYSTEM)
+	ln -fs bootstrapdict.s.$(SYSTEM) bootstrapdict.s
+	touch bootstrapdict.s
+	$(MAKE) fina
 
 fina: kernel ${SAVE_FINA}
 	cat ${SAVE_FINA} | ./$<
@@ -100,20 +108,19 @@ kernel.s: kerneldict.s finac.s
 
 sys.o: sys.c sys.h
 
-distclean:
+anew:
 	rm -f arch.h tconfig.fs sys.c opt.fs flags compiler hostforth
 
 clean:
 	rm -f *.o *.s fina bootstrap kernel0 kernel *\~ \#*\# \
 		help/toc.help ${ALL_HELP}
 
+distclean: anew clean
+
+
 powerpc:
 	ln -fs tconfig-powerpc.fs tconfig.fs
 	ln -fs arch-powerpc.h arch.h
-	ln -fs bootstrapdict.s.powerpc bootstrapdict.s
-	echo -n " -no-cpp-precomp " >> flags
-	echo -n "gcc2" > compiler
-	echo -n "gforth-0.5.0" > hostforth
 
 mips:
 	ln -fs tconfig-mips.fs tconfig.fs
@@ -124,7 +131,6 @@ mips:
 x86:
 	ln -fs tconfig-x86.fs tconfig.fs
 	ln -fs arch-x86.h arch.h
-	ln -fs bootstrapdict-x86.s bootstrapdict.s
 	echo "/usr/pkg/gcc-2.95.3/bin/gcc" > compiler
 	echo -n "gforth-0.5.0" > hostforth
 
@@ -147,3 +153,8 @@ files:
 allocate:
 	echo -n " -DHAS_ALLOCATE " >> flags
 	echo "-1 constant has-allocate" >> opt.fs
+
+
+Linux-ppc: anew powerpc posix fast
+	echo -n "/usr/powerpc-unknown-linux-gnu/gcc-bin/2.95/powerpc-unknown-linux-gnu-gcc" > compiler
+	echo -n "gforth-0.5.0" > hostforth
