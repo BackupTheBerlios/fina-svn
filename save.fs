@@ -10,8 +10,10 @@
 : mark ( a1 -- a2 )
    begin cell+ dup 2@ h# feedbabe.deadbeef d= until ;
 
+: cold!
+   cell+ dict0 cell+ cell+ ! ;
+
 : save ( a u -- )
-   ['] quit cell+ dict0 cell+ cell+ !
    w/o open-file throw >r   0 argv r/o open-file throw
    dup mmap-file throw
    dup dup mark over - dup pad ! r@ write-file throw  \ contents before dictionary
@@ -24,4 +26,13 @@
 : save"
    [char] " parse save ;
 
-save" fina"
+:noname
+   con
+   rp0 @ rp! 
+   sp0 @ sp!
+   argc 1 ?do
+      i argv s" -e" compare 0= if 
+         i 1+ argv evaluate 2
+      else i argv included 1 then
+   +loop quit ; cold!
+
