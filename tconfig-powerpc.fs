@@ -25,3 +25,5 @@
    ." _Forth_UserP: .long XT_USERP + 4" cr
    ." _Forth_Here: .long XT_HERE + 4" cr
 ;
+
+: .end ;

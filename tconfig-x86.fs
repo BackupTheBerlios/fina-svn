@@ -17,7 +17,7 @@
    [char] " parse postpone sliteral postpone type  
    postpone cr ; immediate
 
-: .align ."  .align 4" cr ;
+: .align ."  .balign 4" cr ;
 
 : .init
    ."  .globl Forth_Entry " cr 
@@ -30,4 +30,4 @@
    ." Forth_UserP: .long XT_USERP + 8" cr
    ." Forth_Here: .long XT_HERE + 8" cr ;
 
-
+: .end ;
