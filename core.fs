@@ -199,9 +199,11 @@ variable leaves
 
 
 \ Definers
+' quit dup ?dodefine drop swap - constant /call
+
 : to
    ' ?dodefine xtof dovalue <> -32 ?throw
-   state @ if postpone doto cell- , else ! then ;  immediate
+   state @ if postpone doto /call - , else ! then ;  immediate
 
 : create ( "<spaces>name" --  R: -- a-addr  )
    nesting?  head, xtof docreate xt, drop  0 , linklast ;
