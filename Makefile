@@ -1,9 +1,9 @@
 CC = `cat compiler`
 HOST = `cat hostforth`
-CPPFLAGS = `cat flags` -DHASFILES
-CFLAGS = -g -O2 -Wall -fno-leading-underscore 
+CPPFLAGS = `cat flags`
+CFLAGS = -g -O2 -Wall 
 
-COMMON_OBJECTS = main.o finac.o sys.o
+COMMON_OBJECTS = main.o sys.o
 
 ALL_HELP = ${ALL_FORTH:%.fs=help/%.help}
 
@@ -30,7 +30,7 @@ fina2: ${COMMON_OBJECTS} fina2.o
 
 fina1: ${COMMON_OBJECTS} fina1.o
 
-fina0: ${COMMON_OBJECTS} fina0.o
+fina0: ${COMMON_OBJECTS} 
 
 run: fina
 	cat ${RUN_FINA} - | ./fina
@@ -42,13 +42,13 @@ test: fina2
 test0: fina0
 	cat ${FINA_TEST} | ./$<
 
-fina2.s: fina1 ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
+finas2.s: fina1 ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
 	cat ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1} | ./$< > $@
 
-fina1.s: fina0 ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
+finas1.s: fina0 ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1}
 	cat ${HOST_FINA0} ${FINA_SRC0} ${HOST_FINA1} ${FINA_SRC1} | ./$< > $@
 
-fina0.s: ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1}
+finas0.s: ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1}
 	`cat hostforth` ${FINA_SRC0} ${HOST_GFORTH} ${FINA_SRC1} > $@
 
 # Glossaries
@@ -66,15 +66,32 @@ help/%.help: %.fs
 
 main.o : main.c
 
-finac.o: finac.c fina.h arch.h sys.h
+finac.s: finac.c fina.h arch.h sys.h
+	${CC} ${CPPFLAGS} ${CFLAGS} -S finac.c -o finac.s
 
 fina.o: fina.s
+	${CC} -c ${CFLAGS} $< -o $@
 
 fina0.o: fina0.s
+	${CC} -c ${CFLAGS} $< -o $@
 
 fina1.o: fina1.s
+	${CC} -c ${CFLAGS} $< -o $@
 
 fina2.o: fina1.s
+	${CC} -c ${CFLAGS} $< -o $@
+
+fina.s: finas.s finac.s
+	cat $^ > $@
+
+fina0.s: finas0.s finac.s
+	cat $^ > $@
+
+fina1.s: finas1.s finac.s
+	cat $^ > $@
+
+fina2.s: finas2.s finac.s
+	cat $^ > $@
 
 sys.o: sys.c sys.h
 
@@ -95,7 +112,8 @@ powerpc:
 mips:
 	ln -fs tconfig-mips.fs tconfig.fs
 	ln -fs arch-mips.h arch.h
-	echo "gcc2" > compiler
+	echo -n "gcc" > compiler
+	echo -n "gforth-0.5.0" > hostforth
 
 x86:
 	ln -fs tconfig-x86.fs tconfig.fs
@@ -113,3 +131,6 @@ fast:
 slow:
 	echo "0 constant fast" >> opt.fs
 	echo -n " -UFASTFORTH " >> flags
+
+files:
+	echo -n " -DHASFILES " >> flags
