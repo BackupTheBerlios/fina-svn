@@ -80,10 +80,10 @@ here ," the terminal" count (fname) 2!
 
 \ Extend save-input and restore-input to save file name and line number
 :noname  ( -- xn ... x1 n )
-   sourcefilename  sourceline# defered save-input 3 + ; is save-input
+   sourcefilename  sourceline# deferred save-input 3 + ; is save-input
 
 :noname  ( xn ... x1 n -- flag )
-   3 - defered restore-input if 
+   3 - deferred restore-input if 
       2drop drop -1 
    else 
       to sourceline# (fname) 2! 0 
