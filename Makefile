@@ -29,7 +29,7 @@ SAVE_FINA = ${RUN_FINA} savefina.fs bye.fs
 
 ALL_FORTH = fina.fs ${SAVE_FINA}
 
-ARCH = `uname -p`
+ARCH = `./arch`
 KERN = `uname -s`
 SYSTEM = $(KERN)-$(ARCH)
 
