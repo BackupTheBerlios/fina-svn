@@ -202,7 +202,6 @@ static int prims()
 #if defined(MORE_PRIMS) || defined(HAS_FILES)
         unsigned long long ull;
 #endif 
-        LNKREG;
         foo = -1;
         while (1) { switch (foo) {
                 // DON'T MOVE THIS
@@ -216,34 +215,34 @@ static int prims()
                 
                 PRIM(DOCONST,1);
                 PUSH;
-                tos = *lnk;
+                tos = *getlnk();
                 NEXT;
                 
                 PRIM(DOVALUE,2);
                 PUSH;
-                tos = *lnk;
+                tos = *getlnk();
                 NEXT;
                 
                 PRIM(DOVAR,3);
                 PUSH; 
-                tos = (CELL)lnk;
+                tos = (CELL)getlnk();
                 NEXT;
                 
                 PRIM(DOCREATE,4);
                 PUSH;
-		t0 = (CELL)lnk;
+		t0 = (CELL)getlnk();
                 tos = sizeof(CELL) + t0;
                 goto **(CELL**)t0;
                 NEXT;
                 
                 PRIM(DOUSER,6);
                 PUSH;
-                tos = *userP() + *lnk;
+                tos = *userP() + *getlnk();
                 NEXT;
                 
                 PRIM(DOLIST,7);
                 RPUSH(fpc);
-                fpc = (CELL*)lnk;
+                fpc = (CELL*)getlnk();
 #if defined(PROFILE_FORTH)
                 fpc[-2]++; // XXX No ira en pc
 #endif    
