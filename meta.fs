@@ -91,6 +91,7 @@ variable options
         [char] $ of ." DOLLAR"   endof
         [char] : of ." COLON"    endof
         [char] ; of ." SEMI"     endof
+        [char] & of ." AND"      endof
         dup emit
       endcase
    loop ;
