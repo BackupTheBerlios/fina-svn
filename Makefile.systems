@@ -1,0 +1,60 @@
+################################################################
+# Linux-powerpc
+################################################################
+
+Linux-powerpc-gcc:
+	echo gcc
+
+Linux-powerpc-cppflags: posix-cppflags
+
+Linux-powerpc-forthflags: posix-forthflags
+
+Linux-powerpc-os: 
+	echo posix
+
+################################################################
+# Linux-i386
+################################################################
+
+Linux-i386-gcc:
+	echo gcc-2.95
+
+Linux-i386-cppflags: posix-cppflags
+
+Linux-i386-forthflags: posix-forthflags
+
+Linux-i386-os:
+	echo posix
+
+
+################################################################
+# Darwin
+################################################################
+
+files-cppflags:
+	echo -DHAS_FILES
+
+files-forthflags:
+	echo -1 constant has-files
+
+allocate-cppflags:
+	echo -DHAS_ALLOCATE
+
+allocate-forthflags:
+	echo -1 constant has-allocate
+
+fast-cppflags:
+	echo -DMORE_PRIMS
+
+fast-forthflags:
+	echo -1 constant more-prims
+
+slow-cppflags:
+	echo -UMORE_PRIMS
+
+slow-forthflags:
+	echo 0 constant more-prims
+
+posix-cppflags: fast-cppflags files-cppflags allocate-cppflags
+
+posix-forthflags: fast-forthflags files-forthflags allocate-forthflags
