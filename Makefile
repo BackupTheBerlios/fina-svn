@@ -101,7 +101,7 @@ x86:
 	ln -fs tconfig-x86.fs tconfig.fs
 	ln -fs arch-x86.h arch.h
 	echo "/usr/pkg/gcc-2.95.3/bin/gcc" > compiler
-	echo -n "gforth-0.5.0 -p /usr/local/lib/gforth/0.5.0" > hostforth
+	echo -n "gforth-0.5.0 -p .:/usr/local/lib/gforth/0.5.0" > hostforth
 
 posix:
 	ln -fs sysposix.c sys.c
