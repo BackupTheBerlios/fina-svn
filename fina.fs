@@ -729,6 +729,10 @@ p: within  ( n1|u1 n2|u2 n3|u3 -- flag )
 p: d+  ( d1 d2 -- d3 )
    >r swap >r um+ r> r> + + ;  
 
+\g From Comus. Add n2|u2 to n1|u1, giving the sum n3|u3
+: under+  ( n1|u1 x n2|u2 -- n3|u3 x ) 
+   rot + swap ;
+
 \ Memory
 
 \g @see anscore
@@ -786,7 +790,7 @@ p: count  ( c-addr1 -- c-addr2 u )
 
 \g @see anscore
 p: +!  ( x a-addr -- )
-   swap over @ + swap ! ;  
+   dup @ under+ ! ;
 
 \g @see anscore
 : allot  ( n -- )
@@ -812,7 +816,7 @@ p: +!  ( x a-addr -- )
 
 \g @see ansstring
 : /string  ( c-addr1 u1 n -- c-addr2 u2 )
-   >r r@ - swap r> chars + swap ;  
+   >r r@ under+ r> - ;
 
 \g Returns unparsed input
 : unparsed  ( -- c-addr u ) 
