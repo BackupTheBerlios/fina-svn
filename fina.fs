@@ -282,6 +282,18 @@ internal ( a1 u1 a2 -- u2 ior ) write to file
 prim mmapf
 internal ( a1 -- a2 ) mmap file
 
+prim sizef
+internal ( a -- ud ) size of file
+
+prim seekf
+internal ( ud a -- ior ) seek to file position
+
+prim tellf
+internal ( a -- ud ior ) tell file position
+
+prim linef
+internal ( a1 u1 a2 -- u2 u3 ior ) read line from file
+
 prim argc
 internal ( -- u ) number of arguments command line 
 
@@ -893,7 +905,7 @@ p: doto  internal ( x -- ) runtime for TO, store x at inline address
 
 \ Initialization
 : cold ( -- )
-   xtof dict0 xt>name cell- xtof dict0 cell+ !
+   xtof dict0 xt>name [ 6 cells ] literal - xtof dict0 cell+ !
    xtof dummy2 xt>name to here
    dict0
    [ /tdict ] literal + dup to memtop
