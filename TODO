@@ -1,5 +1,5 @@
-- write do2literal, 3 words per 2literal instead of 4
-- help broken, try "help char" "help dup"
+- rename executables: bootstrap-> kernel0 -> kernel -> fina
+- help broken, try "help char"
 - fast dictionary search using endian-specific code, i.e
    if (((*(CELL*)cstr1) << 3) == ((*(CELL*)cstr2) << 3)) ...
 - factorize INTERPRET with something like FOREACHPARSED
