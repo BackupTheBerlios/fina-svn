@@ -828,7 +828,7 @@ p: +!  ( x a-addr -- )
 
 \g Skip leading characters
 : skip  ( c-addr1 u1 char -- c-addr2 u2 )
-   >r  begin  dup while over c@ i = while 1 /string repeat then  rdrop ;  
+   >r  begin  dup while over c@ r@ = while 1 /string repeat then  rdrop ;  
 
 \g @see anscore
 : parse  ( char "xxxc" -- c-addr u )
