@@ -29,12 +29,16 @@ SAVE_FINA = ${RUN_FINA} savefina.fs bye.fs
 
 ALL_FORTH = fina.fs ${SAVE_FINA}
 
-SYSTEM = `uname -s`-`uname -m`
+ARCH = `uname -m`
+KERN = `uname -s`
+SYSTEM = $(KERN)-$(ARCH)
 
 
 all:
 	$(MAKE) $(SYSTEM)
-	ln -fs bootstrapdict.s.$(SYSTEM) bootstrapdict.s
+	ln -fs bootstrapdict.s.$(ARCH) bootstrapdict.s
+	ln -fs tconfig-$(ARCH).fs tconfig.fs
+	ln -fs arch-$(ARCH).h arch.h
 	touch bootstrapdict.s
 	$(MAKE) fina
 
@@ -118,22 +122,6 @@ clean:
 distclean: anew clean
 
 
-powerpc:
-	ln -fs tconfig-powerpc.fs tconfig.fs
-	ln -fs arch-powerpc.h arch.h
-
-mips:
-	ln -fs tconfig-mips.fs tconfig.fs
-	ln -fs arch-mips.h arch.h
-	echo -n "gcc" > compiler
-	echo -n "gforth-0.5.0" > hostforth
-
-x86:
-	ln -fs tconfig-x86.fs tconfig.fs
-	ln -fs arch-x86.h arch.h
-	echo "/usr/pkg/gcc-2.95.3/bin/gcc" > compiler
-	echo -n "gforth-0.5.0" > hostforth
-
 posix:
 	ln -fs sysposix.c sys.c
 	$(MAKE) files allocate
@@ -155,6 +143,10 @@ allocate:
 	echo "-1 constant has-allocate" >> opt.fs
 
 
-Linux-ppc: anew powerpc posix fast
+Linux-ppc: anew posix fast
 	echo -n "/usr/powerpc-unknown-linux-gnu/gcc-bin/2.95/powerpc-unknown-linux-gnu-gcc" > compiler
+	echo -n "gforth-0.5.0" > hostforth
+
+NetBSD-i686: anew posix fast
+	echo "/usr/pkg/gcc-2.95.3/bin/gcc" > compiler
 	echo -n "gforth-0.5.0" > hostforth
