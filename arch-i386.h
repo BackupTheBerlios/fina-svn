@@ -31,7 +31,7 @@ static inline void setsp(CELL osp)
 
 static inline CELL arch_iscall(CELL xt)
 {
-        return *(CELL*)xt = 0xe8909090;
+        return (*(CELL*)xt) == 0xe8909090;
 }
 
 static inline CELL arch_callsize()
