@@ -77,7 +77,7 @@ file
 
 \ Flow control
 
-\g @see anscore
+\g @see anstools
 : ahead  ( -- a-addr 1 )
    postpone branch   fwmark ;  immediate compile-only
 
@@ -265,7 +265,7 @@ variable leaves
 
 \g @see anscore
 : word  ( char "<chars>ccc<char>" -- c-addr )
-   here >r skipparse s, r@ to here r> ;
+   here swap skipparse s, dup to here ;
 
 \g @see anscore
 : find  ( a -- a 0 | xt 1 | xt -1 )
