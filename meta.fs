@@ -149,15 +149,11 @@ variable underscore  underscore off
    .call" DOUSER"
    ."  .long " nextuser asm. 
    /tcall 1 tcells + size +! ;
-: lit>t ( addr -- addr' )
-   cell+  dup @ asm. ;
-: cell>t ( addr -- addr' )
-\  ." moving " dup @ xt>name if dup @ xt>name .name space else dup @ . then 
-   dup @ .special dup 0< if
-      drop xt>name namecount xttype
-   else 
-      nip 0 ?do lit>t loop
-   then cell+ ;
+
+:noname ( a-addr1 -- a-addr2 )
+   dup @ asm. cell+ ; is lit>t
+:noname ( addr -- addr' , move normal cell to target)
+   dup @ xt>name namecount xttype cell+ ; is ncell>t
 : list>t ( -- )
    lastbody begin 
       dup here <> 
@@ -214,7 +210,8 @@ variable underscore  underscore off
    >t ?stack ['] col>t to type>t :' ;
 :' p: 
    >t ?stack more-prims if ['] prim>t else ['] col>t then to type>t :' ;
-
+:' defer
+   create ;
 :' to postpone doto ; immediate compile-only
 
 :' ?throw ['] do?throw here 2 cells - ! ; immediate compile-only
