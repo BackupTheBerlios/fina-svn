@@ -41,6 +41,7 @@ all:
 	ln -fs arch-$(ARCH).h arch.h
 	touch bootstrapdict.s
 	$(MAKE) fina
+	$(MAKE) doc
 
 fina: kernel ${SAVE_FINA}
 	cat ${SAVE_FINA} | ./$<
