@@ -13,9 +13,9 @@
 #define PUSHLL *--dsp = tos; *--dsp = ll; tos = ll>>32
 #define PUSHULL *--dsp = tos; *--dsp = ull; tos = ull>>32
 
-#define PRIM(x, n)  case n: asm(" .globl XT_" #x "\nXT_" #x ":")
+#define PRIM(x, n)  case n: asm(" .globl XT_" #x "\nXT_" #x ":"); { int unused
 #define NEXTT goto **fpc++
-#define NEXT NEXTT; break
+#define NEXT (void) unused; } NEXTT; break
 #define PUSH *--dsp = tos
 #define RPUSH(reg) *--rsp = (CELL)(reg)
 #define RPOP(reg) (CELL)(reg) = *rsp++;
@@ -34,10 +34,10 @@ struct state volatile * volatile saved = &_saved;
 static CELL bootstrap_dsp[BOOTSTRAP_STACK];
 static CELL bootstrap_rsp[BOOTSTRAP_STACK];
 
-static inline CELL userP()
+static inline CELL *userP()
 {
         extern CELL Forth_UserP;
-        return *(CELL*)(Forth_UserP + arch_callsize());
+        return (CELL*)(Forth_UserP + arch_callsize());
 }
 
 static inline unsigned upCase(unsigned uiVal)
@@ -167,7 +167,7 @@ int FINA_InternalTick(int throw)
         
         if (throw)
         {
-                fpc = (CELL*)(arch_callsize() + *(CELL*)userP());
+                fpc = (CELL*)(arch_callsize() + **(CELL**)userP());
                 rsp = bootstrap_rsp + BOOTSTRAP_STACK;
                 dsp = bootstrap_dsp + BOOTSTRAP_STACK;
                 tos = throw;
@@ -195,9 +195,8 @@ int FINA_Tick()
 static int prims()
 {
         extern CELL Forth_Here;
-        register CELL t0, t1;
+        register CELL t0;
 #if defined(FASTFORTH)
-        register CELL t2;
         long long ll, ll2;
 #endif
 #if defined(FASTFORTH) || defined(HASFILES)
@@ -232,15 +231,13 @@ static int prims()
                 
                 PRIM(DOCREATE,4);
                 PUSH;
-                t0 = (CELL)lnk;
-                tos = t0 + sizeof(CELL);
-                if (*(CELL**)t0) goto **(CELL**)t0;
+                tos = sizeof(CELL) + (CELL)lnk;
+                goto **(CELL**)lnk;
                 NEXT;
                 
                 PRIM(DOUSER,6);
                 PUSH;
-                tos = *lnk;
-                tos += userP();
+                tos = *userP() + *lnk;
                 NEXT;
                 
                 PRIM(DOLIST,7);
@@ -282,11 +279,11 @@ static int prims()
                 NEXT;
                 
                 PRIM(ZEROLT,16);
-                tos = (tos < 0)? -1 : 0;
+                tos = FLAG(tos < 0);
                 NEXT;
                 
                 PRIM(ZEROEQUALS,17);
-                tos = (tos == 0)? -1 : 0;
+                tos = FLAG(tos == 0);
                 NEXT;
                 
                 PRIM(TWOSTAR,18);
@@ -338,11 +335,10 @@ static int prims()
                 NEXT;
                 
                 PRIM(MOVE,29);
-                t0 = *dsp++;
-                t1 = *dsp++;
                 SAVESP;
-                Sys_MemMove((char*)t0, (char*)t1, tos);
+                Sys_MemMove((char*)dsp[0], (char*)dsp[1], tos);
                 RESTORESP;
+                dsp += 2;
                 POP;
                 NEXT;
                 
@@ -367,14 +363,12 @@ static int prims()
                 
                 PRIM(SWAP,34);
                 t0 = tos;
-                tos = *dsp;
-                *dsp = t0;
+                tos = dsp[0];
+                dsp[0] = t0;
                 NEXT;
                 
                 PRIM(XOR,35);
-                t0 = tos;
-                POP;
-                tos = tos ^ t0;
+                tos ^= *dsp++;
                 NEXT;
                 
                 PRIM(BRANCH,36);
@@ -398,7 +392,7 @@ static int prims()
                 PRIM(DOPLUSLOOP,38);
                 t0 = rsp[0] - rsp[1];
                 rsp[0] += tos;
-                if ( (t0 ^ (t0 + tos)) >= 0 || (t0 ^ tos) >= 0 )
+                if ((t0 ^ (t0 + tos)) >= 0 || (t0 ^ tos) >= 0)
                         (char*)fpc += *fpc;
                 else
                         fpc++;
@@ -465,68 +459,58 @@ static int prims()
                 saved->dsp = dsp;
                 saved->fpc = fpc;
                 return 0;
+                NEXT;
                 
                 PRIM(BYE,56);
                 return 1;
                 NEXT;
                 
                 PRIM(CALL0,57);
-                {
-                        typedef unsigned (*CALL0)();
-                        SAVESP;
-                        tos = ((CALL0)tos)();
-                        RESTORESP;
-                }
+//                typedef unsigned (*CALL0)();
+                SAVESP;
+                tos = ((unsigned(*)())tos)();
+                RESTORESP;
                 NEXT;
                 
                 PRIM(CALL1,58);
-                {
-                        typedef unsigned (*CALL1)(unsigned);
-                        SAVESP;
-                        tos = ((CALL1)tos)(dsp[0]);
-                        RESTORESP;
-                        dsp++;
-                }
+//                typedef unsigned (*CALL1)(unsigned);
+                SAVESP;
+                tos = ((unsigned(*)())tos)(dsp[0]);
+                RESTORESP;
+                dsp++;
                 NEXT;
                 
                 PRIM(CALL2,59);
-                {
-                        typedef unsigned (*CALL2)(unsigned, unsigned);
-                        SAVESP;
-                        tos = ((CALL2)tos)(dsp[0], dsp[1]);
-                        RESTORESP;
-                        dsp += 2;
-                }
+//                typedef unsigned (*CALL2)(unsigned, unsigned);
+                SAVESP;
+                tos = ((unsigned(*)())tos)(dsp[0], dsp[1]);
+                RESTORESP;
+                dsp += 2;
                 NEXT;
                 
                 PRIM(CALL3,60);
-                {
-                        typedef unsigned (*CALL3)(unsigned, unsigned, 
-                                                  unsigned);
-                        SAVESP;
-                        tos = ((CALL3)tos)(dsp[0], dsp[1], dsp[2]);
-                        RESTORESP;
-                        dsp += 3;
-                }
+//                typedef unsigned (*CALL3)(unsigned, unsigned, 
+//                                          unsigned);
+                SAVESP;
+                tos = ((unsigned(*)())tos)(dsp[0], dsp[1], dsp[2]);
+                RESTORESP;
+                dsp += 3;
                 NEXT;
                 
                 PRIM(CALL4,61);
-                {
-                        typedef unsigned (*CALL4)(unsigned, unsigned, 
-                                                  unsigned, unsigned);
-                        SAVESP;
-                        tos = ((CALL4)tos)(dsp[0], dsp[1], dsp[2], dsp[3]);
-                        RESTORESP;
-                        dsp += 4;
-                }
+//                typedef unsigned (*CALL4)(unsigned, unsigned, 
+//                                          unsigned, unsigned);
+                SAVESP;
+                tos = ((unsigned(*)())tos)(dsp[0], dsp[1], dsp[2], dsp[3]);
+                RESTORESP;
+                dsp += 4;
                 NEXT;
                 
                 PRIM(SAMEQ,62);
-                t1 = *dsp++;
-                t0 = *dsp++;
                 SAVESP;
-                tos = nCaseCompare(t0, t1, tos);
+                tos = nCaseCompare(dsp[0], dsp[1], tos);
                 RESTORESP;
+                dsp += 2;
                 NEXT;
 
                 PRIM(RFETCH,33);
@@ -536,52 +520,47 @@ static int prims()
 
 #if defined(FASTFORTH)
                 PRIM(DOTO,5);
-                t0 = *fpc++;
-                ((CELL*)t0)[arch_callsize() / sizeof(CELL)] = tos;
+                ((CELL*)*fpc++)[arch_callsize() / sizeof(CELL)] = tos;
                 POP;
                 NEXT;
                 
                 
                 PRIM(PARENSEARCH_WORDLIST,65);
+                CELL * ret;
+                SAVESP;
+                ret = searchWordlist(tos, dsp[0], dsp[1]);
+                RESTORESP;
+                dsp += 2;
+                tos = ret[0];
+                if (tos)
                 {
-                        CELL * ret;
-                        SAVESP;
-                        ret = searchWordlist(tos, dsp[0], dsp[1]);
-                        RESTORESP;
-                        dsp += 2;
+                        tos = ret[2];
+                        PUSH;
+                        tos = ret[1];
+                        PUSH;
                         tos = ret[0];
-                        if (tos)
-                        {
-                                tos = ret[2];
-                                PUSH;
-                                tos = ret[1];
-                                PUSH;
-                                tos = ret[0];
-                        }
                 }
                 NEXT;
                 
                 PRIM(UMSLASHMOD,67);
-                {
 #if 1
-                        t0 = tos;
-                        POP;
-                        POPULL;
-                        PUSH;
-                        PUSH;
-                        SAVESP;
-                        tos = UMSlashMod(ull, t0, dsp);
-                        RESTORESP;
+                t0 = tos;
+                POP;
+                POPULL;
+                PUSH;
+                PUSH;
+                SAVESP;
+                tos = UMSlashMod(ull, t0, dsp);
+                RESTORESP;
 #else
-                        t1 = tos;
-                        POP;
-                        POPLL;
-                        PUSH;
-                        tos = ((unsigned long long)ll) % t1;
-                        PUSH;
-                        tos = ((unsigned long long)ll) / t1;
+                t0 = tos;
+                POP;
+                POPLL;
+                PUSH;
+                tos = ((unsigned long long)ll) % t0;
+                PUSH;
+                tos = ((unsigned long long)ll) / t0;
 #endif
-                }
                 NEXT;
                 
                 PRIM(ALIGNED, 68);
@@ -606,9 +585,8 @@ static int prims()
                 NEXT;
                 
                 PRIM(COUNT, 74);
-                t0 = *(unsigned char*)tos;
-                *--dsp = ++tos;
-                tos = t0;
+                *--dsp = tos + 1;
+                tos = *(unsigned char*)tos;
                 NEXT;
                 
                 PRIM(QDUP, 75);
@@ -627,11 +605,10 @@ static int prims()
                 NEXT;
                 
                 PRIM(ROT, 79);
-                t0 = *dsp++;
-                t1 = *dsp++;
-                *--dsp = t0;
-                *--dsp = tos;
-                tos = t1;
+                t0 = tos;
+                tos = dsp[1];
+                dsp[1] = dsp[0];
+                dsp[0] = t0;
                 NEXT;
                 
                 PRIM(ONEPLUS, 80);
@@ -682,13 +659,12 @@ static int prims()
                 NEXT;
                 
                 PRIM(TWOSWAP, 91);
-                t0 = *dsp++;
-                t1 = *dsp++;
-                t2 = *dsp++;
-                *--dsp = t0;
-                *--dsp = tos;
-                *--dsp = t2;
-                tos = t1;
+                t0 = tos;
+                tos = dsp[1];
+                dsp[1] = t0;
+                t0 = dsp[0];
+                dsp[0] = dsp[2];
+                dsp[2] = t0;
                 NEXT;
                 
                 PRIM(UNLOOP, 93);
@@ -710,10 +686,8 @@ static int prims()
                 NEXT;
                 
                 PRIM(TWOFETCH, 97);
-                t0 = *((CELL*)tos)++;
-                tos = *(CELL*)tos;
-                PUSH;
-                tos = t0;
+                *--dsp=((CELL*)tos)[1];
+                tos = ((CELL*)tos)[0];
                 NEXT;
                 
                 PRIM(WITHIN, 98);
@@ -723,15 +697,13 @@ static int prims()
                 NEXT;
                 
                 PRIM(UMSTAR, 99);
-                {
-                        unsigned long long t0 = (unsigned)tos;
-                        unsigned long long t1;
-                        POP;
-                        t1 = (unsigned)tos;
-                        ull = t1 * t0;
-                        POP;
-                        PUSHULL;
-                }
+                unsigned long long t0 = (unsigned)tos;
+                unsigned long long t1;
+                POP;
+                t1 = (unsigned)tos;
+                ull = t1 * t0;
+                POP;
+                PUSHULL;
                 NEXT;
                 
                 PRIM(DPLUS, 100);
@@ -780,11 +752,10 @@ static int prims()
                 NEXT;
                 
                 PRIM(FILL, 109);
-                t0 = *dsp++;
-                t1 = *dsp++;
                 SAVESP;
-                Sys_MemSet((char*)t1, tos, t0);
+                Sys_MemSet((char*)dsp[1], tos, dsp[0]);
                 RESTORESP;
+                dsp += 2;
                 POP;
                 NEXT;
                 
@@ -801,7 +772,7 @@ static int prims()
                 tos += sizeof(CELL);
                 NEXT;
                 
-                PRIM(XXXLSHIFT, 113);
+                PRIM(LSHIFT, 113);
                 tos = *dsp++ << tos;
                 NEXT;
                 
@@ -831,8 +802,8 @@ static int prims()
                 
 #if defined(HASFILES)
                 PRIM(OPENF, 200);
-                t0 = *dsp++;
-                *dsp = (CELL)Sys_FileOpen(zstr((char*)*dsp, t0), tos);
+                dsp[1] = (CELL)Sys_FileOpen(zstr((char*)dsp[1], dsp[0]), tos);
+                dsp++;
                 tos = Sys_FileThrow();
                 NEXT;
 
@@ -842,16 +813,15 @@ static int prims()
                 NEXT;
 
                 PRIM(READF, 202);
-                t0 = *dsp++;
-                *dsp = Sys_FileRead((void*)tos, (char*)*dsp, t0);
+                dsp[1] = Sys_FileRead((void*)tos, (char*)dsp[1], dsp[0]);
+                dsp++;
                 tos = Sys_FileThrow();
                 NEXT;
                 
                 PRIM(WRITEF, 203);
-                t0 = *dsp++;
-                t1 = *dsp++;
-                Sys_FileWrite((void*)tos, (char*)t1, t0);
+                Sys_FileWrite((void*)tos, (char*)dsp[1], dsp[0]);
                 tos = Sys_FileThrow();
+                dsp += 2;
                 NEXT;
 
                 PRIM(MMAPF, 204);
@@ -889,7 +859,7 @@ static int prims()
                 PRIM(LINEF, 208);
                 dsp[1] = Sys_FileLine((void*)tos, (char*)dsp[1], dsp[0]);
                 tos = Sys_FileThrow();
-                dsp[0] = tos == -39? 0 : -1;
+                dsp[0] = FLAG(tos != -39);
                 tos = tos == -39? 0 : tos;
                 NEXT;
 
@@ -904,8 +874,8 @@ static int prims()
                 NEXT;
 
                 PRIM(RENF, 211);
-                t0 = (CELL)zstr2((char*)dsp[0], tos);
-                Sys_FileRen(zstr((char*)dsp[2], dsp[1]), (char*)t0);
+                tos = (CELL)zstr2((char*)dsp[0], tos);
+                Sys_FileRen(zstr((char*)dsp[2], dsp[1]), (char*)tos);
                 tos = Sys_FileThrow();
                 dsp += 3;
                 NEXT;
@@ -927,19 +897,15 @@ static int prims()
                 NEXT;
                 
                 PRIM(TIMEANDDATE, 299);
-                t0 = (CELL)Sys_Time();
                 PUSH;
-                tos = Sys_Second((void*)t0);
-                PUSH;
-                tos = Sys_Minute((void*)t0);
-                PUSH;
-                tos = Sys_Hour((void*)t0);
-                PUSH;
-                tos = Sys_Day((void*)t0);
-                PUSH;
-                tos = Sys_Month((void*)t0);
-                PUSH;
-                tos = Sys_Year((void*)t0);
+                tos = (CELL)Sys_Time();
+                dsp -= 5;
+                dsp[4] = Sys_Second((void*)tos);
+                dsp[3] = Sys_Minute((void*)tos);
+                dsp[2] = Sys_Hour((void*)tos);
+                dsp[1] = Sys_Day((void*)tos);
+                dsp[0] = Sys_Month((void*)tos);
+                tos = Sys_Year((void*)tos);
                 NEXT;
 
                 PRIM(ARGC,300);

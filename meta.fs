@@ -156,7 +156,8 @@ variable underscore  underscore off
    repeat drop cr 
    +bytes ;
 : create>t ( -- )
-   name>t .call" DOCREATE" ."  .long 0 " cr body>t 
+   name>t .call" DOCREATE" cr
+   ."  .long XT_NOOP" cr body>t 
    /tcall 1 tcells + size +! ;
 : var>t ( -- ) 
    name>t .call" DOVAR" body>t 
