@@ -17,7 +17,7 @@ static inline CELL arch_iscall(CELL xt)
 
 static inline CELL arch_callsize()
 {
-        return sizeof(CELL);
+        return 4;
 }
 
 static inline CELL arch_calledby(CELL xt)
