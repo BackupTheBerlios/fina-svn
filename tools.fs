@@ -34,7 +34,7 @@ forth-wordlist set-current
   loop nip ;
 
 \g @see anstools
-: dump
+: dump  ( addr u -- )
    base @ >r hex
    16 /mod swap >r
    0 ?do 16 dumprow loop
@@ -81,6 +81,6 @@ forth-wordlist set-current
    begin  2dup >  while  cellsee  repeat 2drop ;
 
 \g @see anstools
-: see
+: see  ( "<spaces>name" -- )
    ' /fcompo fimmed rot xtsee 
    0 > if ." immediate "  then    0= if ." compile-only" then cr ;
