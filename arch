@@ -1,7 +1,12 @@
 #!/bin/sh
 if [ `uname -s` = 'Linux' ]
 then
+    if [ `uname -m` = 'ppc' ]
+    then
+        uname -m
+    else
         uname -i
+    fi
 else
         uname -p
 fi
