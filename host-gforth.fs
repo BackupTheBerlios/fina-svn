@@ -111,6 +111,7 @@ create do2lit
 create sskip create sscan
 create sparse create unparsed create unparsed!
 create 'compile,
+create printable
 
 : char+ postpone 1+ ; immediate compile-only
 : 1chars/ ; immediate
