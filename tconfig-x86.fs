@@ -27,7 +27,7 @@
    .align
    ."  .long 0xfeedbabe, 0xdeadbeef" cr
    ." Forth_Entry: .long XT_COLD" cr
-   ." Forth_UserP: .long XT_USERP + 8" cr
-   ." Forth_Here: .long XT_HERE + 8" cr ;
+   ." Forth_UserP: .long XT_USERP" cr
+   ." Forth_Here: .long XT_HERE" cr ;
 
 : .end ;
