@@ -1,3 +1,4 @@
+0 value dict0
 
 \ SYSTEM VARIABLES
 0 ivariable echo
@@ -928,11 +929,4 @@ p: doto  internal ( x -- ) runtime for TO, store x at inline address
    quit ;
 0 ivariable dummy2
 0 ivariable dummy3
-:noname 
-   ."  .long " 
-   /tdict size @ - 1 tcells / 
-   0 do ." 0," loop ." 0" cr 
-   ."  .long 0xcacacaca" cr 
-; execute
-
 bye

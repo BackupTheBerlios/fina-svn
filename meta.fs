@@ -106,7 +106,9 @@ variable options
    tcellbits 8 / * ;
 0 value tlastname
 
-variable size  size off
+variable size  
+5 tcells size ! \ For the header in tconfig.fs
+
 : +body 
    here lastbody -  1 cells / tcells size +! ;
 : +bytes
@@ -199,7 +201,7 @@ variable underscore  underscore off
    ."  .long 0xdeadbeef," lastname namecount xttype cr 
    2 tcells size +! ;
 
-' val>t value type>t
+:noname ; value type>t
 
 
 : forgetit
@@ -240,8 +242,11 @@ variable underscore  underscore off
 
 :' ?throw ['] do?throw here 2 cells - ! ; immediate compile-only
 
+:' bye
+   ."  .fill " /tdict size @ - .  ." ,1,0" cr
+   ."  .long 0xcacacaca" cr 
+   bye ; 
 
 marker forget-previous
 .init
 
-0 value' dict0
