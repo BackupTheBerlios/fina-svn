@@ -38,7 +38,7 @@ forth-wordlist set-current
    base @ >r hex
    16 /mod swap >r
    0 ?do 16 dumprow loop
-   R> dumprow drop r> base ! ;
+   r> dumprow drop r> base ! ;
 
 : (next?)
    2dup cell- @ = over and to found ;
@@ -50,7 +50,7 @@ forth-wordlist set-current
    dup primxt? if exit then  \ XXX
    xt>name nextnfa cell- ;
 
-: type? ( addr <inline-doer> -- flag
+: type? ( addr <inline-doer> -- flag )
    ?dodefine nip @r+ = ;
 
 : doersee ( xt -- )
