@@ -21,7 +21,7 @@ HOST_FINA0 = core.fs defer.fs throwmsg.fs search.fs coreext.fs
 HOST_FINA1 = host-fina.fs
 HOST_GFORTH = host-gforth.fs
 FINA_TEST0 = core.fs defer.fs throwmsg.fs tester.fs coretest.fs postponetest.fs bye.fs
-FINA_TEST = tester.fs coretest.fs postponetest.fs filetest.fs dbltest.fs
+FINA_TEST = tester.fs finatest.fs coretest.fs postponetest.fs filetest.fs dbltest.fs
 
 RUN_FINA = \
    core.fs throwmsg.fs defer.fs signals.fs search.fs coreext.fs searchext.fs \
