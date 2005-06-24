@@ -342,11 +342,11 @@ env: /counted-string 255 ;env
 
 env: /hold 255 ;env
 
-env: /pad 255 ;env
+env: /pad [ tib pad - ] literal ;env
 
-env: address-units-bits 32 ;env
+env: address-units-bits 1 cells 8 * ;env
 
-env: floored -1 ;env
+env: floored -1 2 / 0<> ;env
 
 env: max-char 255 ;env
 
@@ -358,8 +358,8 @@ env: max-u -1 ;env
 
 env: max-ud -1. ;env
 
-env: return-stack-cells 256 ;env
+env: return-stack-cells [ rp0 @ sp0 @ - ] literal ;env
 
-env: stack-cells 256 ;env
+env: stack-cells [ sp0 @  pad -  tib pad -  - ] literal ;env
 
 env: core -1 ;env
