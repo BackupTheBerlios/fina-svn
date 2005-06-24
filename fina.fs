@@ -1194,8 +1194,8 @@ p: doto  ( x -- )
    dup userp ! [ /user ]  literal - \ must be initialized before rp0 and sp0
    dup rp0 !   [ /rs ]    literal - 
    dup sp0 !   [ /ds ]    literal - 
-   [ /tib ]   literal - dup to tib
    [ /pad ]   literal - dup to pad
+   [ /tib ]   literal - dup to tib
    drop
    xtof rx? 'ekey? !
    xtof rx@ 'ekey !
