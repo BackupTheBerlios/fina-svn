@@ -21,7 +21,7 @@ root-wordlist set-current
 forth-wordlist set-current
 
 : dumprow ( addr u -- addr' )
-  swap cr dup 0 <#  # # # # # # # #  #> type space
+  swap dup 0 <#  # # # # # # # #  #> type space
   16 0 do
      over i 1+ < if 2 spaces else dup c@ 0 <# # # #> type then space char+ 
   loop 2 spaces 16 chars - 
@@ -31,7 +31,7 @@ forth-wordlist set-current
            drop [char] .
         then
      then emit char+
-  loop nip ;
+  loop nip cr ;
 
 \g @see anstools
 : dump  ( addr u -- )
