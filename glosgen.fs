@@ -188,7 +188,7 @@ VARIABLE CHARPTR
   DUP 2 CELLS + C@ 
   IF
    s" =======" r@ write-line throw
-   s" x " r@ write-file throw
+   s" ? " r@ write-file throw
    DUP BUILD-HLINE
    OLDLINE CHAR+ OLDLINE C@ R@ WRITE-LINE THROW \ write header line.
   THEN
