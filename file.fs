@@ -124,23 +124,25 @@ create line 102 allot
    save-input n>r (finclude) nr> restore-input -37 ?throw ;
 
 
-\g Hook at start of INCLUDED. The xt must be ( c-addr1 u1 --- c-addr2 u2 )
-variable inchook0  ' noop inchook0 !
+\g Deferred word called at start of INCLUDED. 
+\g The xt must be ( c-addr1 u1 --- c-addr2 u2 )
+defer inchook0  ' noop is inchook0
 
-\g Hook at the end of INCLUDED. The xt must be ( c-addr -- ).
+\g Deferred word called at end of INCLUDED. 
+\g The xt must be ( c-addr -- c-addr ).
 \g Will be called with the value of HERE before file was included.
-variable inchook1  ' drop inchook1 !
+defer inchook1  ' noop is inchook1
 
 \g @see ansfile
 : included  ( i*x c-addr u -- j*x )
-   2dup parsed 2!
-   inchook0 @execute 
+   2dup parsed 2!  
+   inchook0
    save-input n>r  here >r
    2dup r/o open-file throw >r 
    (fname) 2!
    r@ (finclude)
    r> close-file throw
-   r> inchook1 @execute
+   r> inchook1 drop
    nr> restore-input -37 ?throw ;
 
 \g Include file

@@ -1,2 +1,3 @@
 :noname ( prevhere -- )
-   sourcefilename type ."  took " here swap - . ." bytes" cr ; inchook1 !
+   deferred inchook1
+   sourcefilename type ."  took " here over - . ." bytes" cr ; is inchook1

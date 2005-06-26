@@ -3,7 +3,8 @@
 variable (incs)  (incs) off
 
 :noname 
-   (incs) linked 2dup here 2 cells allot 2! ; inchook0 !
+   deferred inchook0
+   (incs) linked 2dup here 2 cells allot 2! ; is inchook0
 
 : (.inc) 
    cell+ 2@ type cr ;
