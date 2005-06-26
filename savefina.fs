@@ -33,4 +33,5 @@ defer banner
 
 :noname
    ." ok" cr ; '.prompt ! 
-echo on save" fina" 
+echo on 
+

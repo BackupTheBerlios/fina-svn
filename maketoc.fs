@@ -16,8 +16,11 @@ variable fname 0 ,
    then
    tocstatus 1+ to tocstatus 2drop ;
 
+: findlast ( addr len char -- addr' len' )
+   >r begin 2dup r@ scan r@ skip dup while 2nip repeat 2drop rdrop ;
+
 : toc
-   2dup [char] / scan 1 /string 2dup [char] . scan nip - fname 2! 
+   2dup [char] / findlast 2dup [char] . scan nip - fname 2! 
    2 to tocstatus
    r/o open-file throw >r
    r@ ['] .entry foreachline 

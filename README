@@ -9,6 +9,14 @@ $ gmake
 
 gmake is GNU make. Common names for it are also "gnumake" and "make".
 
+You can force the location of temporary objects and the destination
+directory:
+
+$ gmake OBJDIR=/tmp/obj PREFIX=/usr/local
+
+There's no separate install target. To install, just build to your
+desired PREFIX.
+
 It might happen that your system isn't supported. You'll get an error
 like:
 

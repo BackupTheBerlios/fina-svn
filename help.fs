@@ -46,7 +46,7 @@ variable requested 0 ,
 : @see ( c-addr u -- )
    level 1+ to level
    s" <<" ?type 2dup ?type s" >>" ?type ?cr
-   s" help/" pad place
+   s" @HLPDIR@/" pad place
    pad append
    s" .help" pad append 
    pad count r/o open-file throw >r
