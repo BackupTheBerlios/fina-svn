@@ -47,15 +47,7 @@ create xtof
    drop ncell>t ;
 : lastbody
    lastxt >body ;
-s" glos.txt" w/o open-file throw constant glos 
-: gemit
-   glos emit-file throw ;
-: gtype 
-   bounds do i c@ gemit loop ;
-: guppertype 
-   bounds do i c@ toupper gemit loop ;
-: gnl 
-   newline gtype ;
+
 \ Undefined in host
 create rx? create rx@ create tx? create tx! create ?dodefine
 create xt, create um+ create dolit create douser

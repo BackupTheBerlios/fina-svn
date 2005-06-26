@@ -1,10 +1,4 @@
 warnings off
-\ glossary stuff
-create glosname 32 chars allot
-: gtype 2drop ; 
-: gemit drop ;
-: guppertype 2drop ;
-: gnl 10 gemit ;
 
 : lastxt ( -- xt)
    lastname name>xt ;
