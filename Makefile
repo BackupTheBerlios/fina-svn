@@ -18,7 +18,7 @@ SRCDIR := $(shell pwd)
 
 COMMON_OBJECTS = $(TMPDIR)/main.o $(TMPDIR)/sys.o
 
-ALL_HELP = ${ALL_FORTH:%.fs=$(HLPDIR)/%.help}
+ALL_HELP = $(ALL_FORTH:%.fs=$(HLPDIR)/%.help)
 
 FINA_SRC0 = $(TMPDIR)/opt.fs tconfig-$(ARCH).fs
 FINA_SRC1 = meta.fs fina.fs
@@ -28,7 +28,7 @@ HOST_GFORTH = host-gforth.fs
 FINA_TEST0 = core.fs defer.fs throwmsg.fs tester.fs coretest.fs \
 	     postponetest.fs bye.fs
 FINA_TEST = tester.fs finatest.fs coretest.fs postponetest.fs \
-	    filetest.fs dbltest.fs
+	    filetest.fs dbltest.fs dbltest2.fs
 
 RUN_FINA0 = \
    core.fs throwmsg.fs defer.fs signals.fs search.fs \
@@ -44,7 +44,7 @@ RUN_FINA = $(RUN_FINA0) help.fs
 
 SAVE_FINA = $(RUN_FINA0) $(TMPDIR)/help.fs savefina.fs
 
-ALL_FORTH = $(RUN_FINA0) help.fs savefina.fs fina.fs
+ALL_FORTH := $(shell echo *.fs)
 
 bootstrap-from-assembler: mkdirs $(TMPDIR)/opt.fs
 	$(MAKE) all
@@ -148,6 +148,7 @@ doc: $(HLPDIR)/toc.help
 $(HLPDIR)/toc.help: $(BINDIR)/fina maketoc.fs $(ALL_HELP)
 	cp -a help/*.help $(HLPDIR)
 	$< maketoc.fs -e "toc{ $(ALL_HELP) }toc bye" > $@
+	for file in $(ALL_HELP) ; do [ -s $$file ] || rm $$file ; done
 
 $(ALL_HELP): $(ALL_FORTH) 
 
