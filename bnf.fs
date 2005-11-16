@@ -2,30 +2,52 @@
 \ Adapted to FINA by Jorge Acereda
 
 : dp! here - allot ;
-0 value success
-: <bnf ( enter rule )
-   r> success if  >in @ here 2>r  >r  else  drop  then ;
-: bnf> ( leave rule )
-   r> 2r> success if  2drop  else  dp! >in !  then >r ;
-: | ( prepare to evaluate alternate rule )
-   r> 2r> success if  2drop drop  else  2dup dp! >in ! 2>r >r then 
-   true to success ;
-: bnf: ( start rule definition)
+0 value matched
+
+\g enter rule
+: <bnf ( -- R: x -- old>in oldhere x | x -- )
+   r> matched if  >in @ here 2>r  >r  else  drop  then ;
+
+\g leave rule
+: bnf> ( -- R: old>in oldhere x -- x | old>in oldhere x -- x )
+   r> 2r> matched if  2drop  else  dp! >in !  then >r ;
+
+\g prepare to evaluate alternate rule
+: | ( -- R: old>in oldhere x -- | old>in oldhere x -- x )
+   r> 2r> matched if  2drop drop  else  2dup dp! >in ! 2>r >r then 
+   true to matched ;
+
+\g start rule definition
+: bnf: ( -- )
    : reveal postpone <bnf ;
-: ;bnf ( end rule definition)
+
+\g end rule definition
+: ;bnf ( -- )
    postpone bnf> postpone ; ; immediate
-: @token ( - n , get current token)  
+
+\g get current token
+: @token ( - n )
    source >in @ /string drop c@ ;
-: +token ( -- , consume token)
-   success negate >in +! ;
-: =token ( n -- , compare against current token and set success)
-   @token =  success and to success ;
-: token ( n "name" -- , create a token)
+
+\g consume token
+: +token ( -- )
+   matched negate >in +! ;
+
+\g compare against current token and set matched
+: =token ( n -- )
+   @token =  matched and to matched ;
+
+\g create a token
+: token ( n "name" -- )
    create c, does> c@ =token +token ;
-: 0bnf ( -- , start bnf definition)
+
+\g start bnf definition
+: 0bnf ( -- )
    0 source + c!
-   true to success ;
-: /bnf ( -- , end bnf definition)
+   true to matched ;
+
+\g end bnf definition
+: /bnf ( -- )
    source nip >in ! ;
 
 
@@ -37,11 +59,11 @@
 \ this grammar recognizes strings having balanced parentheses
 hex    28 token '('      29 token ')'      0 token <eol>
 bnf: <char>
-   @token  dup 2a 7f within  swap 1 27 within or to success  +token ;bnf
+   @token  dup 2a 7f within  swap 1 27 within or to matched  +token ;bnf
 bnf: <s>   '(' <s> ')' <s>  |  <char> <s>  |  ;bnf
 : parse1
    0bnf <s> <eol> /bnf
-   cr success if ." successful " else ." failed " then ;
+   cr matched if ." matched " else ." failed " then ;
 
 
 \  BNF Parser Example    #2  - infix notation        18 9 88 bjr 14:54
@@ -66,7 +88,7 @@ bnf: <expression>     <term> <e'> ;bnf
 ' <expression> to (expression)
 : parse2     
    0bnf  <expression> <eol> /bnf
-   cr success if  ." successful " else ." failed " then ;
+   cr matched if  ." matched " else ." failed " then ;
 
 
 
@@ -106,5 +128,6 @@ bnf: <expression>       <term> <e'> ;bnf
 ' <expression> to (expression)
 : parse3    
    0bnf  here <expression> <eol>  /bnf
-   cr success if here over - dup negate allot type  else ." failed" then ;
+   cr matched if here over - dup negate allot type  else ." failed" then ;
+decimal
 [then]
