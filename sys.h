@@ -28,7 +28,7 @@ void Sys_MemSet(char * dst, unsigned c, unsigned bytes);
 
 // Memory Allocation
 void * Sys_MemAllocate(unsigned bytes);
-void Sys_MemFree(void * addr);
+unsigned Sys_MemFree(void * addr);
 void * Sys_MemResize(void * addr, unsigned newsize);
 
 // Console

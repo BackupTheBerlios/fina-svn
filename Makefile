@@ -8,10 +8,11 @@ HOST     := gforth-0.5.0
 SYSTEM   := $(KERN)-$(ARCH)
 CC       := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-gcc)
 CPPFLAGS := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-cppflags)
+LDFLAGS  := -g
 OS       := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-os)
 FFLAGS   := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-forthflags)
 
-CFLAGS = -g -O2 -Wall
+CFLAGS = -O2 -Wall #-fno-gcse -fno-strict-aliasing -fno-crossjumping -fno-defer-pop -fcaller-saves 
 CPPFLAGS += -I$(TMPDIR)
 
 SRCDIR := $(shell pwd)
@@ -99,7 +100,11 @@ $(TMPDIR)/bootstrapdict-$(ARCH).s: $(FINA_SRC0) $(HOST_GFORTH) $(FINA_SRC1)
 $(TMPDIR)/main.o : main.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ -c -o $@	
 
-$(TMPDIR)/finac.s: finac.c fina.h $(TMPDIR)/arch.h sys.h
+$(TMPDIR)/finac.s: finac.c fina.h $(TMPDIR)/arch.h sys.h \
+		$(TMPDIR)/primstab.i \
+		$(TMPDIR)/moreprimstab.i \
+		$(TMPDIR)/filestab.i \
+		$(TMPDIR)/allocatetab.i
 	$(CC) $(CPPFLAGS) $(CFLAGS) -S finac.c -o $@
 
 $(TMPDIR)/bootstrap.o: $(TMPDIR)/bootstrap.s
@@ -126,6 +131,17 @@ $(TMPDIR)/kernel0.s: $(TMPDIR)/kernel0dict.s $(TMPDIR)/finac.s
 $(TMPDIR)/kernel.s: $(TMPDIR)/kerneldict.s $(TMPDIR)/finac.s
 	cat $^ > $@
 
+$(TMPDIR)/primstab.i: prims.i
+	cat $^ | grep "^ *PRIM(" | sed "s/PRIM(\(.*\),.*/\&\&\1,/g"	 > $@
+
+$(TMPDIR)/moreprimstab.i: moreprims.i
+	cat $^ | grep "^ *PRIM(" | sed "s/PRIM(\(.*\),.*/\&\&\1,/g"	 > $@
+
+$(TMPDIR)/filestab.i: files.i
+	cat $^ | grep "^ *PRIM(" | sed "s/PRIM(\(.*\),.*/\&\&\1,/g"	 > $@
+
+$(TMPDIR)/allocatetab.i: allocate.i
+	cat $^ | grep "^ *PRIM(" | sed "s/PRIM(\(.*\),.*/\&\&\1,/g"	 > $@
 
 clean:
 	rm -f   $(TMPDIR)/*.o $(TMPDIR)/kernel*.s $(TMPDIR)/bootstrap.s \
@@ -133,6 +149,10 @@ clean:
 		$(TMPDIR)/bootstrapdict-$(ARCH).s \
 		$(TMPDIR)/bootstrap $(TMPDIR)/kernel0 \
 		$(TMPDIR)/kernel $(TMPDIR)/glos.txt $(TMPDIR)/help.fs \
+		$(TMPDIR)/primstab.i \
+		$(TMPDIR)/moreprimstab.i \
+		$(TMPDIR)/filestab.i \
+		$(TMPDIR)/allocatetab.i \
 		*\~ \#*\#
 
 uninstall:
@@ -158,3 +178,11 @@ $(HLPDIR)/%.help: %.fs
 
 $(TMPDIR)/help.fs : help.fs
 	sed "s^@HLPDIR@^$(HLPDIR)^" $< > $@
+
+# Benchmarks
+
+bench: $(BINDIR)/fina
+	time $^ benchmarks/sieve.fs -e "main bye"
+	time $^ benchmarks/bubble-sort.fs -e "main bye"
+	time $^ benchmarks/fib.fs -e "main bye"
+

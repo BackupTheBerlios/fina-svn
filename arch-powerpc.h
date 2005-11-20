@@ -2,19 +2,32 @@
 
 #define PRIMSATTR
 
-register CELL * rsp asm("%r18");
-register CELL * fpc asm("%r17");
-register CELL * dsp asm("%r16");
-register CELL   tos asm("%r15");
+
+#define RSPREG asm("%r18");
+#define FPCREG asm("%r17");
+#define DSPREG asm("%r16");
+#define TOSREG asm("%r15");
+
 #define SAVESP
 #define RESTORESP
 
 static inline CELL * getlnk()
 {
-	register volatile CELL * lnk asm("%lr");
-	return lnk;
+	CELL * res;
+        asm volatile (" mflr %0 " : "=r" (res));
+        return res;
 }
 
+
+static inline void next(CELL ** pfpc)
+{
+	CELL tmp;
+	asm volatile (" lwz %1,0(%2) \n"
+		      " addi %0,%2,4 \n"
+		      " mtctr %1 \n"
+		      " bctr "
+		      : "=r" (*pfpc), "=r" (tmp) : "0" (*pfpc));
+}
 
 static inline CELL arch_iscall(CELL xt)
 {

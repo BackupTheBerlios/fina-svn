@@ -104,9 +104,9 @@ int Sys_Tick()
 
 static void initSignals()
 {
-        mysignal(SIGBUS, sighandler);
-        mysignal(SIGSEGV, sighandler);
-        mysignal(SIGILL, sighandler);
+  //        mysignal(SIGBUS, sighandler);
+  //        mysignal(SIGSEGV, sighandler);
+  //        mysignal(SIGILL, sighandler);
 }
 
 static void initTerm()
@@ -358,9 +358,10 @@ void * Sys_MemAllocate(unsigned bytes)
         return ret;
 }
 
-void Sys_MemFree(void * p)
+unsigned Sys_MemFree(void * p)
 {
         free(p);
+	return 0;
 }
 
 void * Sys_MemResize(void * p, unsigned newsize)
