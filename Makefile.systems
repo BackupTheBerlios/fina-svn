@@ -19,7 +19,6 @@ NetBSD-i386-os:
 
 Linux-powerpc-gcc:
 	echo gcc-4.0.2 
-#	echo /usr/powerpc-unknown-linux-gnu/gcc-bin/2.95/gcc
 
 Linux-powerpc-cppflags: posix-cppflags
 	echo -fno-reorder-blocks

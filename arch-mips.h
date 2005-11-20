@@ -1,11 +1,7 @@
-typedef int CELL;
+#define CELL int
 
 #define PRIMSATTR __attribute__ ((section (".data")))
 
-register CELL * rsp asm("$16");
-register CELL * fpc asm("$17");
-register CELL * dsp asm("$18");
-register CELL   tos asm("$19");
 #define SAVESP
 #define RESTORESP
 

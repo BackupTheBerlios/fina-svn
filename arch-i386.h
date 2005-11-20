@@ -1,11 +1,7 @@
-typedef int CELL;
+#define CELL int
 
 #define PRIMSATTR  
 
-CELL * rsp;
-register CELL * fpc asm("%esi");
-register CELL * dsp asm("%edi");
-register CELL   tos asm("%ebx");
 static inline CELL * getlnk()
 {
 	CELL * res;

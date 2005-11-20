@@ -12,7 +12,7 @@ LDFLAGS  := -g
 OS       := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-os)
 FFLAGS   := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-forthflags)
 
-CFLAGS = -O2 -Wall #-fno-gcse -fno-strict-aliasing -fno-crossjumping -fno-defer-pop -fcaller-saves 
+CFLAGS = -O2 -Wall 
 CPPFLAGS += -I$(TMPDIR)
 
 SRCDIR := $(shell pwd)
