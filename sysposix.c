@@ -104,9 +104,9 @@ int Sys_Tick()
 
 static void initSignals()
 {
-  //        mysignal(SIGBUS, sighandler);
-  //        mysignal(SIGSEGV, sighandler);
-  //        mysignal(SIGILL, sighandler);
+	mysignal(SIGBUS, sighandler);
+	mysignal(SIGSEGV, sighandler);
+	mysignal(SIGILL, sighandler);
 }
 
 static void initTerm()
