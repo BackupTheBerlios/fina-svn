@@ -57,6 +57,7 @@ variable options
         [char] 0 of ." ZERO"     endof
         [char] 1 of ." ONE"      endof
         [char] 2 of ." TWO"      endof
+        [char] 3 of ." THREE"    endof
         [char] 4 of ." FOUR"     endof
         [char] 6 of ." SIX"      endof
         [char] 8 of ." EIGHT"    endof

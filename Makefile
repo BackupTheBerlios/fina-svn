@@ -8,7 +8,7 @@ HOST     := gforth-0.5.0
 SYSTEM   := $(KERN)-$(ARCH)
 CC       := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-gcc)
 CPPFLAGS := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-cppflags)
-LDFLAGS  := -g
+LDFLAGS  := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-ldflags)
 OS       := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-os)
 FFLAGS   := $(shell $(MAKE) -s -f Makefile.systems $(SYSTEM)-forthflags)
 
@@ -104,7 +104,8 @@ $(TMPDIR)/finac.s: finac.c fina.h $(TMPDIR)/arch.h sys.h \
 		$(TMPDIR)/primstab.i \
 		$(TMPDIR)/moreprimstab.i \
 		$(TMPDIR)/filestab.i \
-		$(TMPDIR)/allocatetab.i
+		$(TMPDIR)/allocatetab.i \
+		$(TMPDIR)/ffitab.i
 	$(CC) $(CPPFLAGS) $(CFLAGS) -S finac.c -o $@
 
 $(TMPDIR)/bootstrap.o: $(TMPDIR)/bootstrap.s
@@ -143,6 +144,9 @@ $(TMPDIR)/filestab.i: files.i
 $(TMPDIR)/allocatetab.i: allocate.i
 	cat $^ | grep "^ *PRIM(" | sed "s/PRIM(\(.*\),.*/\&\&\1,/g"	 > $@
 
+$(TMPDIR)/ffitab.i: ffi.i
+	cat $^ | grep "^ *PRIM(" | sed "s/PRIM(\(.*\),.*/\&\&\1,/g"	 > $@
+
 clean:
 	rm -f   $(TMPDIR)/*.o $(TMPDIR)/kernel*.s $(TMPDIR)/bootstrap.s \
 		$(TMPDIR)/fina*.s $(TMPDIR)/arch.h $(TMPDIR)/opt.fs \
@@ -153,6 +157,7 @@ clean:
 		$(TMPDIR)/moreprimstab.i \
 		$(TMPDIR)/filestab.i \
 		$(TMPDIR)/allocatetab.i \
+		$(TMPDIR)/ffitab.i \
 		*\~ \#*\#
 
 uninstall:

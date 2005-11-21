@@ -407,6 +407,20 @@ fprim truncf  ( ud fileid -- ior )
 fprim flushf  ( fileid -- ior )
 
 
+\g Prepare foreign function call
+prim ffprep 
+
+\g Call to foreign function
+prim ffcall
+
+prim void
+prim int
+prim ptr
+
+
+prim dlopen
+prim dlsym
+
 \g Number of arguments in command line
 prim argc ( -- u )
 

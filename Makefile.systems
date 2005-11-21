@@ -21,9 +21,12 @@ Linux-powerpc-gcc:
 	echo gcc-4.0.2 
 
 Linux-powerpc-cppflags: posix-cppflags
-	echo -fno-reorder-blocks
+	echo -fno-reorder-blocks -DHAS_FFI
 
 Linux-powerpc-forthflags: posix-forthflags
+
+Linux-powerpc-ldflags:
+	echo -g -ldl -lffi -L/usr/lib/libffi
 
 Linux-powerpc-os: 
 	echo posix

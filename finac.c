@@ -2,6 +2,11 @@
 #include "arch.h"
 #include "sys.h"
 
+#if defined(HAS_FFI)
+#include <dlfcn.h>
+#include <libffi/ffi.h>
+#endif
+
 // #define PROFILE_FORTH 1
 
 #define FLAG(x) (x)? -1 : 0;
@@ -151,16 +156,22 @@ int FINA_InternalTick(int throw)
 #if defined(HAS_ALLOCATE)
 #include "tmp/allocatetab.i"
 #endif
+
+#if defined(HAS_FFI)
+#include "tmp/ffitab.i"
+#endif
+
 	  &&ARGV,
 	};
 
-	CELL * rsp;
-	CELL * fpc;
-	CELL * dsp;
-	CELL   tos; 
+	register CELL * rsp;
+	register CELL * fpc;
+	register CELL * dsp;
+	register CELL   tos; 
         int ret = 0xdeadbeef;
         extern CELL Forth_Here;
         register CELL t0;
+	CELL t1;
         long long ll, ll2;
         unsigned long long ull;
 
@@ -199,6 +210,10 @@ int FINA_InternalTick(int throw)
 
 #if defined(HAS_ALLOCATE)
 #include "allocate.i"
+#endif
+
+#if defined(HAS_FFI)
+#include "ffi.i"
 #endif
 
 	// DON'T MOVE THIS
