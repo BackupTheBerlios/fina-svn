@@ -413,9 +413,9 @@ prim ffprep
 \g Call to foreign function
 prim ffcall
 
-prim void
-prim int
-prim ptr
+prim ffvoid
+prim ffint
+prim ffptr
 
 
 prim dlopen
