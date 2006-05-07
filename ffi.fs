@@ -19,7 +19,7 @@
    create 0 parse dlopen , 
    does> @ newfun ;
 
-1 [if]
+0 [if]
 library libc libc.so.6
 
 libc sleep int (int) sleep
