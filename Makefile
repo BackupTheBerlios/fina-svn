@@ -105,6 +105,7 @@ $(TMPDIR)/finac.s: finac.c fina.h $(TMPDIR)/arch.h sys.h \
 		$(TMPDIR)/moreprimstab.i \
 		$(TMPDIR)/filestab.i \
 		$(TMPDIR)/allocatetab.i \
+		$(TMPDIR)/fixedtab.i \
 		$(TMPDIR)/ffitab.i
 	$(CC) $(CPPFLAGS) $(CFLAGS) -S finac.c -o $@
 
@@ -144,6 +145,9 @@ $(TMPDIR)/filestab.i: files.i
 $(TMPDIR)/allocatetab.i: allocate.i
 	cat $^ | grep "^ *PRIM(" | sed "s/PRIM(\(.*\),.*/\&\&\1,/g"	 > $@
 
+$(TMPDIR)/fixedtab.i: fixed.i
+	cat $^ | grep "^ *PRIM(" | sed "s/PRIM(\(.*\),.*/\&\&\1,/g"	 > $@
+
 $(TMPDIR)/ffitab.i: ffi.i
 	cat $^ | grep "^ *PRIM(" | sed "s/PRIM(\(.*\),.*/\&\&\1,/g"	 > $@
 
@@ -157,6 +161,7 @@ clean:
 		$(TMPDIR)/moreprimstab.i \
 		$(TMPDIR)/filestab.i \
 		$(TMPDIR)/allocatetab.i \
+		$(TMPDIR)/fixedtab.i \
 		$(TMPDIR)/ffitab.i \
 		*\~ \#*\#
 

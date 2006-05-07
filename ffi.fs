@@ -8,8 +8,10 @@
    ffprep abort" Unable to prepare function call" 
    0 parse rot dlsym dup 0= abort" Unable to lookup symbol" lastbody ! ;
 : int ( -- ) ffint , ;
+: float ( -- ) fffloat , ;
 : ptr ( -- ) ffptr , ;
 : (int) ( -- ) ffint , fn ;
+: (float) ( -- ) fffloat , fn ;
 : (ptr) ( -- ) ffptr , fn ;
 : (void) ( -- ) ffvoid , fn ;
 : newfun ( lib -- )

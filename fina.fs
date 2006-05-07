@@ -406,6 +406,11 @@ fprim truncf  ( ud fileid -- ior )
 \g Flush file
 fprim flushf  ( fileid -- ior )
 
+\g Convert 16.16 fixed point integer to float
+prim fx>float
+
+\g Convert float to 16.16 fixed point integer
+prim float>fx
 
 \g Prepare foreign function call
 prim ffprep 
@@ -415,6 +420,7 @@ prim ffcall
 
 prim ffvoid
 prim ffint
+prim fffloat
 prim ffptr
 
 

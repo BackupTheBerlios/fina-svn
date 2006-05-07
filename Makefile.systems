@@ -77,6 +77,9 @@ allocate-cppflags:
 allocate-forthflags:
 	echo -1 constant has-allocate
 
+fixed-cppflags:
+	echo -DHAS_FIXED
+
 fast-cppflags:
 	echo -DMORE_PRIMS
 
@@ -89,6 +92,6 @@ slow-cppflags:
 slow-forthflags:
 	echo 0 constant more-prims
 
-posix-cppflags: fast-cppflags files-cppflags allocate-cppflags
+posix-cppflags: fast-cppflags files-cppflags allocate-cppflags fixed-cppflags
 
 posix-forthflags: fast-forthflags files-forthflags allocate-forthflags

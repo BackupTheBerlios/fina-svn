@@ -157,6 +157,10 @@ int FINA_InternalTick(int throw)
 #include "tmp/allocatetab.i"
 #endif
 
+#if defined(HAS_FIXED)
+#include "tmp/fixedtab.i"
+#endif
+
 #if defined(HAS_FFI)
 #include "tmp/ffitab.i"
 #endif
@@ -174,6 +178,7 @@ int FINA_InternalTick(int throw)
 	CELL t1;
         long long ll, ll2;
         unsigned long long ull;
+	float f;
 
         (void)ll; (void)ll2; (void)ull;
         if (throw)
@@ -210,6 +215,10 @@ int FINA_InternalTick(int throw)
 
 #if defined(HAS_ALLOCATE)
 #include "allocate.i"
+#endif
+
+#if defined(HAS_FIXED)
+#include "fixed.i"
 #endif
 
 #if defined(HAS_FFI)

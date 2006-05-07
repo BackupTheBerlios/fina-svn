@@ -31,6 +31,11 @@
         tos = &ffi_type_uint;
         NEXT;
 
+        PRIM(FFFLOAT, 1003);
+        PUSH;
+        tos = &ffi_type_float;
+        NEXT;
+
         PRIM(FFPTR, 1004);
         PUSH;
         tos = &ffi_type_pointer;
