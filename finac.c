@@ -143,26 +143,26 @@ int FINA_InternalTick(int throw)
 {
 	static CELL * tab[] = {
 	  &&NOOP,
-#include "tmp/primstab.i"
+#include "primstab.it"
 
 #if defined(MORE_PRIMS)
-#include "tmp/moreprimstab.i"
+#include "moreprimstab.it"
 #endif
 
 #if defined(HAS_FILES)
-#include "tmp/filestab.i"
+#include "filestab.it"
 #endif
 
 #if defined(HAS_ALLOCATE)
-#include "tmp/allocatetab.i"
+#include "allocatetab.it"
 #endif
 
 #if defined(HAS_FIXED)
-#include "tmp/fixedtab.i"
+#include "fixedtab.it"
 #endif
 
 #if defined(HAS_FFI)
-#include "tmp/ffitab.i"
+#include "ffitab.it"
 #endif
 
 	  &&ARGV,
