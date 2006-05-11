@@ -9,7 +9,7 @@ static Display * g_dpy;
 static int g_screen;
 static XVisualInfo * g_visual;
 
-struct awxHandle {
+struct _aw {
 	Window win;
 	GLXContext ctx;
 	XVisualInfo * vinfo;
@@ -40,81 +40,76 @@ void awosEnd() {
 	XCloseDisplay(g_dpy);
 }
 
-void * awosOpen(const char * t, int w, int h) {
-        struct awxHandle * ret = NULL;
-	struct awxHandle * han = calloc(1, sizeof(*han));
-	han->vinfo = chooseVisual( g_dpy, g_screen);
-	if (han->vinfo) {
-		han->ctx = glXCreateContext(g_dpy, han->vinfo, NULL, True);
-		han->win = XCreateSimpleWindow(g_dpy, RootWindow(g_dpy, g_screen),
-					       0, 0, w, h, 0, 0, None);
-		XSelectInput(g_dpy, han->win, 
+aw awosOpen(const char * t, int width, int height) {
+	aw ret = NULL;
+	aw w = calloc(1, sizeof(*ret));
+	w->vinfo = chooseVisual( g_dpy, g_screen);
+	if (w->vinfo) {
+		w->ctx = glXCreateContext(g_dpy, w->vinfo, NULL, True);
+		w->win = XCreateSimpleWindow(g_dpy, RootWindow(g_dpy, g_screen),
+					     0, 0, width, height, 0, 0, None);
+		XSelectInput(g_dpy, w->win, 
 			     KeyPressMask | 
 			     ButtonPressMask | 
 			     ButtonReleaseMask | 
 			     PointerMotionMask | 
 			     StructureNotifyMask);
 		Atom del = XInternAtom(g_dpy, "WM_DELETE_WINDOW", False);
-		XSetWMProtocols(g_dpy, han->win, &del, 1);
-		if (han->win && han->ctx)
-			ret = han;
+		XSetWMProtocols(g_dpy, w->win, &del, 1);
+		if (w->win && w->ctx)
+			ret = w;
 	}
-	if (!ret && han)
-		awosClose(han);
-	return han;
+	if (!ret)
+		awosClose(w);
+	return ret;
 }
 
-int awosClose(void * vh) {
-	struct awxHandle * han = (struct awxHandle *) vh;
-	if (han->win) XDestroyWindow(g_dpy, han->win);
-	if (han->ctx) glXDestroyContext(g_dpy, han->ctx);
-	if (han->vinfo) XFree(han->vinfo);
-	free(han);
+int awosClose(aw w) {
+	if (w) {
+		if (w->win) XDestroyWindow(g_dpy, w->win);
+		if (w->ctx) glXDestroyContext(g_dpy, w->ctx);
+		if (w->vinfo) XFree(w->vinfo);
+		free(w);
+	}
+	return w != 0;
 }
 
-int awosSwapBuffers(void * vh) {
-	struct awxHandle * han = (struct awxHandle *) vh;
-	glXSwapBuffers(g_dpy, han->win);
+int awosSwapBuffers(aw w) {
+	glXSwapBuffers(g_dpy, w->win);
 	return 1;
 }
 
-int awosMakeCurrent(void * vh) {
-	struct awxHandle * han = (struct awxHandle *) vh;
-	return glXMakeCurrent(g_dpy, han->win, han->ctx);
+int awosMakeCurrent(aw w) {
+	return glXMakeCurrent(g_dpy, w->win, w->ctx);
 }
 
-int awosShow(void * vh) {
-	struct awxHandle * han = (struct awxHandle *) vh;
+int awosShow(aw w) {
 	int ret = 0;
-	ret |= XMapWindow(g_dpy, han->win);
+	ret |= XMapWindow(g_dpy, w->win);
 	ret |= XSync(g_dpy, False);
 	return ret;
 }
 
-int awosHide(void * vh) {
-	struct awxHandle * han = (struct awxHandle *) vh;
+int awosHide(aw w) {
 	int ret = 0;
-	ret |= XUnmapWindow(g_dpy, han->win);
+	ret |= XUnmapWindow(g_dpy, w->win);
 	ret |= XSync(g_dpy, False);
 	return ret;
 }
 
-int awosSetTitle(void * vh, const char * t) {
-	struct awxHandle * han = (struct awxHandle *) vh;
+int awosSetTitle(aw w, const char * t) {
 	int ret = 0;
-	ret |= XStoreName(g_dpy, han->win, t);
-	ret |= XSetIconName(g_dpy, han->win, t);
+	ret |= XStoreName(g_dpy, w->win, t);
+	ret |= XSetIconName(g_dpy, w->win, t);
 	return ret;
 }
 
-int awosMove(void * vh, int x, int y) {
-	struct awxHandle * han = (struct awxHandle *) vh;
-	return XMoveWindow(g_dpy, han->win, x, y);
+int awosMove(aw w, int x, int y) {
+	return XMoveWindow(g_dpy, w->win, x, y);
 }
 
-int awosResize(void * vh, int w, int h) {
-	struct awxHandle * han = (struct awxHandle *) vh;
-	return XResizeWindow(g_dpy, han->win, w, h);
+int awosResize(aw w, int width, int height) {
+	return XResizeWindow(g_dpy, w->win, width, height);
 }
 
 static int mapButton(int button) {
@@ -140,8 +135,7 @@ int mapKey(KeyCode keycode) {
 	return XKeycodeToKeysym(g_dpy, keycode, 0);
 }
 
-struct awEvent * awosNextEvent(void * vh) {
-	struct awxHandle * han = (struct awxHandle *) vh;
+struct awEvent * awosNextEvent(aw w) {
 	static struct awEvent ev;
 	struct awEvent * pev = NULL;
 	XEvent event;

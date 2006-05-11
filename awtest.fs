@@ -10,16 +10,16 @@ library GL libGL.so
 GL glViewport int int int int  (void) glViewport
 GL glClear int  (void) glClear
 
-awInit .
-awOpen .
-char " parse Mi titulo" 0term awSetTitle
-100 100 awResize
-100 100 awMove
-awShow
+:noname awInit 0= abort" Unable to initialize" ; execute
+awOpen value aw
+aw char " parse Mi titulo" 0term awSetTitle
+aw 100 100 awResize
+aw 100 100 awMove
+aw awShow
 
 : unknown ." unknown" cr drop ;
 : resize ." resize" 2@ . . cr ;
-: close drop awClose ." Goodbye" cr bye ;
+: close drop aw awClose ." Goodbye" cr bye ;
 : down ." down " @ . ;
 : up ." up " @ . ;
 : motion ." motion " 2@ . . cr ;
@@ -28,10 +28,10 @@ create handlers ' unknown , ' resize , ' close , ' down , ' up , ' motion ,
 
 : evloop
    begin 
-      awNextEvent ?dup if 
+      aw awNextEvent ?dup if 
          dup cell+ swap @ cells handlers + @execute 
       else
-         GL_COLOR_BUFFER_BIT GL_DEPTH_BUFFER_BIT or glClear awSwapBuffers
+         GL_COLOR_BUFFER_BIT GL_DEPTH_BUFFER_BIT or glClear aw awSwapBuffers
       then 
       pause
    again ;

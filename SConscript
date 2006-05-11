@@ -53,4 +53,4 @@ if ARGUMENTS.get('test', 0):
 awenv = env.Copy()
 awenv.Append(LIBS=['X11', 'GL', 'Xxf86vm', 'Xext'])
 awenv.Append(CCFLAGS=' -g ')
-awenv.SharedLibrary('aw', Split('aw/aw.c aw/awx.c'))
+awenv.SharedLibrary('aw', Split('aw.c awx.c'))

@@ -27,16 +27,17 @@ struct awEvent {
   };
 };
 
+typedef struct _aw * aw;
+
 int awInit();
 void awEnd();
-int awOpen();
-void awSelect(int);
-void awClose();
-void awSwapBuffers();
-void awMakeCurrent();
-void awShow();
-void awHide();
-void awSetTitle(const char *);
-void awMove(int, int);
-void awResize(int, int);
-struct awEvent * awNextEvent();
+aw awOpen();
+void awClose(aw);
+void awSwapBuffers(aw);
+void awMakeCurrent(aw);
+void awShow(aw);
+void awHide(aw);
+void awSetTitle(aw, const char *);
+void awMove(aw, int, int);
+void awResize(aw, int, int);
+struct awEvent * awNextEvent(aw);
