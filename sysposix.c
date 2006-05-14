@@ -273,9 +273,8 @@ unsigned long long Sys_FileTell(void * handle)
 unsigned Sys_FileLine(void * handle, char * buf, unsigned size)
 {
         unsigned res = 0;
-        buf[size] = 0;
         errnoThrow(handle == 0);
-        if (!throw) ferrorThrow(0 == fgets(buf, size+1, handle), handle);
+        if (!throw) ferrorThrow(0 == fgets(buf, size, handle), handle);
         if (!throw) res = strlen(buf);
         if (!throw) res -= buf[res-1] == '\n';
         return res;
