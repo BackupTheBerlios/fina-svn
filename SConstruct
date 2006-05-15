@@ -1,4 +1,18 @@
-env = Environment(ARCH='powerpc', CC='gcc-4.0.2')
+import os
+
+def shelloutput(cmd):
+        pipe = os.popen(cmd, 'r')
+        ret = pipe.read()
+        pipe.close()
+        return ret.strip()
+
+def arch():
+	arch = shelloutput('uname -m')
+	if arch == 'ppc':
+		arch = 'powerpc'
+	return arch
+
+env = Environment(ARCH=arch(), CC='gcc-4.0.2')
 env.Append(CPPFLAGS='-O2')
 env.Append(CPPDEFINES=['HAS_FILES', 'HAS_ALLOCATE', 'HAS_FIXED', 'HAS_FFI', 
 			'MORE_PRIMS'])
