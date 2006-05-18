@@ -4,16 +4,16 @@ variable (incs)  (incs) off
 
 :noname 
    deferred inchook0
-   (incs) linked 2dup here 2 cells allot 2! ; is inchook0
+   (incs) linked 2dup s, ; is inchook0
 
 : (.inc) 
-   cell+ 2@ type cr ;
+   cell+ count type cr ;
 
 : .included
    forall (incs) (.inc) ;
 
 : (inc?)
-   cell+ 2@ 2over compare 0= found or to found ;
+   cell+ count 2over compare 0= found or to found ;
 
 \g Has the file been included?
 : included?  ( c-addr u -- flag )
