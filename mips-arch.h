@@ -1,4 +1,4 @@
-#define CELL int
+#define CELL long
 
 #define PRIMSATTR __attribute__ ((section (".data")))
 

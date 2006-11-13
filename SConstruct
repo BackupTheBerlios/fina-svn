@@ -1,4 +1,5 @@
 import os
+import sys
 
 def shelloutput(cmd):
         pipe = os.popen(cmd, 'r')
@@ -15,10 +16,13 @@ def arch():
 prefix = ARGUMENTS.get('prefix', '#')
 helpdir = prefix + 'share/fina/help'
 
-env = Environment(ARCH=arch(), CC='gcc-4.0.2')
+env = Environment(ARCH=arch(), CC='gcc')
 env.Append(CPPFLAGS='-O2')
+env.Append(LINKFLAGS='-g')
 env.Append(CPPDEFINES=['HAS_FILES', 'HAS_ALLOCATE', 'HAS_FIXED', 'HAS_FFI', 
 			'MORE_PRIMS'])
+
+
 tab = Builder(action=
 	'cat $SOURCE | grep "^ *PRIM(" | sed "s/PRIM(\(.*\),.*/\&\&\\1,/g" > $TARGET',
 	source_scanner = CScan)
@@ -32,6 +36,21 @@ hlp = Builder(action='obj/fina glosgen.fs -e "newglos makeglos $SOURCE writeglos
 env.Append(BUILDERS = {'Tab' : tab})
 env.Append(BUILDERS = {'Asm' : asm})
 env.Append(BUILDERS = {'Hlp' : hlp})
+
+env['INCFFI'] = {
+	'darwin' : [
+		'/sw/lib/gcc4/lib/gcc/i386-apple-darwin8/4.2.0/include/libffi', 
+		'/sw/lib/gcc4/include/'
+	],
+	'linux2' : [	'/usr/include/libffi' ]
+}[sys.platform]
+env['LIBFFI'] = {
+	'darwin' : '/sw/lib/gcc4/lib',
+	'linux2' : ''
+}[sys.platform]
+
+
+
 env.SConscript('SConscript', 
 		build_dir = 'obj', 
 		src_dir = '.', 

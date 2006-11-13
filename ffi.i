@@ -1,10 +1,11 @@
 
         PRIM(FFPREP, 1000);
         // types rtype nargs cif -- status
-        SAVESP;
-        tos = ffi_prep_cif((ffi_cif*)tos, FFI_DEFAULT_ABI, 
+        CALLSAVE;
+        t1 = ffi_prep_cif((ffi_cif*)tos, FFI_DEFAULT_ABI, 
                            dsp[0], (ffi_type*)dsp[1], (ffi_type**)dsp[2]);
-        RESTORESP;
+        CALLREST;
+        tos = t1;
         dsp += 3;
         NEXT;
         
@@ -15,9 +16,9 @@
         int n = ((ffi_cif*)tos)->nargs;
         t0 = *dsp++;
         while(n--) { arg[n] = (void*)(dsp++); }
-        SAVESP;
+        CALLSAVE;
         ffi_call((ffi_cif*)tos, FFI_FN(t0), &t1, arg);
-        RESTORESP;
+        CALLREST;
         if (((ffi_cif*)tos)->rtype != &ffi_type_void) 
                 tos = t1;
         else
@@ -47,15 +48,17 @@
 
 
         PRIM(DLOPEN, 1100);
-        SAVESP;
-        tos = (CELL)dlopen(zstr((char*)dsp[0], tos), RTLD_GLOBAL|RTLD_NOW);
-        RESTORESP;
+        CALLSAVE;
+        t1 = (CELL)dlopen(zstr((char*)dsp[0], tos), RTLD_GLOBAL|RTLD_NOW);
+        CALLREST;
+        tos = t1;
         dsp++;
         NEXT;
         
         PRIM(DLSYM, 1101);
-        SAVESP;
-        tos = (CELL)dlsym((void*)tos, zstr((char*)dsp[1], dsp[0]));
-        RESTORESP;
+        CALLSAVE;
+        t1 = (CELL)dlsym((void*)tos, zstr((char*)dsp[1], dsp[0]));
+        CALLREST;
+        tos = t1;
         dsp += 2;
         NEXT;

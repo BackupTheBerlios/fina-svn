@@ -1,4 +1,4 @@
-#define CELL int
+#define CELL long
 
 #define PRIMSATTR
 
@@ -8,8 +8,8 @@
 #define DSPREG asm("%r16");
 #define TOSREG asm("%r15");
 
-#define SAVESP
-#define RESTORESP
+#define CALLSAVE
+#define CALLREST
 
 static inline CELL * getlnk()
 {

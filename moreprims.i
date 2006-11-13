@@ -208,9 +208,9 @@
                 NEXT;
                 
                 PRIM(FILL, 109);
-                SAVESP;
+                CALLSAVE;
                 Sys_MemSet((char*)dsp[1], tos, dsp[0]);
-                RESTORESP;
+                CALLREST;
                 dsp += 2;
                 POP;
                 NEXT;

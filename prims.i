@@ -126,9 +126,9 @@
                 NEXT;
                 
                 PRIM(MOVE,29);
-                SAVESP;
+                CALLSAVE;
                 Sys_MemMove((char*)dsp[0], (char*)dsp[1], tos);
-                RESTORESP;
+                CALLREST;
                 dsp += 2;
                 POP;
                 NEXT;
@@ -192,16 +192,18 @@
                 
                 PRIM(RXQ,66);
                 PUSH;
-                SAVESP;
-                tos = Sys_HasChar();
-                RESTORESP;
+                CALLSAVE;
+                t1 = Sys_HasChar();
+                CALLREST;
+                tos = t1;
                 NEXT;
                 
                 PRIM(RXFETCH,39);
                 PUSH;
-                SAVESP;
-                tos = Sys_GetChar(); 
-                RESTORESP;
+                CALLSAVE;
+                t1 = Sys_GetChar(); 
+                CALLREST;
+                tos = t1;
                 NEXT;
                 
                 PRIM(TXQ,40);
@@ -210,9 +212,9 @@
                 NEXT;
                 
                 PRIM(TXSTORE,41);
-                SAVESP;
+                CALLSAVE;
                 Sys_PutChar(tos);
-                RESTORESP;
+                CALLREST;
                 POP;
                 NEXT;
                 
@@ -253,50 +255,49 @@
                 NEXT;
                 
                 PRIM(CALL0,57);
-//                typedef unsigned (*CALL0)();
-                SAVESP;
-                tos = ((unsigned(*)())tos)();
-                RESTORESP;
+                CALLSAVE;
+                t1 = ((unsigned(*)())tos)();
+                CALLREST;
+                tos = t1;
                 NEXT;
                 
                 PRIM(CALL1,58);
-//                typedef unsigned (*CALL1)(unsigned);
-                SAVESP;
-                tos = ((unsigned(*)())tos)(dsp[0]);
-                RESTORESP;
+                CALLSAVE;
+                t1 = ((unsigned(*)())tos)(dsp[0]);
+                CALLREST;
+                tos = t1;
                 dsp++;
                 NEXT;
                 
                 PRIM(CALL2,59);
-//                typedef unsigned (*CALL2)(unsigned, unsigned);
-                SAVESP;
-                tos = ((unsigned(*)())tos)(dsp[0], dsp[1]);
-                RESTORESP;
+                CALLSAVE;
+                t1 = ((unsigned(*)())tos)(dsp[0], dsp[1]);
+                CALLREST;
+                tos = t1;
                 dsp += 2;
                 NEXT;
                 
                 PRIM(CALL3,60);
-//                typedef unsigned (*CALL3)(unsigned, unsigned, 
-//                                          unsigned);
-                SAVESP;
-                tos = ((unsigned(*)())tos)(dsp[0], dsp[1], dsp[2]);
-                RESTORESP;
+                CALLSAVE;
+                t1 = ((unsigned(*)())tos)(dsp[0], dsp[1], dsp[2]);
+                CALLREST;
+                tos = t1;
                 dsp += 3;
                 NEXT;
                 
                 PRIM(CALL4,61);
-//                typedef unsigned (*CALL4)(unsigned, unsigned, 
-//                                          unsigned, unsigned);
-                SAVESP;
-                tos = ((unsigned(*)())tos)(dsp[0], dsp[1], dsp[2], dsp[3]);
-                RESTORESP;
+                CALLSAVE;
+                t1 = ((unsigned(*)())tos)(dsp[0], dsp[1], dsp[2], dsp[3]);
+                CALLREST;
+                tos = t1;
                 dsp += 4;
                 NEXT;
                 
                 PRIM(SAMEQ,62);
-                SAVESP;
-                tos = nCaseCompare(dsp[0], dsp[1], tos);
-                RESTORESP;
+                CALLSAVE;
+                t1 = nCaseCompare(dsp[0], dsp[1], tos);
+                CALLREST;
+                tos = t1;
                 dsp += 2;
                 NEXT;
 
@@ -307,24 +308,37 @@
 
 
                 PRIM(MS, 298);
+                CALLSAVE;
                 Sys_Sleep(tos);
+                CALLREST;
                 POP;
                 NEXT;
                 
                 PRIM(TIMEANDDATE, 299);
                 PUSH;
-                tos = (CELL)Sys_Time();
+                CALLSAVE;
+                t1 = (CELL)Sys_Time();
+                t2 = Sys_Second((void*)t1);
+                t3 = Sys_Minute((void*)t1);
+                t4 = Sys_Hour((void*)t1);
+                t5 = Sys_Day((void*)t1);
+                t6 = Sys_Month((void*)t1);
+                t7 = Sys_Year((void*)t1);
+                CALLREST;
                 dsp -= 5;
-                dsp[4] = Sys_Second((void*)tos);
-                dsp[3] = Sys_Minute((void*)tos);
-                dsp[2] = Sys_Hour((void*)tos);
-                dsp[1] = Sys_Day((void*)tos);
-                dsp[0] = Sys_Month((void*)tos);
-                tos = Sys_Year((void*)tos);
+                tos = t2;
+                dsp[4] = t3;
+                dsp[3] = t4;
+                dsp[2] = t5;
+                dsp[1] = t6;
+                dsp[0] = t7;
                 NEXT;
 
                 PRIM(ARGC,300);
                 PUSH;
-                tos = Sys_Argc();
+                CALLSAVE;
+                t1 = Sys_Argc();
+                CALLREST;
+                tos = t1;
                 NEXT;
 

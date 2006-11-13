@@ -1,29 +1,20 @@
-#define CELL int
+#define CELL long
 
 #define PRIMSATTR  
+#define FPCREG asm("%esi")
+#define RSPREG
+#define DSPREG asm("%edi") 
+#define TOSREG asm("%ecx")
 
 static inline CELL * getlnk()
 {
-	CELL * res;
+        CELL * res;
         asm volatile (" popl %0 " : "=r" (res));
         return res;
 }
 
-static inline CELL getsp()
-{
-        register CELL   sp asm("%esp");
-        CELL   osp;
-        asm volatile (" mov %1,%0 " : "=r" (osp) : "r" (sp) );
-        return osp;
-}
-
-static inline void setsp(CELL osp)
-{
-        register CELL   sp asm("%esp");
-        asm volatile (" mov %1,%0 " : "=r" (sp) : "r" (osp) );
-}
-#define SAVESP { CELL savedsp = getsp()
-#define RESTORESP setsp(savedsp);}
+#define CALLSAVE SAVEREGS
+#define CALLREST RESTREGS
 
 static inline CELL arch_iscall(CELL xt)
 {

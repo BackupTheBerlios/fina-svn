@@ -4,7 +4,7 @@
 
 #if defined(HAS_FFI)
 #include <dlfcn.h>
-#include <libffi/ffi.h>
+#include <ffi.h>
 #endif
 
 // #define PROFILE_FORTH 1
@@ -33,14 +33,10 @@ struct state {
         CELL   tos;
 } _saved;
 struct state volatile * volatile saved = &_saved;
-volatile int foo = 0;
 #define BOOTSTRAP_STACK 16
 
 static CELL bootstrap_dsp[BOOTSTRAP_STACK];
 static CELL bootstrap_rsp[BOOTSTRAP_STACK];
-
-volatile CELL foo;
-
 
 static inline CELL *userP()
 {
@@ -122,6 +118,18 @@ static inline unsigned CELL UMSlashMod(unsigned CELL * dd,
 #endif
 }
 
+#define SAVEREGS \
+        saved->tos = tos; \
+        saved->rsp = rsp; \
+        saved->dsp = dsp; \
+        saved->fpc = fpc 
+
+#define RESTREGS \
+        fpc = saved->fpc; \
+        rsp = saved->rsp; \
+        dsp = saved->dsp; \
+        tos = saved->tos 
+
 int FINA_Init(int argc, char ** argv)
 {
         extern CELL Forth_Entry;
@@ -141,8 +149,8 @@ void FINA_End()
 
 int FINA_InternalTick(int throw)
 {
-	static CELL * tab[] = {
-	  &&NOOP,
+        static CELL * tab[] = {
+                &&NOOP,
 #include "primstab.it"
 
 #if defined(MORE_PRIMS)
@@ -165,21 +173,21 @@ int FINA_InternalTick(int throw)
 #include "ffitab.it"
 #endif
 
-	  &&ARGV,
-	};
-
-	register CELL * rsp;
-	register CELL * fpc;
-	register CELL * dsp;
-	register CELL   tos; 
+                &&ARGV,
+        };
+        
+        register CELL * rsp RSPREG;
+        register CELL * fpc FPCREG;
+        register CELL * dsp DSPREG;
+        register CELL   tos TOSREG; 
         int ret = 0xdeadbeef;
         extern CELL Forth_Here;
         register CELL t0;
-	CELL t1;
+        CELL t1, t2, t3, t4, t5, t6, t7;
         long long ll, ll2;
         unsigned long long ull;
-	float f;
-
+        float f;
+        
         (void)ll; (void)ll2; (void)ull;
         if (throw)
         {
@@ -189,26 +197,21 @@ int FINA_InternalTick(int throw)
                 tos = throw;
         }
         else
-        {
-                fpc = saved->fpc;
-                rsp = saved->rsp;
-                dsp = saved->dsp;
-                tos = saved->tos;
-        }
-
-
-	// DON'T MOVE THIS
-	PRIM(NOOP,-1);
-	NEXT;
-	
+                RESTREGS;
+        
+        
+        // DON'T MOVE THIS
+        PRIM(NOOP,-1);
+        NEXT;
+        
 #define RETURN(x) ret = x; goto end
-
+        
 #include "prims.i"
-
+        
 #if defined(MORE_PRIMS)
 #include "moreprims.i"
 #endif
-
+        
 #if defined(HAS_FILES)
 #include "files.i"
 #endif
@@ -225,18 +228,20 @@ int FINA_InternalTick(int throw)
 #include "ffi.i"
 #endif
 
-	// DON'T MOVE THIS
-	PRIM(ARGV,301);
-	PUSH;
-	*dsp = (CELL)Sys_Argv(tos);
-	tos = strLen((char*)*dsp);
-	NEXT;
-	
+        // DON'T MOVE THIS
+        PRIM(ARGV,301);
+        PUSH;
+        t2 = tos;
+        CALLSAVE;
+        t1 = (CELL)Sys_Argv(t2);
+        t2 = strLen((char*)t1);
+        CALLREST;
+        *dsp = t1;
+        tos = t2;
+        NEXT;
+        
 end:
-	saved->tos = tos;
-	saved->rsp = rsp;
-	saved->dsp = dsp;
-	saved->fpc = fpc;
+        SAVEREGS;
         return ret;
 }
 

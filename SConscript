@@ -1,7 +1,7 @@
 Import('env prefix helpdir')
 fenv = env.Copy()
-fenv.Append(CPPPATH=[Dir('.'), '/usr/include/libffi'])
-fenv.Append(LIBPATH='/usr/lib/libffi/')
+fenv.Append(CPPPATH=['obj'] + fenv['INCFFI'])
+fenv.Append(LIBPATH=fenv['LIBFFI'])
 fenv.Tab('primstab.it', 'prims.i')
 fenv.Tab('moreprimstab.it', 'moreprims.i')
 fenv.Tab('filestab.it', 'files.i')
@@ -101,3 +101,14 @@ toc = env.Command('toc.help', [f] + allhelp,
         '$SOURCE maketoc.fs -e "toc{ ${SOURCES[1:]} }toc bye" > $TARGET')
 
 env.Default(env.Install(helpdir, [toc] + allhelp + anshelp))
+
+if ARGUMENTS.get('BENCH', 0):
+	for i in ['bubble-sort.fs', 'fib.fs', 'sieve.fs']:
+		env.Default(env.Command('dummy' + i , 'benchmarks/' + i,
+					'time bin/fina $SOURCE -e "main bye"'))
+
+if ARGUMENTS.get('CHECK', 0):
+	for i in ['coretest.fs', 'dbltest.fs', 'dbltest2.fs', 'filetest.fs', 
+			'finatest.fs', 'postponetest.fs']:
+		env.Default(env.Command('dummy' + i, ['tester.fs', i],
+				'bin/fina $SOURCES -e bye'))
