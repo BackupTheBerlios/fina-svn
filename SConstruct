@@ -46,7 +46,7 @@ env['INCFFI'] = {
 }[sys.platform]
 env['LIBFFI'] = {
 	'darwin' : '/sw/lib/gcc4/lib',
-	'linux2' : ''
+	'linux2' : '/usr/lib/libffi/'
 }[sys.platform]
 
 
