@@ -18,7 +18,9 @@ helpdir = prefix + 'share/fina/help'
 
 env = Environment(ARCH=arch(), CC='gcc')
 env.Append(CPPFLAGS='-O2')
-env.Append(LINKFLAGS='-g -static')
+env.Append(LINKFLAGS='-g')
+if sys.platform == 'netbsd3' or sys.platform == 'netbsd4':
+	env.Append(LINKFLAGS=' -static ')
 env.Append(CPPDEFINES=['HAS_FILES', 'HAS_ALLOCATE', 'HAS_FIXED', 'HAS_FFI', 
 			'MORE_PRIMS'])
 
