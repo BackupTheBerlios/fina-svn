@@ -17,7 +17,7 @@
    [char] " parse postpone sliteral postpone type  
    postpone cr ; immediate
 
-: .align ."  .align 2" cr ;
+: .align ."  .p2align 2" cr ;
 
 : .init
    ."  .globl Forth_Entry " cr 

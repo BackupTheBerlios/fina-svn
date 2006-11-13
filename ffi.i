@@ -49,7 +49,13 @@
 
         PRIM(DLOPEN, 1100);
         CALLSAVE;
-        t1 = (CELL)dlopen(zstr((char*)dsp[0], tos), RTLD_GLOBAL|RTLD_NOW);
+        t1 = (CELL)dlopen(zstr((char*)dsp[0], tos), 
+#if defined(__NetBSD__)
+	DL_LAZY
+#else
+	RTLD_GLOBAL|RTLD_NOW
+#endif
+	);
         CALLREST;
         tos = t1;
         dsp++;

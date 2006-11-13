@@ -1,7 +1,8 @@
 Import('env prefix helpdir')
 fenv = env.Copy()
 fenv.Append(CPPPATH=['obj'] + fenv['INCFFI'])
-fenv.Append(LIBPATH=fenv['LIBFFI'])
+fenv.Append(LIBPATH=fenv['LIBPATHFFI'])
+fenv.Append(LIBS=fenv['LIBFFI'])
 fenv.Tab('primstab.it', 'prims.i')
 fenv.Tab('moreprimstab.it', 'moreprims.i')
 fenv.Tab('filestab.it', 'files.i')
@@ -10,7 +11,6 @@ fenv.Tab('fixedtab.it', 'fixed.i')
 fenv.Tab('ffitab.it', 'ffi.i')
 fenv.Command('arch.h', '$ARCH-arch.h', 'ln -sf ${SOURCE.abspath} $TARGET')
 fenv.Asm('finac.s', 'finac.c')
-fenv.Append(LIBS=['dl', 'ffi'])
 
 for phase in range(3):
         ks = fenv.Command('kernel' + str(phase) + '.s', 
@@ -60,6 +60,8 @@ if ARGUMENTS.get('test', 0):
 
 
 awenv = env.Copy()
+awenv.Append(LIBPATH=awenv['LIBX'])
+awenv.Append(CPPPATH=awenv['INCX'])
 awenv.Append(LIBS=['X11', 'GL', 'Xxf86vm', 'Xext'])
 awenv.Append(CCFLAGS=' -g ')
 awenv.SharedLibrary(prefix + 'lib/fina/aw', Split('aw.c awx.c'))

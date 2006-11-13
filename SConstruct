@@ -18,7 +18,7 @@ helpdir = prefix + 'share/fina/help'
 
 env = Environment(ARCH=arch(), CC='gcc')
 env.Append(CPPFLAGS='-O2')
-env.Append(LINKFLAGS='-g')
+env.Append(LINKFLAGS='-g -static')
 env.Append(CPPDEFINES=['HAS_FILES', 'HAS_ALLOCATE', 'HAS_FIXED', 'HAS_FFI', 
 			'MORE_PRIMS'])
 
@@ -38,18 +38,39 @@ env.Append(BUILDERS = {'Asm' : asm})
 env.Append(BUILDERS = {'Hlp' : hlp})
 
 env['INCFFI'] = {
+	'netbsd3' : [	'/usr/pkg/include' ],
+	'netbsd4' : [	'/usr/pkg/include' ],
 	'darwin' : [
 		'/sw/lib/gcc4/lib/gcc/i386-apple-darwin8/4.2.0/include/libffi', 
 		'/sw/lib/gcc4/include/'
 	],
-	'linux2' : [	'/usr/include/libffi' ]
+	'linux2' : [	'/usr/include/libffi' ],
+}[sys.platform]
+env['LIBPATHFFI'] = {
+	'netbsd3' : '/usr/pkg/lib',
+	'netbsd4' : '/usr/pkg/lib',
+	'darwin' : '/sw/lib/gcc4/lib',
+	'linux2' : '/usr/lib/libffi',
 }[sys.platform]
 env['LIBFFI'] = {
-	'darwin' : '/sw/lib/gcc4/lib',
-	'linux2' : '/usr/lib/libffi/'
+	'netbsd3' : 'ffi',
+	'netbsd4' : 'ffi',
+	'darwin' : ['ffi', 'dl'],
+	'linux2' : ['ffi', 'dl'],
 }[sys.platform]
 
-
+env['INCX'] = {
+	'netbsd3': ['/usr/X11R6/include'],
+	'netbsd4': ['/usr/X11R6/include'],
+	'darwin': ['/usr/X11R6/include'],
+	'linux2': ['/usr/include'],
+}[sys.platform]
+env['LIBX'] = {
+	'netbsd3': ['/usr/X11R6/lib'],
+	'netbsd4': ['/usr/X11R6/lib'],
+	'darwin': ['/usr/X11R6/lib'],
+	'linux2': ['/usr/lib'],
+}[sys.platform]
 
 env.SConscript('SConscript', 
 		build_dir = 'obj', 

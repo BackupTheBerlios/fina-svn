@@ -24,7 +24,7 @@ struct awEvent {
     struct { int which; } down;
     struct { int which; } up;
     struct { int x, y; } motion;
-  };
+  } u;
 };
 
 typedef struct _aw * aw;

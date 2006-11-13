@@ -45,6 +45,7 @@ aw awosOpen(const char * t, int width, int height) {
 	aw w = calloc(1, sizeof(*ret));
 	w->vinfo = chooseVisual( g_dpy, g_screen);
 	if (w->vinfo) {
+		Atom del;
 		w->ctx = glXCreateContext(g_dpy, w->vinfo, NULL, True);
 		w->win = XCreateSimpleWindow(g_dpy, RootWindow(g_dpy, g_screen),
 					     0, 0, width, height, 0, 0, None);
@@ -54,7 +55,7 @@ aw awosOpen(const char * t, int width, int height) {
 			     ButtonReleaseMask | 
 			     PointerMotionMask | 
 			     StructureNotifyMask);
-		Atom del = XInternAtom(g_dpy, "WM_DELETE_WINDOW", False);
+		del = XInternAtom(g_dpy, "WM_DELETE_WINDOW", False);
 		XSetWMProtocols(g_dpy, w->win, &del, 1);
 		if (w->win && w->ctx)
 			ret = w;
@@ -150,29 +151,29 @@ struct awEvent * awosNextEvent(aw w) {
 			
 		case ConfigureNotify:
 			ev.type = AW_EVENT_RESIZE;
-			ev.resize.w = event.xconfigure.width;
-			ev.resize.h = event.xconfigure.height;
+			ev.u.resize.w = event.xconfigure.width;
+			ev.u.resize.h = event.xconfigure.height;
 			break;
 			
 		case ButtonPress:
 			ev.type = AW_EVENT_DOWN;
-			ev.down.which = mapButton(event.xbutton.button);
+			ev.u.down.which = mapButton(event.xbutton.button);
 			break;
 
 		case ButtonRelease:
 			ev.type = AW_EVENT_UP;
-			ev.up.which = mapButton(event.xbutton.button);
+			ev.u.up.which = mapButton(event.xbutton.button);
 			break;
 
 		case MotionNotify:
 			ev.type = AW_EVENT_MOTION;
-			ev.motion.x = event.xmotion.x;
-			ev.motion.y = event.xmotion.y;
+			ev.u.motion.x = event.xmotion.x;
+			ev.u.motion.y = event.xmotion.y;
 			break;
 
 		case KeyPress:
 			ev.type = AW_EVENT_DOWN;
-			ev.down.which = mapKey(event.xkey.keycode);
+			ev.u.down.which = mapKey(event.xkey.keycode);
 			break;
 
 		default:
