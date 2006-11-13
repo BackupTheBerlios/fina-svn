@@ -48,7 +48,7 @@ f = fenv.Command('fina', Split("""kernel2
            lineedit.fs multi.fs osnice.fs
            help.fs savefina.fs
         """),
-        ['echo "`cat ${SOURCES[1:]} ` save\\" $TARGET\\" bye"  | $SOURCE',
+        ['echo "`cat ${SOURCES[1:]} ` save\\" obj/fina\\" bye"  | $SOURCE',
         'chmod 777 $TARGET'])
 env.Default(env.Install(prefix + 'bin', f))
 
