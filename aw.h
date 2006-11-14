@@ -6,7 +6,7 @@ enum {
   AW_EVENT_DOWN,
   AW_EVENT_UP,
   AW_EVENT_MOTION,
-} eventType;
+};
 
 enum {
   AW_KEY_NONE,

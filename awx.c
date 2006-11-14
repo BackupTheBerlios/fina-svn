@@ -31,10 +31,12 @@ static XVisualInfo* chooseVisual() {
 int awosInit() {
 	int hasExtensions = 0;
 	g_dpy = XOpenDisplay(0);
-	g_screen = DefaultScreen(g_dpy);
-	return 0 != glXQueryExtension(g_dpy, 0, 0);
+	if (g_dpy) {
+		g_screen = DefaultScreen(g_dpy);
+		hasExtensions = 0 != glXQueryExtension(g_dpy, 0, 0);
+		}
+	return hasExtensions;
 }
-
 
 void awosEnd() {
 	XCloseDisplay(g_dpy);

@@ -18,12 +18,15 @@
 : newfun ( lib -- )
    create 0 , 8 cells allot \ func|cif, will be filled by "ret"
    does> dup @ swap cell+ ffcall ;
+: trylib
+   2swap pad place pad append  pad count dlopen ;
 : library ( "forthname" "libname" ) 
-   create 0 parse dlopen dup 0= abort" Unable to open library" , 
+   create 0 parse 2dup s" .dylib" trylib >r s" .so" trylib r> or
+   dup 0= abort" Unable to open library" , 
    does> @ newfun ;
 
 0 [if]
-library libc libc.so.6
+library libc libc
 
 libc sleep int (int) sleep
 libc cwrite int ptr int (int) write
