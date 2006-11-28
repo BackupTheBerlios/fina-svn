@@ -2,7 +2,7 @@ void Sys_Init(int argc, char ** argv);
 void Sys_End();
 int Sys_Tick();
 unsigned Sys_Argc();
-char * Sys_Argv(unsigned i);
+char ** Sys_Argv();
 
 unsigned Sys_Throw();
 

@@ -431,7 +431,7 @@ prim dlsym
 prim argc ( -- u )
 
 \g Get command line argument
-prim argv ( u1 -- c-addr u2 )
+prim argv ( -- addr )
 
 \g Do nothing
 prim noop ( -- )

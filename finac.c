@@ -231,13 +231,10 @@ int FINA_InternalTick(int throw)
         // DON'T MOVE THIS
         PRIM(ARGV,301);
         PUSH;
-        t2 = tos;
         CALLSAVE;
-        t1 = (CELL)Sys_Argv(t2);
-        t2 = strLen((char*)t1);
+        t1 = (CELL)Sys_Argv();
         CALLREST;
-        *dsp = t1;
-        tos = t2;
+        tos = t1;
         NEXT;
         
 end:

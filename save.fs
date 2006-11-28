@@ -1,4 +1,3 @@
-
 : mark ( a1 -- a2 )
    begin cell+ dup 2@ [ hex ] feedbabe.deadbeef [ decimal ]  d= until ;
 
@@ -6,7 +5,7 @@
    dict0 cell+ cell+ ! ;
 
 : save ( a u -- )
-   w/o open-file throw >r   0 argv r/o open-file throw
+   w/o open-file throw >r   0 arg r/o open-file throw
    dup mmap-file throw
    dup dup mark over - dup pad ! r@ write-file throw 
    dict0 memtop over - dup pad +! r@ write-file throw

@@ -1,5 +1,3 @@
-include save.fs
-
 : .line type cr ;
 : license
    s" LICENSE" r/o open-file throw >r
@@ -15,13 +13,13 @@ defer banner
 ; is banner
 
 : doargs
-   argc 1 ?do
+   #args 1 ?do
       0
-      i argv drop c@ [char] - = if
-         i argv s" -e" compare 0= if  i swap >r 1+ argv evaluate  r> 2 +  then
-         i argv s" -s" compare 0= if  ['] noop is banner 1+  then
-         dup 0= if i argv type ."  ignored" cr 1+ then
-      else i swap >r argv included r> 1+ then
+      i arg drop c@ [char] - = if
+         i arg s" -e" compare 0= if  i swap >r 1+ arg evaluate  r> 2 +  then
+         i arg s" -s" compare 0= if  ['] noop is banner 1+  then
+         dup 0= if i arg type ."  ignored" cr 1+ then
+      else i swap >r arg included r> 1+ then
    +loop ;
 
 :noname

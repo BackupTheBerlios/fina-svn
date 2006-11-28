@@ -46,7 +46,7 @@ f = fenv.Command('fina', Split("""kernel2
            tools.fs toolsext.fs
            facility.fs facilityext.fs 
            lineedit.fs multi.fs osnice.fs
-           help.fs savefina.fs
+           help.fs args.fs save.fs savefina.fs
         """),
         ['echo "`cat ${SOURCES[1:]} ` save\\" obj/fina\\" bye"  | $SOURCE',
         'chmod 777 $TARGET'])
@@ -77,6 +77,7 @@ env.Default(env.Install(prefix + 'share/fina', Split("""
 allforth = """
 ans-report.fs  coretest.fs     fina.fs		meta.fs		    searchext.fs
 answords.fs    dbltest.fs      finatest.fs	module.fs	    sh.fs
+args.fs 
 assert.fs      dbltest2.fs     glosgen.fs	multi.fs	    signals.fs
 aw.fs	       defer.fs        gtk.fs		opt.fs		    string.fs
 awtest.fs      double.fs       help.fs	        optional.fs	    tconfig-mips.fs

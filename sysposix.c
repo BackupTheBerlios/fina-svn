@@ -22,7 +22,7 @@
 #include "sys.h"
 
 static struct termios otio;
-static int argc;
+static unsigned argc;
 static char ** argv;
 static int throw;
 static jmp_buf jmpbuf;
@@ -239,9 +239,9 @@ unsigned Sys_Argc()
         return argc;
 }
 
-char * Sys_Argv(unsigned i)
+char ** Sys_Argv()
 {
-        return argv[i];
+        return argv;
 }
 
 unsigned long long Sys_FileSize(void * handle)
