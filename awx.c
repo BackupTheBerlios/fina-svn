@@ -16,6 +16,8 @@ struct _aw {
 	struct awEvent ev;
 	struct awEvent ev2;
 	int pending;
+	unsigned bx;
+	unsigned by;
 };
 
 static XVisualInfo* chooseVisual() {
@@ -29,6 +31,25 @@ static XVisualInfo* chooseVisual() {
         *p++ = GLX_DEPTH_SIZE; *p++ = 1;
 	*p++ = None;
 	return glXChooseVisual(g_dpy, g_screen, att);
+}
+
+static void calcBorders(Window w, unsigned * left, unsigned * top) {
+	unsigned u0, u1, u2, u3;
+	Window root, curr , *c;
+	int x, y;
+	*left = 0;
+	*top = 0;
+	do {
+		XQueryTree(g_dpy, w, &root, &curr, &c, &u1);
+		XFree(c);
+		XGetGeometry(g_dpy, w, &root, &x, &y, &u0, &u1, &u2, &u3);
+		if(curr != root){
+			*left += x;
+			*top += y;
+		}
+		w = curr;
+	}
+	while(w != root);
 }
 
 int awosInit() {
@@ -94,6 +115,7 @@ int awosShow(aw w) {
 	int ret = 0;
 	ret |= XMapWindow(g_dpy, w->win);
 	ret |= XSync(g_dpy, False);
+	calcBorders(w->win, &w->bx, &w->by);
 	return ret;
 }
 
@@ -112,7 +134,7 @@ int awosSetTitle(aw w, const char * t) {
 }
 
 int awosMove(aw w, int x, int y) {
-	return XMoveWindow(g_dpy, w->win, x, y);
+	return XMoveWindow(g_dpy, w->win, x - w->bx, y - w->by);
 }
 
 int awosResize(aw w, int width, int height) {
