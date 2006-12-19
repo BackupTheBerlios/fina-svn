@@ -1,6 +1,7 @@
 
 enum {
   AW_EVENT_UNKNOWN,
+  AW_EVENT_MOVE,
   AW_EVENT_RESIZE,
   AW_EVENT_CLOSE,
   AW_EVENT_DOWN,
@@ -20,6 +21,7 @@ enum {
 struct awEvent {
   int type;
   union {
+    struct { int x, y; } move;
     struct { int w, h; } resize;
     struct { int which; } down;
     struct { int which; } up;

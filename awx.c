@@ -13,6 +13,9 @@ struct _aw {
 	Window win;
 	GLXContext ctx;
 	XVisualInfo * vinfo;
+	struct awEvent ev;
+	struct awEvent ev2;
+	int pending;
 };
 
 static XVisualInfo* chooseVisual() {
@@ -32,7 +35,7 @@ int awosInit() {
 	int hasExtensions = 0;
 	g_dpy = XOpenDisplay(0);
 	if (g_dpy) {
-		g_screen = DefaultScreen(g_dpy);
+		g_screen = XDefaultScreen(g_dpy);
 		hasExtensions = 0 != glXQueryExtension(g_dpy, 0, 0);
 		}
 	return hasExtensions;
@@ -46,10 +49,11 @@ aw awosOpen(const char * t, int width, int height) {
 	aw ret = NULL;
 	aw w = calloc(1, sizeof(*ret));
 	w->vinfo = chooseVisual( g_dpy, g_screen);
+	w->pending = 0;
 	if (w->vinfo) {
 		Atom del;
 		w->ctx = glXCreateContext(g_dpy, w->vinfo, NULL, True);
-		w->win = XCreateSimpleWindow(g_dpy, RootWindow(g_dpy, g_screen),
+		w->win = XCreateSimpleWindow(g_dpy, XRootWindow(g_dpy, g_screen),
 					     0, 0, width, height, 0, 0, None);
 		XSelectInput(g_dpy, w->win, 
 			     KeyPressMask | 
@@ -139,47 +143,53 @@ int mapKey(KeyCode keycode) {
 }
 
 struct awEvent * awosNextEvent(aw w) {
-	static struct awEvent ev;
 	struct awEvent * pev = NULL;
 	XEvent event;
-	if (XPending(g_dpy)) { 
-		pev = &ev;
+	if (w->pending) {
+		w->pending = 0;
+		pev = &w->ev2;
+	} else if (XPending(g_dpy)) { 
+		pev = &w->ev;
 		XNextEvent(g_dpy, &event);
 		switch(event.type) {
 			
 		case ClientMessage:
-			ev.type = AW_EVENT_CLOSE;
+			pev->type = AW_EVENT_CLOSE;
 			break;
 			
 		case ConfigureNotify:
-			ev.type = AW_EVENT_RESIZE;
-			ev.u.resize.w = event.xconfigure.width;
-			ev.u.resize.h = event.xconfigure.height;
+			pev->type = AW_EVENT_MOVE;
+			pev->u.move.x = event.xconfigure.x;
+			pev->u.move.y = event.xconfigure.y;
+			w->pending = 1;
+			w->ev2.type = AW_EVENT_RESIZE;
+			w->ev2.u.resize.w = event.xconfigure.width;
+			w->ev2.u.resize.h = event.xconfigure.height;
 			break;
 			
 		case ButtonPress:
-			ev.type = AW_EVENT_DOWN;
-			ev.u.down.which = mapButton(event.xbutton.button);
+			pev->type = AW_EVENT_DOWN;
+			pev->u.down.which = mapButton(event.xbutton.button);
 			break;
 
 		case ButtonRelease:
-			ev.type = AW_EVENT_UP;
-			ev.u.up.which = mapButton(event.xbutton.button);
+			pev->type = AW_EVENT_UP;
+			pev->u.up.which = mapButton(event.xbutton.button);
 			break;
 
 		case MotionNotify:
-			ev.type = AW_EVENT_MOTION;
-			ev.u.motion.x = event.xmotion.x;
-			ev.u.motion.y = event.xmotion.y;
+			pev->type = AW_EVENT_MOTION;
+			pev->u.motion.x = event.xmotion.x;
+			pev->u.motion.y = event.xmotion.y;
 			break;
 
 		case KeyPress:
-			ev.type = AW_EVENT_DOWN;
-			ev.u.down.which = mapKey(event.xkey.keycode);
+			pev->type = AW_EVENT_DOWN;
+			pev->u.down.which = mapKey(event.xkey.keycode);
 			break;
 
 		default:
-			ev.type = AW_EVENT_UNKNOWN;
+			pev->type = AW_EVENT_UNKNOWN;
 			break;
 		}
 	}
