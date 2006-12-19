@@ -64,7 +64,7 @@ awenv.Append(LIBPATH=awenv['LIBX'])
 awenv.Append(CPPPATH=awenv['INCX'])
 awenv.Append(LIBS=['X11', 'GL', 'Xxf86vm', 'Xext'])
 awenv.Append(CCFLAGS=' -g ')
-awenv.SharedLibrary(prefix + 'lib/fina/aw', Split('aw.c awx.c'))
+env.Default(awenv.SharedLibrary(prefix + 'lib/fina/aw', Split('aw.c awx.c')))
 
 env.Default(env.Install(prefix + 'share/fina', Split("""
         coretest.fs gtk.fs sh.fs ans-report.fs dbltest.fs module.fs
