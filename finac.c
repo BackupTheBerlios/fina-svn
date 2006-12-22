@@ -18,7 +18,7 @@
 #define PUSHLL *--dsp = tos; *--dsp = ll; tos = ll>>32
 #define PUSHULL *--dsp = tos; *--dsp = ull; tos = ull>>32
 
-#define PRIM(x, n)  x: asm(" .globl XT_" #x "\nXT_" #x ":"); { int unused
+#define PRIM(x, n)  x: asm(".p2align 2\n.globl XT_" #x "\nXT_" #x ":"); { int unused
 #define NEXTT goto **fpc++
 #define NEXT (void) unused; } NEXTT
 #define PUSH *--dsp = tos
