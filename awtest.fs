@@ -19,12 +19,14 @@ aw awShow
 
 : unknown ." unknown" cr drop ;
 : resize ." resize" 2@ . . cr ;
+: moveh ." move" 2@ . . cr ;
 : close drop aw awClose ." Goodbye" cr bye ;
 : down ." down " @ . ;
 : up ." up " @ . ;
 : motion ." motion " 2@ . . cr ;
 
-create handlers ' unknown , ' resize , ' close , ' down , ' up , ' motion ,
+create handlers 
+' unknown , ' moveh , ' resize , ' close , ' down , ' up , ' motion ,
 
 : evloop
    begin 
