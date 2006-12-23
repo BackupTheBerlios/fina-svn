@@ -28,6 +28,8 @@ for phase in range(3):
                 host-fina.fs
                 meta.fs fina.fs
                 """), 'cat ${SOURCES[1:]} | $SOURCE > $TARGET')
+fenv.Default(fenv.Command('dummy', '$ARCH-dict2.s', 
+            Copy('$ARCH-dict0.s', '$SOURCE')))
 
 if helpdir[0] == '#':
 	helpdir2 = helpdir[1:]
