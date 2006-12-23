@@ -44,7 +44,7 @@ forth-wordlist set-current
    2dup cell- @ = over and to found ;
 
 : nextnfa ( nfa1 -- nfa2 )
-   ['] (next?) forwords drop found ;
+   ['] (next?) forwords drop found if found else here cell+ then ;
 
 : /xt ( xt -- a-addr )
    dup primxt? if exit then  \ XXX
