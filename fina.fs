@@ -889,7 +889,8 @@ create #order ( -- a-addr )
 \g Is xt a primitive xt?
 : primxt? ( xt -- flag )
    xtof noop xtof argv cell+ within ;
-\ dict? 0= ;  
+
+: link? dup 0= swap dict? or ;
 
 \g Go from execution token to name
 : xt>name ( xt -- c-addr )
@@ -899,7 +900,7 @@ create #order ( -- a-addr )
       begin cell- @ dup name>xt r@ = until
    else
       r@ ?dodefine nip 0= if rdrop 0 exit then
-      r@ begin cell- dup name>xt r@ = over cell- @ dict? and  until
+      r@ begin cell- dup name>xt r@ = over cell- @ link? and  until
    then  rdrop ;  
 
 \g Convert address/count to loop limits
