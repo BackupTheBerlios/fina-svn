@@ -23,8 +23,12 @@ variable cls ( contains ta -> |size|wid|super|)
    wordlist over cell+ ! methods ;
 : subclass ( ta "c ") class size^ over @ over ! cell+ cell+ ! ;
 : end ( ) size^ drop previous definitions 0 cls ! ;
-: new ( ta "name ") create dup , @ allot immediate
-   does> dup cell+ swap @ send' ;
+: instance ( ta) dup , @ allot does> dup cell+ swap @ send' ;
+: new ( ta "name ") create instance immediate ;
+
+: var 1 cells defs ;
+: iv ( ta "name " ) dup @ defs , does> 2@ self+ swap send' ;
+: ref var , does> 2@ self+ @ swap send' ;
 
 0 [if]
 1 cells constant cell
