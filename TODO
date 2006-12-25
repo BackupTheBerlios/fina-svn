@@ -1,3 +1,4 @@
+- Fix -1 0 ?do i . loop (should work as in gforth)
 - Blocks
 - Make it possible to compile without bootstrap compiler (keep .s files for
   the supported architectures). Should also drop the gcc2 build-depend.

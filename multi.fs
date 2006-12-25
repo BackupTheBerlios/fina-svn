@@ -9,7 +9,7 @@ require assert.fs
 : hex. base @ >r hex . r> base ! ;
 
 : user ( "<spaces>name" -- ) 
-   nesting?  head, xtof douser xt, drop  
+   nesting?  head, ['] douser xt, drop
    lastuser ,  
    lastuser -1 cells + to lastuser
    linklast ;
@@ -33,7 +33,7 @@ user stacktop  ( -- a-addr )
    ' execute ego - assert0( dup -1024 1 within ) ; immediate
 
 \g Obtain the address of a user variable in another task
-: 's  ( "uvarname" -- a-addr )
+: 's  ( tid "uvarname" -- a-addr )
    postpone 's-offset state @ if
       postpone literal postpone +
    else + then ; immediate
@@ -64,19 +64,19 @@ decimal
 : pause  ( -- ) 
    rp@ sp@ stacktop !  follower @ follower @ 's status >r ; compile-only  
 
-: restore 
+: restore ( --  rt: newuserp -- )
    postpone rdrop postpone userp postpone ! ; immediate compile-only
 
 \g Status for sleeping tasks
-: sleeping ( --  r: newuserp -- )
+: sleeping ( --  rt: newuserp -- )
    restore pause ;
 
 \g Status for stopped tasks
-: stopped ( --  r: newuserp -- )
+: stopped ( --  rt: newuserp -- )
    restore pause ;
 
 \g Status for ready tasks
-: ready  ( --  r: newuserp -- )
+: ready  ( --  rt: newuserp -- )
    restore stacktop @ sp! rp! ; compile-only 
 
 \g Stop current task

@@ -146,16 +146,16 @@ warnings off
 
 \g @see anscore
 : constant ( x "<spaces>name" --  rt: -- x )
-   nesting?  head,  xtof doconst xt, drop  , linklast ;
+   nesting?  head,  ['] doconst xt, drop  , linklast ;
 
 
 \g @see anscore
 : value ( x "name" -- rt: -- x )
-   nesting?  head,  xtof dovalue xt, drop  , linklast ;
+   nesting?  head,  ['] dovalue xt, drop  , linklast ;
 
 \g @see anscore
 : variable ( "<spaces>name" -- ) 
-   nesting?  head, xtof dovar xt, drop  -559038737 , linklast ; 
+   nesting?  head, ['] dovar xt, drop  -559038737 , linklast ; 
 
 variable leaves
 
@@ -237,16 +237,16 @@ variable leaves
 
 \g @see anscore
 : to
-   ' ?dodefine xtof dovalue <> -32 ?throw
+   ' ?dodefine ['] dovalue <> -32 ?throw
    state @ if postpone doto /call - , else ! then ;  immediate
 
 \g @see anscore
 : create ( "<spaces>name" --  R: -- a-addr  )
-   nesting?  head, xtof docreate xt, drop  ['] noop , linklast ;
+   nesting?  head, ['] docreate xt, drop  ['] noop , linklast ;
 
 \g @see anscore
 : >body ( xt -- a-addr )
-   ?dodefine xtof docreate <> -31 ?throw
+   ?dodefine ['] docreate <> -31 ?throw
    cell+ ; 
 
 \g Connect latest word to the DOES> code
