@@ -174,7 +174,7 @@
                 NEXT;
                 
                 PRIM(DOLOOP,37);
-                if (++rsp[0] < rsp[1])
+                if (++rsp[0] != rsp[1])
                         fpc = ((char*)fpc) + *fpc;
                 else
                         fpc++;
