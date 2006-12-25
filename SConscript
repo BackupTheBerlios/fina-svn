@@ -12,6 +12,16 @@ fenv.Tab('ffitab.it', 'ffi.i')
 fenv.Command('arch.h', '$ARCH-arch.h', 'ln -sf ${SOURCE.abspath} $TARGET')
 fenv.Asm('finac.s', 'finac.c')
 
+
+def gendict(arch, phase, kernel):
+        fenv.Command(arch + '-dict' + str(phase) + '.s', 
+		[kernel] + \
+		Split('core.fs defer.fs throwmsg.fs search.fs coreext.fs opt.fs') + \
+                [arch + '-tconfig.fs'] + Split('host-fina.fs meta.fs fina.fs'),
+                'cat ${SOURCES[1:]} | $SOURCE > $TARGET')
+
+architectures = ['powerpc', 'mips', 'i386']
+
 for phase in range(3):
         ks = fenv.Command('kernel' + str(phase) + '.s', 
                 ['finac.s', '$ARCH-dict' + str(phase) + '.s'],
@@ -21,15 +31,14 @@ for phase in range(3):
                 fenv.Command('dummy' + str(phase), [k] + Split("""
                 core.fs defer.fs throwmsg.fs tester.fs coretest.fs 
                 postponetest.fs bye.fs
-                """), 'cat ${SOURCES[1:]} | $SOURCE')           
-        fenv.Command('$ARCH-dict' + str(phase+1) + '.s', [k] + Split("""
-                core.fs defer.fs throwmsg.fs search.fs coreext.fs
-                opt.fs $ARCH-tconfig.fs
-                host-fina.fs
-                meta.fs fina.fs
-                """), 'cat ${SOURCES[1:]} | $SOURCE > $TARGET')
-fenv.Default(fenv.Command('dummy', '$ARCH-dict2.s', 
-            Copy('$ARCH-dict0.s', '$SOURCE')))
+                """), 'cat ${SOURCES[1:]} | $SOURCE')
+	for arch in architectures:
+		gendict(arch, phase+1, k)
+
+for arch in architectures:
+	fenv.Default(fenv.Command(arch + 'dummy', arch + '-dict2.s', 
+       	  		  Copy(arch + '-dict0.s', '$SOURCE')))
+	
 
 if helpdir[0] == '#':
 	helpdir2 = helpdir[1:]
@@ -82,7 +91,7 @@ answords.fs    dbltest.fs      finatest.fs	module.fs	    sh.fs
 args.fs 
 assert.fs      dbltest2.fs     glosgen.fs	multi.fs	    signals.fs
 aw.fs	       defer.fs        gtk.fs		opt.fs		    string.fs
-awtest.fs      double.fs       help.fs	        optional.fs	    tconfig-mips.fs
+awtest.fs      double.fs       help.fs	        optional.fs	    mips-tconfig.fs
 backtrace.fs   doubleext.fs    host-fina.fs	osnice.fs	    tester.fs
 bnf.fs	       facility.fs     host-gforth.fs	postponetest.fs     throwmsg.fs
 bye.fs	       facilityext.fs  hype.fs		powerpc-tconfig.fs  tools.fs
