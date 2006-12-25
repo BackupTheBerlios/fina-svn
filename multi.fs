@@ -61,23 +61,28 @@ decimal
 \g Stop current task and transfer control to the task of which
 \g 'status' USER variable is stored in 'follower' USER variable
 \g of current task.
-: pause  ( -- ) 
-   rp@ sp@ stacktop !  follower @ follower @ 's status >r ; compile-only  
+: pause  ( -- )
+   rp@  \ This item will be consumed by READY
+   sp@ stacktop !  follower @ follower @ 's status >r ; compile-only  
 
-: restore ( --  rt: newuserp -- )
+: resume
    postpone rdrop postpone userp postpone ! ; immediate compile-only
 
 \g Status for sleeping tasks
-: sleeping ( --  rt: newuserp -- )
-   restore pause ;
+: sleeping
+   resume pause ;
 
 \g Status for stopped tasks
-: stopped ( --  rt: newuserp -- )
-   restore pause ;
+: stopped
+   resume pause ;
 
 \g Status for ready tasks
-: ready  ( --  rt: newuserp -- )
-   restore stacktop @ sp! rp! ; compile-only 
+: ready
+   resume stacktop @ sp! rp! ; compile-only 
+
+\g Status for starting tasks
+: starting
+   resume sp0 @ sp! rp0 @ rp! ['] ready status ! ;
 
 \g Stop current task
 : stop  ( -- )
@@ -121,19 +126,15 @@ decimal
 \g Initialize and link task 
 : build ( tid -- )
    assert( dup built 0= )
-   follower @ over 's follower !
-   dup follower !  sleep ;
+   follower @ over 's follower !  dup follower !  sleep ;
 
 \g Activate the task identified by tid. ACTIVATE must be used
 \g only in definition. The code following ACTIVATE must not
 \g EXIT. In other words it must be infinite loop like QUIT.
 : activate ( tid -- )
    assert( dup built )
-   r> swap >r
-   r@ 's rp0 @ !
-   r@ 's rp0 @  r@ 's sp0 @ !
-   r@ 's sp0 @  r@ 's stacktop !
-   r> awake ; compile-only
+   r> over 's rp0 @ ! \ set entry point
+   ['] starting swap 's status ! ;
 
 \ Initializations for system task
 ' ready status !
