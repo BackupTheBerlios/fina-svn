@@ -18,17 +18,6 @@ static inline CELL * getlnk()
         return res;
 }
 
-
-static inline void next(CELL ** pfpc)
-{
-	CELL tmp;
-	asm volatile (" lwz %1,0(%2) \n"
-		      " addi %0,%2,4 \n"
-		      " mtctr %1 \n"
-		      " bctr "
-		      : "=r" (*pfpc), "=r" (tmp) : "0" (*pfpc));
-}
-
 static inline CELL arch_iscall(CELL xt)
 {
         return (*(CELL*)xt & 0xfc000003) == 0x48000001;

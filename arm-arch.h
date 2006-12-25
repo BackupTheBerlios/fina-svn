@@ -1,3 +1,6 @@
+#define CELL long
+
+#define PRIMSATTR
 
 #define SAVESP
 #define RESTORESP
