@@ -30,6 +30,7 @@ variable options
    postpone else ; immediate compile-only
 : endcase 
    postpone drop options @ 0 ?do postpone then loop ; immediate compile-only
+: align begin here aligned 0= while 0 c, repeat ;
 : ,"
    [char] " parse here over 1 chars + allot place align ;
 : asmtype
